@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super Smash Browser - Ultimate Edition</title>
+    <title>Super Smash Browser - Shield & Juice Edition</title>
     <style>
         body {
             margin: 0; background: #05050d; color: white;
@@ -51,7 +51,7 @@
 
     <div id="menu">
         <h1 style="font-size: 38px; margin-bottom: 5px; color: #ff9900; text-shadow: 0 0 15px rgba(255,153,0,0.4);">SUPER SMASH BROWSER</h1>
-        <p style="color: #555577; margin-bottom: 20px; font-weight: bold; font-size: 14px;">STOCKS • STAGES • SPECIALS</p>
+        <p style="color: #555577; margin-bottom: 20px; font-weight: bold; font-size: 14px;">SHIELDS • SCREENSHAKE • PARTICLES</p>
         
         <div class="select-container">
             <div class="select-box" style="border-top: 4px solid #ff4444;">
@@ -83,8 +83,8 @@
         <button class="btn" id="btnLocal">2 SPELERS (LOKAAL)</button>
         <button class="btn" id="btnCPU">SPELEN VS CPU</button>
         
-        <p style="color: #666; font-size: 11px; margin-top: 15px;">P1: A-D (Lopen), W (Springen), F (Aanval), G (Special)</p>
-        <p style="color: #666; font-size: 11px;">P2: ◄ ► (Lopen), ▲ (Springen), . (Aanval), / (Special)</p>
+        <p style="color: #666; font-size: 11px; margin-top: 10px;">P1: A-D (Lopen), W (Springen), F (Aanval), G (Special), <b>Shift (Schild)</b></p>
+        <p style="color: #666; font-size: 11px;">P2: ◄ ► (Lopen), ▲ (Springen), . (Aanval), / (Special), <b>▼ (Schild)</b></p>
     </div>
 
     <div id="victoryScreen">
@@ -109,13 +109,17 @@
         let isCPUGame = false;
         let projectielen = [];
         let lasers = []; 
+        let particles = []; // Voor de hit-vonken
         let cameraOffset = 0;
         let screenFlashTimer = 0;
+        
+        // Screenshake variabelen
+        let shakeTimer = 0;
+        let shakeIntensity = 0;
 
-        // Stage definities
         let activeStageName = "Battlefield";
         let mainStage = { x: 150, y: 340, width: 500, height: 25, depth: 35 };
-        let softPlatforms = []; // Kleine platformpjes waar je doorheen kunt springen/vallen
+        let softPlatforms = [];
 
         const classStats = {
             SwordFighter: { color: "#ff5555", weaponColor: "#e0e0e0", damage: 13, range: 55, knockback: 6.5 },
@@ -143,6 +147,10 @@
                 this.animFrame = 0;
                 this.isFinalSmashing = false; 
                 this.respawnTimer = 0;
+
+                // Shield stats
+                this.isShielding = false;
+                this.shieldHealth = 40; // Max schild grootte
             }
 
             setClass(type) {
@@ -159,6 +167,8 @@
                 this.attackTimer = 0;
                 this.specialTimer = 0;
                 this.respawnTimer = 0;
+                this.isShielding = false;
+                this.shieldHealth = 40;
             }
 
             respawn() {
@@ -167,18 +177,30 @@
                 this.y = 100;
                 this.vx = 0; this.vy = 0;
                 this.percentage = 0;
-                this.respawnTimer = 60; // Knippert 60 frames (invincible)
+                this.respawnTimer = 60;
+                this.shieldHealth = 40;
             }
 
             update() {
                 if (this.respawnTimer > 0) this.respawnTimer--;
 
+                // Schild logica regeneratie / afbraak
+                if (this.isShielding && this.isGrounded) {
+                    this.vx *= 0.2; // Je kunt niet snel lopen tijdens shield
+                    this.shieldHealth -= 0.25;
+                    if (this.shieldHealth <= 5) {
+                        this.isShielding = false; // Schild breekt als het te klein is
+                    }
+                } else {
+                    if (this.shieldHealth < 40) this.shieldHealth += 0.1; // Schild laadt langzaam op
+                }
+
                 this.vy += gravity;
                 this.x += this.vx;
                 this.y += this.vy;
 
-                if (this.vx > 0.1) this.facing = 1;
-                if (this.vx < -0.1) this.facing = -1;
+                if (this.vx > 0.1 && !this.isShielding) this.facing = 1;
+                if (this.vx < -0.1 && !this.isShielding) this.facing = -1;
 
                 this.vx *= this.isGrounded ? 0.8 : 0.95;
 
@@ -190,13 +212,12 @@
                 }
                 if (this.specialTimer > 0) {
                     this.specialTimer--;
-                    // Special aanval specifieke physics
                     if (this.type === "SwordFighter" && this.specialTimer > 5) {
-                        this.vx = this.facing * 6; // Spin attack verplaatst je snel naar voren
+                        this.vx = this.facing * 6;
                     }
                 }
 
-                // --- COLLISION HOOFDPLATFORM ---
+                // Stage collision
                 if (this.x + this.width > mainStage.x && this.x < mainStage.x + mainStage.width &&
                     this.y + this.height <= mainStage.y + 10 && this.y + this.height + this.vy >= mainStage.y) {
                     this.y = mainStage.y - this.height; this.vy = 0; this.isGrounded = true;
@@ -204,7 +225,7 @@
                     this.isGrounded = false; 
                 }
 
-                // --- COLLISION SOFT PLATFORMS ---
+                // Soft platforms collision
                 if (!this.isGrounded && this.vy >= 0) {
                     for (let plat of softPlatforms) {
                         if (this.x + this.width > plat.x && this.x < plat.x + plat.width &&
@@ -218,7 +239,6 @@
 
             drawShadow() {
                 if (this.respawnTimer % 4 >= 2) return;
-                // Schaduw op hoofdpodium
                 if (this.x + this.width > mainStage.x && this.x < mainStage.x + mainStage.width && this.y <= mainStage.y) {
                     let distance = mainStage.y - (this.y + this.height);
                     let shadowWidth = Math.max(8, this.width - (distance * 0.08));
@@ -231,11 +251,24 @@
             }
 
             draw() {
-                if (this.respawnTimer % 4 >= 2) return; // Knipper effect bij respawn
+                if (this.respawnTimer % 4 >= 2) return;
 
                 let centerX = this.x + this.width / 2;
                 let centerY = this.y + this.height / 2;
                 let weaponColor = classStats[this.type].weaponColor;
+
+                // Teken Schild bubble indien actief
+                if (this.isShielding) {
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.arc(centerX, centerY, this.shieldHealth, 0, Math.PI * 2);
+                    ctx.fillStyle = this.isP1 ? "rgba(255, 50, 50, 0.4)" : "rgba(50, 50, 255, 0.4)";
+                    ctx.strokeStyle = this.isP1 ? "rgba(255, 150, 150, 0.8)" : "rgba(150, 150, 255, 0.8)";
+                    ctx.lineWidth = 2;
+                    ctx.fill();
+                    ctx.stroke();
+                    ctx.restore();
+                }
 
                 if (this.isFinalSmashing || (this.specialTimer > 0 && this.type === "Gunner")) {
                     ctx.save();
@@ -264,7 +297,7 @@
                 ctx.fillStyle = "#000";
                 ctx.fillRect(4, -28, 3, 4);
 
-                // WAPEN EN SPECIAL ANIMATIES
+                // WAPENS
                 let ext = 0;
                 let sizeMultiplier = this.isFinalSmashing ? 2.2 : 1.0; 
 
@@ -272,12 +305,9 @@
                     ext = Math.sin((this.attackTimer / 15) * Math.PI) * (25 * sizeMultiplier);
                 }
 
-                // Special-animatie rotaties/veranderingen
-                let isSpinning = (this.type === "SwordFighter" && this.specialTimer > 0);
-
                 if (this.type === "Brawler") {
                     ctx.fillStyle = this.isFinalSmashing ? "#ffaa00" : (this.specialTimer > 0 ? "#ff5500" : weaponColor);
-                    let upAmt = (this.specialTimer > 0) ? -15 : 0; // Uppercut gooit arm omhoog
+                    let upAmt = (this.specialTimer > 0) ? -15 : 0;
                     ctx.fillRect(5, -8 + upAmt, (12 + ext), 10 * sizeMultiplier);
                     ctx.beginPath();
                     ctx.arc(17 + ext, -3 + upAmt, 8 * sizeMultiplier, 0, Math.PI * 2);
@@ -286,8 +316,8 @@
                 else if (this.type === "SwordFighter") {
                     ctx.save();
                     ctx.translate(8, -2);
-                    if (isSpinning) {
-                        ctx.rotate(this.specialTimer * 0.7); // Tol-rotatie
+                    if (this.specialTimer > 0) {
+                        ctx.rotate(this.specialTimer * 0.7);
                     } else if (this.attackTimer > 0) {
                         ctx.rotate((ext / (25 * sizeMultiplier)) * Math.PI / 2 - Math.PI/4);
                     } else {
@@ -312,10 +342,10 @@
                 if (this.isFinalSmashing || (this.specialTimer > 0 && this.type === "Gunner")) ctx.restore(); 
             }
 
-            jump() { if (this.isGrounded) this.vy = -12; }
+            jump() { if (this.isGrounded && !this.isShielding) this.vy = -12; }
 
             attack(opponent) {
-                if (this.attackTimer > 0 || this.specialTimer > 0 || gameState !== "PLAYING") return; 
+                if (this.attackTimer > 0 || this.specialTimer > 0 || this.isShielding || gameState !== "PLAYING") return; 
                 
                 this.attackTimer = 15; 
                 let stats = Object.assign({}, classStats[this.type]);
@@ -339,37 +369,47 @@
                     if (hitzoneX < opponent.x + opponent.width && hitzoneX + stats.range > opponent.x &&
                         this.y < opponent.y + opponent.height && this.y + this.height > opponent.y) {
                         
-                        opponent.percentage += stats.damage;
-                        opponent.vx = this.facing * (stats.knockback + (opponent.percentage * 0.15));
-                        opponent.vy = -4 - (opponent.percentage * 0.08);
-                        if (this.isFinalSmashing) flashScreen(); 
+                        // Check of opponent aan het shielden is
+                        if (opponent.isShielding) {
+                            opponent.shieldHealth -= stats.damage * 0.8;
+                            createParticles(opponent.x + opponent.width/2, opponent.y + opponent.height/2, "cyan", 5);
+                        } else {
+                            opponent.percentage += stats.damage;
+                            opponent.vx = this.facing * (stats.knockback + (opponent.percentage * 0.15));
+                            opponent.vy = -4 - (opponent.percentage * 0.08);
+                            
+                            triggerShake(this.isFinalSmashing ? 14 : 5, 10);
+                            createParticles(opponent.x + opponent.width/2, opponent.y + opponent.height/2, stats.weaponColor, 12);
+                            if (this.isFinalSmashing) flashScreen(); 
+                        }
                     }
                 }
             }
 
-            // --- NEW: SPECIAL ATTACKS MOVE LOGICA ---
             special(opponent) {
-                if (this.attackTimer > 0 || this.specialTimer > 0 || gameState !== "PLAYING") return;
+                if (this.attackTimer > 0 || this.specialTimer > 0 || this.isShielding || gameState !== "PLAYING") return;
 
-                this.specialTimer = 25; // Elke special duurt 25 frames
+                this.specialTimer = 25;
 
                 if (this.type === "Brawler") {
-                    // Shoryuken Uppercut! Vliegt omhoog.
                     this.vy = -14;
                     this.isGrounded = false;
-                    // Raakt hij de tegenstander tijdens de sprong?
                     if (Math.abs(this.x - opponent.x) < 50 && this.y > opponent.y - 40 && this.y < opponent.y + opponent.height + 40) {
-                        opponent.percentage += 15;
-                        opponent.vy = -13; // Lanceert mee omhoog
-                        opponent.vx = this.facing * 3;
+                        if (opponent.isShielding) {
+                            opponent.shieldHealth -= 12;
+                        } else {
+                            opponent.percentage += 15;
+                            opponent.vy = -13;
+                            opponent.vx = this.facing * 3;
+                            triggerShake(8, 12);
+                            createParticles(opponent.x + opponent.width/2, opponent.y + opponent.height/2, "#ff5500", 15);
+                        }
                     }
                 } 
                 else if (this.type === "SwordFighter") {
-                    // Spin Attack activeert (physics update regelt de verplaatsing)
-                    // Continue hitbox check gedurende de gehele spin (wordt afgehandeld in hoofdloop)
+                    // Verplaatsing via update loop handled continuous hits
                 } 
                 else if (this.type === "Gunner") {
-                    // Giga Laser Beam! Schiet na korte vertraging dwars door het veld
                     lasers.push({
                         x: this.facing === 1 ? this.x + this.width : 0,
                         y: this.y + 10,
@@ -382,29 +422,71 @@
             }
         }
 
-        const p1 = new Player(250, 200, { left: "KeyA", right: "KeyD", up: "KeyW", attack: "KeyF", special: "KeyG" }, true);
-        const p2 = new Player(550, 200, { left: "ArrowLeft", right: "ArrowRight", up: "ArrowUp", attack: "Period", special: "Slash" }, false);
+        const p1 = new Player(250, 200, { left: "KeyA", right: "KeyD", up: "KeyW", attack: "KeyF", special: "KeyG", shield: "ShiftLeft" }, true);
+        const p2 = new Player(550, 200, { left: "ArrowLeft", right: "ArrowRight", up: "ArrowUp", attack: "Period", special: "Slash", shield: "ArrowDown" }, false);
 
         const keys = {};
         window.addEventListener("keydown", (e) => { keys[e.code] = true; });
         window.addEventListener("keyup", (e) => { keys[e.code] = false; });
 
-        function flashScreen() { screenFlashTimer = 6; } 
+        // --- NEW JUICE: SCREENSHAKE LOGICA ---
+        function triggerShake(intensity, duration) {
+            shakeTimer = duration;
+            shakeIntensity = intensity;
+        }
+
+        // --- NEW JUICE: PARTICLES LOGICA ---
+        function createParticles(x, y, color, amount) {
+            for(let i=0; i<amount; i++) {
+                particles.push({
+                    x: x, y: y,
+                    vx: (Math.random() - 0.5) * 8,
+                    vy: (Math.random() - 0.5) * 8,
+                    size: Math.random() * 4 + 2,
+                    alpha: 1,
+                    color: color
+                });
+            }
+        }
+
+        function updateAndDrawParticles() {
+            for(let i = particles.length - 1; i >= 0; i--) {
+                let p = particles[i];
+                p.x += p.vx; p.y += p.vy;
+                p.alpha -= 0.03;
+                ctx.fillStyle = p.color;
+                ctx.globalAlpha = p.alpha;
+                ctx.fillRect(p.x, p.y, p.size, p.size);
+                ctx.globalAlpha = 1.0;
+                if(p.alpha <= 0) particles.splice(i, 1);
+            }
+        }
 
         function handleInput() {
             if (gameState !== "PLAYING") return;
-            // Speler 1
-            if (keys[p1.controls.left]) p1.vx = -5;
-            if (keys[p1.controls.right]) p1.vx = 5;
-            if (keys[p1.controls.up]) p1.jump();
+            
+            // Shield status toggles via key hold
+            p1.isShielding = keys[p1.controls.shield] && p1.isGrounded;
+            if (!isCPUGame) {
+                p2.isShielding = keys[p2.controls.shield] && p2.isGrounded;
+            }
+
+            // Speler 1 movement (geblokkeerd bij shield)
+            if (!p1.isShielding) {
+                if (keys[p1.controls.left]) p1.vx = -5;
+                if (keys[p1.controls.right]) p1.vx = 5;
+                if (keys[p1.controls.up]) p1.jump();
+            }
             if (keys[p1.controls.attack]) { p1.attack(p2); keys[p1.controls.attack] = false; }
             if (keys[p1.controls.special]) { p1.special(p2); keys[p1.controls.special] = false; }
 
-            // Speler 2
+            // Speler 2 movement
             if (!isCPUGame) {
-                if (keys[p2.controls.left]) p2.vx = -5;
-                if (keys[p2.controls.right]) p2.vx = 5;
-                if (keys[p2.controls.up]) p2.jump();
+                if (!p2.isShielding) {
+                    if (keys[p2.controls.left]) p2.vx = -5;
+                    if (keys[p2.controls.right]) p2.vx = 5;
+                    if (keys[p2.controls.up]) p2.jump();
+                }
                 if (keys[p2.controls.attack]) { p2.attack(p1); keys[p2.controls.attack] = false; }
                 if (keys[p2.controls.special]) { p2.special(p1); keys[p2.controls.special] = false; }
             }
@@ -413,12 +495,22 @@
         function updateCPU() {
             if (!isCPUGame || gameState !== "PLAYING") return;
 
-            if (p2.x < p1.x - 40) p2.vx = 2.5;
-            else if (p2.x > p1.x + 40) p2.vx = -2.5;
-
-            if (p1.y < p2.y - 40 && Math.random() < 0.03) p2.jump();
-
             let dist = Math.abs(p2.x - p1.x);
+
+            // CPU verdedigt soms slim als P1 dichtbij aanvalt
+            if (dist < 60 && p1.attackTimer > 10 && Math.random() < 0.35 && p2.isGrounded) {
+                p2.isShielding = true;
+                return;
+            } else {
+                p2.isShielding = false;
+            }
+
+            if (!p2.isShielding) {
+                if (p2.x < p1.x - 40) p2.vx = 2.5;
+                else if (p2.x > p1.x + 40) p2.vx = -2.5;
+                if (p1.y < p2.y - 40 && Math.random() < 0.03) p2.jump();
+            }
+
             if (dist < 60 && Math.random() < 0.04) {
                 if (Math.random() < 0.4) p2.special(p1);
                 else p2.attack(p1);
@@ -429,36 +521,45 @@
         }
 
         function handleContinuousHits() {
-            // Checkt doorlopende aanvallen zoals de SwordFighter spin en Gunner Lasers
             [p1, p2].forEach(p => {
                 let opp = (p === p1) ? p2 : p1;
                 if (p.type === "SwordFighter" && p.specialTimer > 0) {
                     if (Math.abs(p.x - opp.x) < 65 && Math.abs(p.y - opp.y) < 50) {
-                        opp.percentage += 0.6; // Kleine tikkende schade
-                        opp.vx = p.facing * 3;
+                        if (opp.isShielding) {
+                            opp.shieldHealth -= 0.3;
+                        } else {
+                            opp.percentage += 0.5;
+                            opp.vx = p.facing * 3;
+                            if (Math.random() < 0.2) createParticles(opp.x + opp.width/2, opp.y + opp.height/2, "white", 1);
+                        }
                     }
                 }
             });
 
-            // Update lasers van de Gunners
             for (let i = lasers.length - 1; i >= 0; i--) {
                 let laser = lasers[i];
                 laser.timer--;
                 
-                // Teken de laserstraal
                 if (laser.timer < 10) {
                     ctx.fillStyle = "white";
                     ctx.fillRect(laser.x, laser.y, laser.width, laser.height);
                     ctx.fillStyle = "cyan";
                     ctx.fillRect(laser.x, laser.y + 4, laser.width, laser.height - 8);
 
-                    // Hit detection (eenmalig effectief per laser flits)
                     let target = (laser.owner === p1) ? p2 : p1;
                     if (laser.timer === 8 && target.x + target.width > laser.x && target.x < laser.x + laser.width &&
                         target.y + target.height > laser.y && target.y < laser.y + laser.height) {
-                        target.percentage += 12;
-                        target.vx = laser.owner.facing * (6 + (target.percentage * 0.1));
-                        target.vy = -3;
+                        
+                        if (target.isShielding) {
+                            target.shieldHealth -= 10;
+                            createParticles(target.x + target.width/2, target.y + target.height/2, "cyan", 6);
+                        } else {
+                            target.percentage += 12;
+                            target.vx = laser.owner.facing * (6 + (target.percentage * 0.1));
+                            target.vy = -3;
+                            triggerShake(6, 10);
+                            createParticles(target.x + target.width/2, target.y + target.height/2, "cyan", 14);
+                        }
                     }
                 }
                 if (laser.timer <= 0) lasers.splice(i, 1);
@@ -478,10 +579,17 @@
                 if (proj.x > target.x && proj.x < target.x + target.width && 
                     proj.y > target.y && proj.y < target.y + target.height + (proj.isMega ? 20 : 0)) {
                     
-                    target.percentage += proj.damage;
-                    target.vx = (proj.vx > 0 ? 1 : -1) * (proj.knockback + (target.percentage * 0.12));
-                    target.vy = proj.isMega ? -6 : -3.5;
-                    if (proj.isMega) flashScreen();
+                    if (target.isShielding) {
+                        target.shieldHealth -= proj.damage * 0.7;
+                        createParticles(target.x + target.width/2, target.y + target.height/2, "cyan", 4);
+                    } else {
+                        target.percentage += proj.damage;
+                        target.vx = (proj.vx > 0 ? 1 : -1) * (proj.knockback + (target.percentage * 0.12));
+                        target.vy = proj.isMega ? -6 : -3.5;
+                        triggerShake(proj.isMega ? 12 : 3, 8);
+                        createParticles(target.x + target.width/2, target.y + target.height/2, "cyan", proj.isMega ? 15 : 4);
+                        if (proj.isMega) flashScreen();
+                    }
                     projectielen.splice(i, 1);
                     continue;
                 }
@@ -489,12 +597,11 @@
             }
         }
 
-        // --- NEW: RESPAWN LOGICA & LEVENS SYSTEEM ---
         function checkRingOuts() {
             [p1, p2].forEach(p => {
                 if (p.y > canvas.height || p.x < 0 || p.x > canvas.width) {
                     if (p.stocks > 1) {
-                        p.respawn(); // Verliest 1 leven en komt terug
+                        p.respawn();
                     } else {
                         p.stocks = 0;
                         gameState = "GAMEOVER";
@@ -505,7 +612,7 @@
         }
 
         function showVictoryScreen() {
-            projectielen = []; lasers = [];
+            projectielen = []; lasers = []; particles = [];
             let title = document.getElementById("victoryTitle");
             let sub = document.getElementById("victorySub");
 
@@ -521,14 +628,12 @@
             document.getElementById("victoryScreen").style.display = "flex";
         }
 
-        // --- NEW: EXTRA STAGES MERGEN ---
         function setupStage() {
             activeStageName = document.getElementById("stageSelect").value;
             softPlatforms = [];
 
             if (activeStageName === "Battlefield") {
                 mainStage = { x: 180, y: 350, width: 440, height: 25, depth: 35 };
-                // 2 Zwevende platformpjes toevoegen
                 softPlatforms.push({ x: 230, y: 240, width: 120 });
                 softPlatforms.push({ x: 450, y: 240, width: 120 });
             } else if (activeStageName === "FinalDestination") {
@@ -549,7 +654,6 @@
             ctx.fillStyle = skyGradient;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Parallax elementen
             ctx.fillStyle = "#0d0d1a";
             ctx.fillRect(40 - cameraOffset * 0.3, 180, 150, 320);
             ctx.fillRect(600 - cameraOffset * 0.3, 150, 160, 350);
@@ -559,13 +663,11 @@
         }
 
         function draw3DStage() {
-            // Teken Hoofdplatform
             ctx.fillStyle = "#2c2c3e";
             ctx.fillRect(mainStage.x, mainStage.y, mainStage.width, mainStage.height);
             ctx.fillStyle = "#ffaa00";
             ctx.fillRect(mainStage.x, mainStage.y, mainStage.width, 3);
 
-            // Isometrische 3D rand
             ctx.fillStyle = "#1e1e2b";
             ctx.beginPath();
             ctx.moveTo(mainStage.x, mainStage.y + mainStage.height);
@@ -575,12 +677,11 @@
             ctx.closePath();
             ctx.fill();
 
-            // Teken eventuele soft platforms (Smash stijl zwevende plankjes)
             softPlatforms.forEach(plat => {
                 ctx.fillStyle = "rgba(40, 40, 60, 0.8)";
                 ctx.fillRect(plat.x, plat.y, plat.width, 8);
                 ctx.fillStyle = "#00ffcc";
-                ctx.fillRect(plat.x, plat.y, plat.width, 2); // Neon randje
+                ctx.fillRect(plat.x, plat.y, plat.width, 2);
             });
         }
 
@@ -618,6 +719,15 @@
             p2.update();
             checkRingOuts();
 
+            // --- APPLICATION OF SCREENSHAKE ---
+            ctx.save();
+            if (shakeTimer > 0) {
+                let dx = (Math.random() - 0.5) * shakeIntensity;
+                let dy = (Math.random() - 0.5) * shakeIntensity;
+                ctx.translate(dx, dy);
+                shakeTimer--;
+            }
+
             drawAchtergrond();
             p1.drawShadow();
             p2.drawShadow();
@@ -627,6 +737,9 @@
             p1.draw();
             p2.draw();
             updateProjectiles();
+            updateAndDrawParticles(); // Update hit-vonken
+
+            ctx.restore(); // Stop screenshake matrix transformatie
 
             if (screenFlashTimer > 0) {
                 ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
@@ -634,7 +747,7 @@
                 screenFlashTimer--;
             }
 
-            // UI renderen met Levens (Sterretjes ⭐)
+            // UI
             let p1UI = document.getElementById("p1-ui");
             let p2UI = document.getElementById("p2-ui");
 
