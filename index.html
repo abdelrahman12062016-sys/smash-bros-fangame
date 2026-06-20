@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super Smash Browser - Final Smash Fixed</title>
+    <title>Super Smash Browser - Victory Screen Edition</title>
     <style>
         body {
             margin: 0; background: #111; color: white;
@@ -11,13 +11,17 @@
             flex-direction: column; align-items: center; justify-content: center;
             height: 100vh; overflow: hidden;
         }
-        #menu {
+        #menu, #victoryScreen {
             position: absolute; background: rgba(15, 15, 25, 0.98);
             width: 800px; height: 500px; display: flex;
             flex-direction: column; align-items: center; justify-content: center;
             border: 4px solid #ffaa00; z-index: 10;
             box-shadow: 0 0 40px rgba(255, 170, 0, 0.3);
             border-radius: 10px;
+        }
+        #victoryScreen {
+            display: none; background: rgba(10, 10, 15, 0.95); border-color: #00ffcc;
+            box-shadow: 0 0 40px rgba(0, 255, 204, 0.3);
         }
         .btn {
             background: linear-gradient(135deg, #ffaa00, #ff5500); color: white; border: none;
@@ -26,6 +30,9 @@
             width: 300px; transition: 0.2s; box-shadow: 0 4px 15px rgba(0,0,0,0.4);
         }
         .btn:hover { transform: scale(1.05); filter: brightness(1.2); }
+        .btn-victory {
+            background: linear-gradient(135deg, #00ffcc, #0099ff);
+        }
         .select-container { display: flex; gap: 40px; margin-bottom: 30px; }
         .select-box {
             background: #1a1a24; border: 2px solid #333; padding: 20px; border-radius: 8px; text-align: center;
@@ -45,7 +52,7 @@
 
     <div id="menu">
         <h1 style="font-size: 40px; margin-bottom: 5px; color: #ffaa00; text-shadow: 0 0 10px rgba(255,170,0,0.5);">SUPER SMASH BROWSER</h1>
-        <p style="color: #666; margin-bottom: 25px;">Final Smash Fixed (Enkel vijand vliegt weg!)</p>
+        <p style="color: #666; margin-bottom: 25px;">Final Smash & Victory Screen Edition</p>
         
         <div class="select-container">
             <div class="select-box" style="border-top: 4px solid #ff3333;">
@@ -68,6 +75,12 @@
 
         <button class="btn" id="btnLocal">2 SPELERS (LOKAAL)</button>
         <button class="btn" id="btnCPU">SPELEN VS CPU</button>
+    </div>
+
+    <div id="victoryScreen">
+        <h1 id="victoryTitle" style="font-size: 50px; color: #00ffcc; text-shadow: 0 0 20px rgba(0,255,204,0.6); margin-bottom: 10px;">VICTORY!</h1>
+        <p id="victorySub" style="font-size: 20px; color: #aaa; margin-bottom: 30px;">Speler 1 wint de match!</p>
+        <button class="btn btn-victory" id="btnBackToMenu">TERUG NAAR MENU</button>
     </div>
 
     <canvas id="gameCanvas" width="800" height="500"></canvas>
@@ -96,6 +109,7 @@
 
         class Player {
             constructor(x, y, controls) {
+                this.startX = x; this.startY = y; // Sla startposities op voor resets
                 this.x = x; this.y = y;
                 this.width = 40; this.height = 60;
                 this.type = "Brawler"; 
@@ -114,6 +128,14 @@
             setClass(type) {
                 this.type = type;
                 this.color = classStats[type].color;
+            }
+
+            reset() {
+                this.x = this.startX; this.y = this.startY;
+                this.vx = 0; this.vy = 0;
+                this.percentage = 0;
+                this.isFinalSmashing = false;
+                this.attackTimer = 0;
             }
 
             update() {
@@ -138,11 +160,6 @@
                     this.y + this.height <= stage.y + 10 && this.y + this.height + this.vy >= stage.y) {
                     this.y = stage.y - this.height; this.vy = 0; this.isGrounded = true;
                 } else { this.isGrounded = false; }
-
-                // Blast zones (Respawn)
-                if (this.y > canvas.height || this.x < 0 || this.x > canvas.width) {
-                    this.x = canvas.width / 2; this.y = 100; this.vx = 0; this.vy = 0; this.percentage = 0;
-                }
             }
 
             draw() {
@@ -222,20 +239,19 @@
             jump() { if (this.isGrounded) this.vy = -12; }
 
             attack(opponent) {
-                if (this.attackTimer > 0) return; 
+                if (this.attackTimer > 0 || gameState !== "PLAYING") return; 
                 
                 this.attackTimer = 15; 
                 let currentKnockback = classStats[this.type].knockback;
                 let currentDamage = classStats[this.type].damage;
                 let currentRange = classStats[this.type].range;
 
-                // Check kans op Final Smash tussen 100% en 230%
                 if (this.percentage >= 100 && this.percentage <= 230) {
-                    if (Math.random() < 0.30) { // 30% kans
+                    if (Math.random() < 0.30) { 
                         this.isFinalSmashing = true;
                         currentDamage *= 2.2;
                         currentKnockback *= 2.5;
-                        currentRange += 30; // Vergroot het bereik veilig naar voren
+                        currentRange += 30; 
                     }
                 }
 
@@ -250,18 +266,14 @@
                         owner: this
                     });
                 } else {
-                    // HITBOX LOGICA (Zorgt dat enkel de OPPONENT weggeslingerd wordt!)
                     let hitzoneX = this.facing === 1 ? this.x + this.width : this.x - currentRange;
                     
                     if (hitzoneX < opponent.x + opponent.width && hitzoneX + currentRange > opponent.x &&
                         this.y < opponent.y + opponent.height && this.y + this.height > opponent.y) {
                         
                         opponent.percentage += currentDamage;
-                        
-                        // Bereken knockback puur gebaseerd op de stats van de aanvaller en schade van de OPSTELLER
                         let calculatedKb = currentKnockback + (opponent.percentage * 0.15);
                         
-                        // Pas dit direct toe op het SLachtoffer (opponent), de aanvaller (this) behoudt zijn eigen snelheid (vx)
                         opponent.vx = this.facing * calculatedKb;
                         opponent.vy = -4 - (opponent.percentage * 0.08);
                         
@@ -282,6 +294,7 @@
         function flashScreen() { screenFlashTimer = 6; } 
 
         function handleInput() {
+            if (gameState !== "PLAYING") return;
             if (keys[p1.controls.left]) p1.vx = -5;
             if (keys[p1.controls.right]) p1.vx = 5;
             if (keys[p1.controls.up]) p1.jump();
@@ -296,7 +309,7 @@
         }
 
         function updateCPU() {
-            if (!isCPUGame) return;
+            if (!isCPUGame || gameState !== "PLAYING") return;
 
             if (p2.x < p1.x - 30) p2.vx = 2.5;
             else if (p2.x > p1.x + 30) p2.vx = -2.5;
@@ -340,18 +353,57 @@
             }
         }
 
+        // --- NEW: CHECK VOOR RING OUTS & TOON VICTORY SCHERM ---
+        function checkGameOver() {
+            let p1Dead = (p1.y > canvas.height || p1.x < 0 || p1.x > canvas.width);
+            let p2Dead = (p2.y > canvas.height || p2.x < 0 || p2.x > canvas.width);
+
+            if (p1Dead || p2Dead) {
+                gameState = "GAMEOVER";
+                projectielen = [];
+
+                let title = document.getElementById("victoryTitle");
+                let sub = document.getElementById("victorySub");
+
+                if (p1Dead) {
+                    title.innerText = isCPUGame ? "GAME OVER" : "VICTORY!";
+                    title.style.color = isCPUGame ? "#ff3333" : "#00ffcc";
+                    sub.innerText = isCPUGame ? `De CPU (${p2.type}) heeft gewonnen!` : `Speler 2 (${p2.type}) wint de match!`;
+                } else if (p2Dead) {
+                    title.innerText = "VICTORY!";
+                    title.style.color = "#00ffcc";
+                    sub.innerText = `Speler 1 (${p1.type}) wint de match!`;
+                }
+
+                // Toon het overwinningsscherm overlay
+                document.getElementById("victoryScreen").style.display = "flex";
+            }
+        }
+
         function startScherm(vsCPU) {
             isCPUGame = vsCPU;
             gameState = "PLAYING";
             
+            p1.reset();
+            p2.reset();
+
             p1.setClass(document.getElementById("p1Char").value);
             p2.setClass(document.getElementById("p2Char").value);
 
             document.getElementById("menu").style.display = "none";
+            document.getElementById("victoryScreen").style.display = "none";
             canvas.style.display = "block";
             document.getElementById("ui").style.display = "flex";
             
             gameLoop();
+        }
+
+        function backToMenu() {
+            gameState = "MENU";
+            document.getElementById("victoryScreen").style.display = "none";
+            canvas.style.display = "none";
+            document.getElementById("ui").style.display = "none";
+            document.getElementById("menu").style.display = "flex";
         }
 
         function gameLoop() {
@@ -364,6 +416,9 @@
 
             p1.update();
             p2.update();
+            
+            // Check na het verplaatsen of er iemand dood is gegaan
+            checkGameOver();
 
             // Grid
             ctx.strokeStyle = "rgba(255,255,255,0.02)";
@@ -403,6 +458,7 @@
 
         document.getElementById("btnLocal").addEventListener("click", () => startScherm(false));
         document.getElementById("btnCPU").addEventListener("click", () => startScherm(true));
+        document.getElementById("btnBackToMenu").addEventListener("click", backToMenu);
     });
     </script>
 </body>
