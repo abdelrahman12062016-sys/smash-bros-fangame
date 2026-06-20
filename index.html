@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super Smash Browser - Ultimate Edition</title>
+    <title>Super Smash Browser - All-Out Roster Edition</title>
     <style>
         body {
             margin: 0; background: #05050d; color: white;
@@ -11,7 +11,7 @@
             flex-direction: column; align-items: center; justify-content: center;
             height: 100vh; overflow: hidden;
         }
-        #menu, #victoryScreen, #storyMenu {
+        #menu, #victoryScreen {
             position: absolute; background: rgba(10, 10, 20, 0.98);
             width: 850px; height: 530px; display: flex;
             flex-direction: column; align-items: center; justify-content: center;
@@ -19,8 +19,7 @@
             box-shadow: 0 0 40px rgba(255, 153, 0, 0.3);
             border-radius: 12px; overflow-y: auto; padding: 20px; box-sizing: border-box;
         }
-        #victoryScreen, #storyMenu { display: none; }
-        #victoryScreen { border-color: #00ffcc; box-shadow: 0 0 40px rgba(0, 255, 204, 0.4); }
+        #victoryScreen { display: none; border-color: #00ffcc; box-shadow: 0 0 40px rgba(0, 255, 204, 0.4); }
         .btn {
             background: linear-gradient(135deg, #ff9900, #ff4500); color: white; border: none;
             padding: 10px 20px; margin: 5px; font-size: 16px;
@@ -28,86 +27,112 @@
             width: 260px; transition: 0.2s; box-shadow: 0 5px 15px rgba(0,0,0,0.5);
         }
         .btn:hover { transform: scale(1.03); filter: brightness(1.2); }
-        .btn-story { background: linear-gradient(135deg, #a83232, #6b1111); border: 2px solid #ff4444; }
         .btn-victory { background: linear-gradient(135deg, #00ffcc, #0099ff); }
         .config-panel { display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; justify-content: center; width: 100%; }
         .p-box {
             background: #131324; border: 2px solid #2a2a40; padding: 8px; border-radius: 8px; text-align: center; width: 180px; box-sizing: border-box;
         }
-        select, input[type="text"] {
+        select {
             padding: 4px; font-size: 13px; margin-top: 4px; background: #222; color: white; border: 1px solid #555;
             border-radius: 4px; cursor: pointer; width: 100%; box-sizing: border-box;
         }
         canvas { background: #000; border: 4px solid #222; border-radius: 8px; display: none; box-shadow: 0 15px 35px rgba(0,0,0,0.8); }
         #ui { display: none; justify-content: space-between; width: 800px; margin-top: 10px; }
-        .p-ui-box { padding: 6px 12px; border-radius: 6px; background: rgba(0,0,0,0.6); width: 180px; text-align: center; font-size: 13px; font-weight: bold; border-bottom: 4px solid #fff; }
-        .stocks { color: #ffaa00; font-size: 11px; margin-top: 2px; }
-        #controllerStatus { color: #55ff55; font-size: 12px; font-weight: bold; margin-bottom: 10px; display: none; }
+        .p-ui-box { padding: 6px 12px; border-radius: 6px; background: rgba(0,0,0,0.6); width: 180px; text-align: center; font-size: 14px; font-weight: bold; border-bottom: 4px solid #fff; }
+        .stocks { color: #ffaa00; font-size: 12px; margin-top: 2px; }
     </style>
 </head>
 <body>
 
     <div id="menu">
-        <h1 style="font-size: 28px; margin: 0 0 5px 0; color: #ff9900; text-shadow: 0 0 15px rgba(255,153,0,0.4);">SUPER SMASH BROWSER</h1>
-        <div id="controllerStatus">🎮 CONTROLLER VERBONDEN (P1 VERVANGT TOETSENBORD)</div>
+        <h1 style="font-size: 30px; margin: 0 0 5px 0; color: #ff9900; text-shadow: 0 0 15px rgba(255,153,0,0.4);">SUPER SMASH BROWSER</h1>
+        <p style="color: #00ffcc; margin: 0 0 15px 0; font-weight: bold; font-size: 13px; text-shadow: 0 0 10px rgba(0,255,204,0.4);">🔥 OMNI-MODUS: 10 SPEELBARE CHARACTERS ACTIEF 🔥</p>
         
-        <div style="margin-bottom: 15px; background: #131324; padding: 10px; border-radius: 8px; border: 1px solid #2a2a40; display: flex; gap: 10px;">
-            <div>
-                <label><b>Spelmodus:</b> </label>
-                <select id="matchMode" style="width: 130px;">
-                    <option value="FFA">Free For All</option>
-                    <option value="2v2">Teams 2v2</option>
-                </select>
-            </div>
-            <div>
-                <label><b>Stage:</b> </label>
-                <select id="stageSelect" style="width: 130px;">
-                    <option value="Battlefield">Battlefield</option>
-                    <option value="FinalDestination">Final Destination</option>
-                    <option value="ThePit">The Pit</option>
-                </select>
-            </div>
+        <div style="margin-bottom: 15px; background: #131324; padding: 10px; border-radius: 8px; border: 1px solid #2a2a40;">
+            <label><b>Spelmodus:</b> </label>
+            <select id="matchMode" style="width: 150px; display: inline-block; margin: 0 10px;">
+                <option value="FFA">Free For All (Iedereen tegen iedereen)</option>
+                <option value="2v2">Teams 2v2 (P1+P3 vs P2+P4)</option>
+            </select>
+            <label><b>Stage:</b> </label>
+            <select id="stageSelect" style="width: 150px; display: inline-block; margin: 0;">
+                <option value="Battlefield">Battlefield</option>
+                <option value="FinalDestination">Final Destination</option>
+                <option value="ThePit">The Pit</option>
+            </select>
         </div>
 
         <div class="config-panel">
             <div class="p-box" style="border-top: 4px solid #ff4444;">
-                <h4 style="margin:2px 0;">P1 (Jij)</h4>
-                <select id="p1Char"><option value="Brawler">Brawler 🥊</option><option value="SwordFighter">SwordFighter ⚔️</option><option value="Gunner">Gunner 🔫</option><option value="Ninja">Ninja 🥷</option><option value="Mage">Mage 🧙‍♂️</option><option value="Viking">Viking 🪓</option><option value="Alien">Alien 👽</option><option value="Robot">Robot 🤖</option><option value="Pirate">Pirate 🏴‍☠️</option><option value="SonicBoy">Sonic Boy 🎧</option></select>
-                <p style="font-size:11px; color:#aaa; margin:4px 0;">Toetsen of Controller</p>
+                <h4 style="margin:2px 0;">Speler 1 (Jij)</h4>
+                <select id="p1Char">
+                    <option value="Brawler">Brawler 🥊</option>
+                    <option value="SwordFighter">SwordFighter ⚔️</option>
+                    <option value="Gunner">Gunner 🔫</option>
+                    <option value="Ninja">Ninja 🥷</option>
+                    <option value="Mage">Mage 🧙‍♂️</option>
+                    <option value="Viking">Viking 🪓</option>
+                    <option value="Alien">Alien 👽</option>
+                    <option value="Robot">Robot 🤖</option>
+                    <option value="Pirate">Pirate 🏴‍☠️</option>
+                    <option value="SonicBoy">Sonic Boy 🎧</option>
+                </select>
+                <select id="p1Control" disabled><option>Mens (A/D/W/F/G)</option></select>
             </div>
             <div class="p-box" style="border-top: 4px solid #4444ff;">
-                <h4 style="margin:2px 0;">P2</h4>
-                <select id="p2Char"><option value="Ninja">Ninja 🥷</option><option value="SwordFighter">SwordFighter ⚔️</option><option value="Brawler">Brawler 🥊</option><option value="Gunner">Gunner 🔫</option></select>
-                <select id="p2Control"><option value="CPU">CPU</option><option value="Human">Mens</option></select>
-                <select id="p2Level"><option value="3">AI Lvl 3</option><option value="6">AI Lvl 6</option><option value="9">AI Lvl 9 🔥</option></select>
+                <h4 style="margin:2px 0;">Speler 2</h4>
+                <select id="p2Char">
+                    <option value="Ninja">Ninja 🥷</option>
+                    <option value="SwordFighter">SwordFighter ⚔️</option>
+                    <option value="Brawler">Brawler 🥊</option>
+                    <option value="Gunner">Gunner 🔫</option>
+                    <option value="Mage">Mage 🧙‍♂️</option>
+                    <option value="Viking">Viking 🪓</option>
+                    <option value="Alien">Alien 👽</option>
+                    <option value="Robot">Robot 🤖</option>
+                    <option value="Pirate">Pirate 🏴‍☠️</option>
+                    <option value="SonicBoy">Sonic Boy 🎧</option>
+                </select>
+                <select id="p2Control"><option value="CPU">CPU (Computer)</option><option value="Human">Mens (◄/►/▲/./\/)</option></select>
+                <select id="p2Level"><option value="3">AI Level 3</option><option value="1">AI Level 1</option><option value="6">AI Level 6</option><option value="9">AI Level 9 🔥</option></select>
             </div>
             <div class="p-box" style="border-top: 4px solid #22cc22;">
-                <h4 style="margin:2px 0;">P3 (Amiibo)</h4>
-                <select id="p3Char"><option value="Mage">Mage 🧙‍♂️</option><option value="Brawler">Brawler 🥊</option><option value="Viking">Viking 🪓</option></select>
-                <select id="p3Control" onchange="toggleAmiiboUI(3)"><option value="CPU">Normale CPU</option><option value="AMIIBO">Faked Amiibo 🌟</option><option value="OFF">UIT</option></select>
-                <input type="text" id="p3AmiiboName" value="AmiiboP3" style="display:none;" placeholder="Amiibo Naam">
-                <div id="p3AmiiboStats" style="font-size:10px; color:#00ffcc; display:none; margin-top:2px;">Lvl 1 (KOs: 0)</div>
+                <h4 style="margin:2px 0;">Speler 3</h4>
+                <select id="p3Char">
+                    <option value="Mage">Mage 🧙‍♂️</option>
+                    <option value="SwordFighter">SwordFighter ⚔️</option>
+                    <option value="Brawler">Brawler 🥊</option>
+                    <option value="Gunner">Gunner 🔫</option>
+                    <option value="Ninja">Ninja 🥷</option>
+                    <option value="Viking">Viking 🪓</option>
+                    <option value="Alien">Alien 👽</option>
+                    <option value="Robot">Robot 🤖</option>
+                    <option value="Pirate">Pirate 🏴‍☠️</option>
+                    <option value="SonicBoy">Sonic Boy 🎧</option>
+                </select>
+                <select id="p3Control"><option value="CPU">CPU (Computer)</option><option value="OFF">UIT (Geen)</option></select>
+                <select id="p3Level"><option value="3">AI Level 3</option><option value="1">AI Level 1</option><option value="6">AI Level 6</option><option value="9">AI Level 9 🔥</option></select>
             </div>
             <div class="p-box" style="border-top: 4px solid #eeee22;">
-                <h4 style="margin:2px 0;">P4 (Amiibo)</h4>
-                <select id="p4Char"><option value="Viking">Viking 🪓</option><option value="Gunner">Gunner 🔫</option><option value="Alien">Alien 👽</option></select>
-                <select id="p4Control" onchange="toggleAmiiboUI(4)"><option value="CPU">Normale CPU</option><option value="AMIIBO">Faked Amiibo 🌟</option><option value="OFF">UIT</option></select>
-                <input type="text" id="p4AmiiboName" value="AmiiboP4" style="display:none;" placeholder="Amiibo Naam">
-                <div id="p4AmiiboStats" style="font-size:10px; color:#00ffcc; display:none; margin-top:2px;">Lvl 1 (KOs: 0)</div>
+                <h4 style="margin:2px 0;">Speler 4</h4>
+                <select id="p4Char">
+                    <option value="Viking">Viking 🪓</option>
+                    <option value="SwordFighter">SwordFighter ⚔️</option>
+                    <option value="Brawler">Brawler 🥊</option>
+                    <option value="Gunner">Gunner 🔫</option>
+                    <option value="Ninja">Ninja 🥷</option>
+                    <option value="Mage">Mage 🧙‍♂️</option>
+                    <option value="Alien">Alien 👽</option>
+                    <option value="Robot">Robot 🤖</option>
+                    <option value="Pirate">Pirate 🏴‍☠️</option>
+                    <option value="SonicBoy">Sonic Boy 🎧</option>
+                </select>
+                <select id="p4Control"><option value="CPU">CPU (Computer)</option><option value="OFF">UIT (Geen)</option></select>
+                <select id="p4Level"><option value="3">AI Level 3</option><option value="1">AI Level 1</option><option value="6">AI Level 6</option><option value="9">AI Level 9 🔥</option></select>
             </div>
         </div>
 
-        <button class="btn" id="btnStartGame">VERSUS GEVECHT!</button>
-        <button class="btn btn-story" id="btnOpenStory">STORY MODUS 🏆</button>
-    </div>
-
-    <div id="storyMenu">
-        <h1 style="font-size: 30px; color: #ff4444; margin: 0 0 10px 0;">STORY MODUS</h1>
-        <p style="color: #aaa; text-align: center; width: 80%; font-size:14px; margin-bottom: 20px;">
-            Vecht je een weg door 3 levels vol computergestuurde bewakers en versla de reusachtige <b>Giga-Boss</b> aan het einde!
-        </p>
-        <button class="btn" id="btnStartStory">START AVONTUUR</button>
-        <button class="btn btn-victory" id="btnCloseStory">TERUG NAAR MENU</button>
+        <button class="btn" id="btnStartGame">START SPECTAKEL!</button>
     </div>
 
     <div id="victoryScreen">
@@ -125,24 +150,6 @@
     </div>
 
     <script>
-    // Faked Amiibo persistente data opslag (blijft bewaard tijdens het spelen)
-    let amiiboData = {
-        3: { name: "AmiiboP3", level: 1, kos: 0, dmgBonus: 1.0 },
-        4: { name: "AmiiboP4", level: 1, kos: 0, dmgBonus: 1.0 }
-    };
-
-    function toggleAmiiboUI(num) {
-        let mode = document.getElementById(`p${num}Control`).value;
-        let nameInp = document.getElementById(`p${num}AmiiboName`);
-        let statsDiv = document.getElementById(`p${num}AmiiboStats`);
-        if (mode === "AMIIBO") {
-            nameInp.style.display = "block"; statsDiv.style.display = "block";
-            statsDiv.innerText = `Lvl ${amiiboData[num].level} (KOs: ${amiiboData[num].kos})`;
-        } else {
-            nameInp.style.display = "none"; statsDiv.style.display = "none";
-        }
-    }
-
     window.addEventListener("DOMContentLoaded", () => {
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
@@ -154,35 +161,25 @@
             if(!audioCtx) return;
             let osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
             osc.connect(gain); gain.connect(audioCtx.destination); let now = audioCtx.currentTime;
-            if(type==="jump"){ osc.type="square"; osc.frequency.setValueAtTime(140, now); osc.frequency.exponentialRampToValueAtTime(380, now+0.12); gain.gain.setValueAtTime(0.06, now); gain.gain.linearRampToValueAtTime(0, now+0.12); osc.start(now); osc.stop(now+0.12); }
-            if(type==="hit"){ osc.type="sawtooth"; osc.frequency.setValueAtTime(110, now); osc.frequency.linearRampToValueAtTime(30, now+0.1); gain.gain.setValueAtTime(0.15, now); gain.gain.linearRampToValueAtTime(0, now+0.1); osc.start(now); osc.stop(now+0.1); }
-            if(type==="laser"){ osc.type="triangle"; osc.frequency.setValueAtTime(550, now); osc.frequency.exponentialRampToValueAtTime(180, now+0.18); gain.gain.setValueAtTime(0.06, now); gain.gain.linearRampToValueAtTime(0, now+0.18); osc.start(now); osc.stop(now+0.18); }
+            if(type==="jump"){ osc.type="square"; osc.frequency.setValueAtTime(140, now); osc.frequency.exponentialRampToValueAtTime(380, now+0.12); gain.gain.setValueAtTime(0.08, now); gain.gain.linearRampToValueAtTime(0, now+0.12); osc.start(now); osc.stop(now+0.12); }
+            if(type==="hit"){ osc.type="sawtooth"; osc.frequency.setValueAtTime(110, now); osc.frequency.linearRampToValueAtTime(30, now+0.1); gain.gain.setValueAtTime(0.18, now); gain.gain.linearRampToValueAtTime(0, now+0.1); osc.start(now); osc.stop(now+0.1); }
+            if(type==="laser"){ osc.type="triangle"; osc.frequency.setValueAtTime(550, now); osc.frequency.exponentialRampToValueAtTime(180, now+0.18); gain.gain.setValueAtTime(0.08, now); gain.gain.linearRampToValueAtTime(0, now+0.18); osc.start(now); osc.stop(now+0.18); }
+            if(type==="block"){ osc.type="sine"; osc.frequency.setValueAtTime(280, now); gain.gain.setValueAtTime(0.12, now); gain.gain.linearRampToValueAtTime(0, now+0.08); osc.start(now); osc.stop(now+0.08); }
         }
 
         let gameState = "MENU", matchMode = "FFA";
-        let isStoryMode = false, storyLevel = 1;
         let spelers = [], projectielen = [], lasers = [], particles = [], blastEffects = [];
         let shakeTimer = 0, shakeIntensity = 0, cameraOffset = 0;
         let mainStage = { x: 150, y: 340, width: 500, height: 25, depth: 35 }, softPlatforms = [];
 
-        // Controller knoppen herkenning status onthouden
-        let controllerIndex = null;
-        window.addEventListener("gamepadconnected", (e) => {
-            controllerIndex = e.gamepad.index;
-            document.getElementById("controllerStatus").style.display = "block";
-        });
-        window.addEventListener("gamepaddisconnected", () => {
-            controllerIndex = null;
-            document.getElementById("controllerStatus").style.display = "none";
-        });
-
+        // UITGEBREIDE CHARACTER STATS VOOR ALLE 10 DE CHARACTERS
         const classStats = {
             Brawler:      { weaponColor: "#ff4500", damage: 15, range: 45, knockback: 8.5 },
             SwordFighter: { weaponColor: "#e0e0e0", damage: 12, range: 55, knockback: 6.2 },
             Gunner:       { weaponColor: "#00ffff", damage: 5,  range: 0,  knockback: 3.8 },
             Ninja:        { weaponColor: "#bf55ec", damage: 9,  range: 40, knockback: 5.5 },
-            Mage:         { networkColor: "#4d13d1", damage: 11, range: 0,  knockback: 6.0 },
-            Viking:       { weaponColor: "#f5d76e", damage: 22, range: 60, knockback: 11.0 },
+            Mage:         { weaponColor: "#4d13d1", damage: 11, range: 0,  knockback: 6.0 },
+            Viking:       { weaponColor: "#f5d76e", damage: 22, range: 60, knockback: 11.0 }, // Traag maar super harde knockback
             Alien:        { weaponColor: "#00ff66", damage: 8,  range: 45, knockback: 5.0 },
             Robot:        { weaponColor: "#95a5a6", damage: 14, range: 45, knockback: 7.5 },
             Pirate:       { weaponColor: "#f22613", damage: 13, range: 50, knockback: 8.0 },
@@ -208,23 +205,17 @@
                 
                 this.attackTimer = 0; this.specialTimer = 0; this.animFrame = 0;
                 this.respawnTimer = 0; this.isShielding = false; this.shieldHealth = 40; this.jumpsLeft = 2; this.airDodgeTimer = 0;
-                this.isAmiibo = false; this.amiiboNum = 0;
-                this.isBoss = false; // Voor Story Mode
+                this.gravityFieldActive = false; // Specifiek voor Alien special
             }
 
-            reset(type, isCPU, aiLevel, teamMode, isAmiibo = false, amiiboNum = 0) {
+            reset(type, isCPU, aiLevel, teamMode) {
                 this.x = this.startX; this.y = this.startY; this.vx = 0; this.vy = 0;
                 this.percentage = 0; this.stocks = 3; this.isActive = true;
                 this.type = type; this.isCPU = isCPU; this.aiLevel = parseInt(aiLevel);
-                this.attackTimer = 0; this.specialTimer = 0; this.isBoss = false;
-                this.isAmiibo = isAmiibo; this.amiiboNum = amiiboNum;
-                this.width = 38; this.height = 56;
+                this.attackTimer = 0; this.specialTimer = 0; this.animFrame = 0;
+                this.isShielding = false; this.shieldHealth = 40; this.jumpsLeft = 2; this.airDodgeTimer = 0;
+                this.gravityFieldActive = false;
                 
-                if (isAmiibo) {
-                    this.name = amiiboData[amiiboNum].name;
-                    this.aiLevel = Math.min(9, 3 + amiiboData[amiiboNum].level);
-                } else { this.name = playerMeta[this.id-1].name; }
-
                 if (teamMode === "2v2") {
                     this.team = (this.id === 1 || this.id === 3) ? "ROOD" : "BLAUW";
                     this.color = this.team === "ROOD" ? (this.id === 1 ? "#ff3333" : "#ff7777") : (this.id === 2 ? "#3333ff" : "#7777ff");
@@ -242,101 +233,228 @@
             update() {
                 if (!this.isActive) return;
                 if (this.respawnTimer > 0) this.respawnTimer--;
-                this.vy += gravity; this.x += this.vx; this.y += this.vy;
+                if (this.airDodgeTimer > 0) this.airDodgeTimer--;
+
+                if (this.airDodgeTimer > 10) { this.vy = 0; return; }
+
+                if (this.isShielding && this.isGrounded) {
+                    this.vx *= 0.2; this.shieldHealth -= 0.25;
+                    if (this.shieldHealth <= 5) this.isShielding = false;
+                } else {
+                    if (this.shieldHealth < 40) this.shieldHealth += 0.08;
+                }
+
+                // Gewone zwaartekracht berekening, tenzij Alien zwaartekrachtveld actief is
+                if (this.gravityFieldActive) {
+                    this.vy -= 0.15; // Zweef omhoog!
+                    if (this.vy < -3) this.vy = -3;
+                } else {
+                    this.vy += gravity;
+                }
+
+                this.x += this.vx; this.y += this.vy;
                 if (this.vx > 0.1 && !this.isShielding) this.facing = 1;
                 if (this.vx < -0.1 && !this.isShielding) this.facing = -1;
-                this.vx *= this.isGrounded ? 0.8 : 0.96;
+                
+                // Robot heeft ingebouwde heavy armor (minder knockback / remt sneller af)
+                let friction = this.isGrounded ? (this.type === "Robot" ? 0.72 : 0.8) : 0.96;
+                this.vx *= friction;
 
                 if (Math.abs(this.vx) > 0.2 && this.isGrounded) this.animFrame += 0.22;
                 if (this.isGrounded) this.jumpsLeft = 2;
 
                 if (this.attackTimer > 0) this.attackTimer--;
-                if (this.specialTimer > 0) this.specialTimer--;
+                if (this.specialTimer > 0) {
+                    this.specialTimer--;
+                    if (this.type === "SwordFighter" && this.specialTimer > 5) this.vx = this.facing * 4.5;
+                    if (this.type === "Brawler" && this.specialTimer > 0) {
+                        createParticles(this.x + this.width/2 - cameraOffset*0.3, this.y + this.height/2, "#ff6600", 2);
+                    }
+                }
 
-                // Stage collision
                 if (this.x + this.width > mainStage.x && this.x < mainStage.x + mainStage.width &&
                     this.y + this.height <= mainStage.y + 10 && this.y + this.height + this.vy >= mainStage.y) {
                     this.y = mainStage.y - this.height; this.vy = 0; this.isGrounded = true;
                 } else { this.isGrounded = false; }
+
+                if (!this.isGrounded && this.vy >= 0) {
+                    for (let plat of softPlatforms) {
+                        if (this.x + this.width > plat.x && this.x < plat.x + plat.width &&
+                            this.y + this.height <= plat.y + 8 && this.y + this.height + this.vy >= plat.y) {
+                            this.y = plat.y - this.height; this.vy = 0; this.isGrounded = true; break;
+                        }
+                    }
+                }
+                this.gravityFieldActive = false; // Reset elke frame
+            }
+
+            drawShadow() {
+                if (!this.isActive || this.respawnTimer % 4 >= 2 || this.airDodgeTimer > 10) return;
+                if (this.x + this.width > mainStage.x && this.x < mainStage.x + mainStage.width && this.y <= mainStage.y) {
+                    let distance = mainStage.y - (this.y + this.height);
+                    let shadowWidth = Math.max(6, this.width - (distance * 0.08));
+                    let shadowAlpha = Math.max(0, 0.35 - (distance * 0.002));
+                    ctx.fillStyle = `rgba(0, 0, 0, ${shadowAlpha})`; ctx.beginPath();
+                    ctx.ellipse(this.x + this.width/2 - cameraOffset*0.3, mainStage.y, shadowWidth, 4, 0, 0, Math.PI * 2); ctx.fill();
+                }
             }
 
             draw() {
                 if (!this.isActive || this.respawnTimer % 4 >= 2) return;
+                if (this.airDodgeTimer > 10) ctx.globalAlpha = 0.35;
+
                 let cx = this.x + this.width / 2 - cameraOffset * 0.3;
                 let cy = this.y + this.height / 2;
 
-                ctx.save(); ctx.translate(cx, cy); ctx.scale(this.facing, 1);
-                ctx.fillStyle = this.color; ctx.fillRect(-this.width/2, -this.height/2, this.width, this.height);
-                ctx.fillStyle = "#ffdbac"; ctx.fillRect(-8, -this.height/2 - 12, 16, 14);
-                
-                // Amiibo gloed effect
-                if (this.isAmiibo) {
-                    ctx.strokeStyle = "#00ffcc"; ctx.lineWidth = 3; ctx.strokeRect(-this.width/2, -this.height/2, this.width, this.height);
+                if (this.isShielding) {
+                    ctx.save(); ctx.beginPath(); ctx.arc(cx, cy, this.shieldHealth, 0, Math.PI*2);
+                    ctx.fillStyle = this.team === "BLAUW" ? "rgba(50,50,255,0.4)" : "rgba(255,50,50,0.4)";
+                    ctx.strokeStyle = "rgba(255,255,255,0.7)"; ctx.lineWidth = 1.5; ctx.fill(); ctx.stroke(); ctx.restore();
                 }
-                ctx.restore();
+
+                ctx.save(); ctx.translate(cx, cy); ctx.scale(this.facing, 1);
+                
+                let legSwing = Math.sin(this.animFrame) * 11; 
+                if (!this.isGrounded) legSwing = 8; 
+                ctx.fillStyle = "#11111e"; 
+                ctx.fillRect(-11, 14, 6, 14 + legSwing * 0.25); 
+                ctx.fillRect(4, 14, 6, 14 - legSwing * 0.25);
+
+                ctx.fillStyle = this.color; ctx.fillRect(-14, -13, 28, 27);
+                
+                // Custom hoofd per character type!
+                if (this.type === "Alien") ctx.fillStyle = "#33ff33";
+                else if (this.type === "Robot") ctx.fillStyle = "#bdc3c7";
+                else ctx.fillStyle = "#ffdbac"; 
+                ctx.fillRect(-8, -28, 16, 15);
+
+                // Ogen of vizier
+                ctx.fillStyle = "#000"; 
+                if (this.type === "Ninja") { ctx.fillStyle = "purple"; ctx.fillRect(-8, -24, 16, 4); ctx.fillStyle = "white"; ctx.fillRect(4, -23, 2, 2); }
+                else if (this.type === "Robot") { ctx.fillStyle = "red"; ctx.fillRect(2, -25, 6, 2); }
+                else if (this.type === "Alien") { ctx.fillStyle = "black"; ctx.fillRect(2, -26, 5, 5); }
+                else { ctx.fillRect(4, -24, 2, 3); }
+
+                let ext = 0; if (this.attackTimer > 0) ext = Math.sin((this.attackTimer/14)*Math.PI)*24;
+                
+                // UNIEKE WAPEN VISUALS
+                ctx.fillStyle = classStats[this.type].weaponColor;
+                if (this.type === "Brawler") { 
+                    ctx.save(); ctx.shadowBlur = 10; ctx.shadowColor = "#ff3300"; ctx.fillStyle = "#ff2200";
+                    ctx.fillRect(6 + ext, -5, 13, 11); ctx.restore();
+                } else if (this.type === "SwordFighter") { 
+                    ctx.save(); 
+                    if (this.specialTimer > 0) {
+                        let spinAngle = (this.specialTimer * 0.4) * Math.PI; ctx.rotate(spinAngle);
+                        ctx.fillStyle = "#00ffcc"; ctx.fillRect(4, -3, 34, 6);
+                    } else { ctx.rotate(-Math.PI/4 + (this.attackTimer > 0 ? (ext * 0.05) : 0)); ctx.fillRect(4, -2, 28, 4); }
+                    ctx.restore(); 
+                } else if (this.type === "Gunner") { 
+                    ctx.fillRect(2, -6, 14, 8); ctx.fillStyle = "#00ffff"; ctx.fillRect(16, -5, 4, 6);
+                } else if (this.type === "Ninja") {
+                    ctx.fillStyle = "#444"; ctx.fillRect(2, -2, 18 + ext*0.2, 3); // Kleine katana
+                } else if (this.type === "Viking") {
+                    ctx.fillStyle = "#7f8c8d"; ctx.fillRect(4, -20, 4, 24); // Steel
+                    ctx.fillStyle = "#ecf0f1"; ctx.fillRect(6 + ext*0.2, -26, 14, 14); // Dikke bijlblad
+                } else if (this.type === "Pirate") {
+                    ctx.fillStyle = "#f1c40f"; ctx.fillRect(2, -2, 20 + ext*0.3, 5); // Sabel
+                } else if (this.type === "SonicBoy") {
+                    ctx.fillStyle = "#ff007f"; ctx.fillRect(-10, -32, 20, 4); // Koptelefoon band
+                    ctx.fillRect(-12, -28, 4, 8); ctx.fillRect(8, -28, 4, 8);
+                }
+
+                ctx.restore(); ctx.globalAlpha = 1.0;
             }
 
             jump() {
-                if (!this.isActive) return;
-                if (this.isGrounded) { this.vy = -11.5; playSound("jump"); }
-                else if (this.jumpsLeft > 1) { this.vy = -10.5; this.jumpsLeft = 0; playSound("jump"); }
+                if (this.isShielding || !this.isActive) return;
+                if (this.isGrounded) { this.vy = -11.5; this.jumpsLeft = 1; playSound("jump"); }
+                else if (this.jumpsLeft > 0) { this.vy = -10.5; this.jumpsLeft = 0; playSound("jump"); createParticles(this.x+this.width/2 - cameraOffset*0.3, this.y+this.height, "white", 4); }
+            }
+
+            triggerAirDodge(dx) {
+                if (this.isGrounded || this.airDodgeTimer > 0 || !this.isActive) return;
+                this.airDodgeTimer = 18; this.vx = dx * 7.5; this.vy = -1.5;
             }
 
             attack() {
-                if (this.attackTimer > 0 || !this.isActive) return;
+                if (this.attackTimer > 0 || this.specialTimer > 0 || this.isShielding || this.airDodgeTimer > 10 || !this.isActive) return;
                 this.attackTimer = 14; let stats = classStats[this.type];
-                let dmg = stats.damage;
-                if (this.isAmiibo) dmg *= amiiboData[this.amiiboNum].dmgBonus; // Amiibo doet meer schade!
 
                 if (this.type === "Gunner") {
-                    playSound("laser"); projectielen.push({ type: "laser", x: this.facing === 1 ? this.x+this.width+4 : this.x-16, y: this.y+16, vx: this.facing*10, damage: dmg, knockback: stats.knockback, owner: this });
+                    playSound("laser"); projectielen.push({ type: "laser", x: this.facing === 1 ? this.x+this.width+4 : this.x-16, y: this.y+16, vx: this.facing*10, damage: stats.damage, knockback: stats.knockback, owner: this });
+                } else if (this.type === "Ninja") {
+                    playSound("laser"); projectielen.push({ type: "shuriken", x: this.x, y: this.y+12, vx: this.facing*11, damage: stats.damage, knockback: stats.knockback, owner: this });
+                } else if (this.type === "Mage") {
+                    playSound("laser"); projectielen.push({ type: "fireball", x: this.x, y: this.y+10, vx: this.facing*7, damage: stats.damage, knockback: stats.knockback, owner: this });
+                } else if (this.type === "Alien") {
+                    playSound("laser"); projectielen.push({ type: "eyelaser", x: this.x, y: this.y+4, vx: this.facing*14, damage: stats.damage, knockback: stats.knockback, owner: this });
                 } else {
                     let hx = this.facing === 1 ? this.x + this.width : this.x - stats.range;
                     spelers.forEach(opp => {
-                        if (opp === this || !opp.isActive || (this.team && opp.team === this.team)) return;
+                        if (opp === this || !opp.isActive || opp.airDodgeTimer > 10 || (this.team && opp.team === this.team)) return;
                         if (hx < opp.x + opp.width && hx + stats.range > opp.x && this.y < opp.y + opp.height && this.y + this.height > opp.y) {
-                            this.hitOpponent(opp, dmg, this.facing * (stats.knockback + (opp.percentage * 0.1)));
+                            if (opp.isShielding) { opp.shieldHealth -= stats.damage*0.7; playSound("block"); } 
+                            else { this.hitOpponent(opp, stats.damage, this.facing * (stats.knockback + (opp.percentage * 0.13))); }
                         }
                     });
                 }
             }
 
             special() {
-                if (this.specialTimer > 0 || !this.isActive) return;
-                this.specialTimer = 30;
-                let stats = classStats[this.type];
-                let dmg = stats.damage * 1.3;
+                if (this.attackTimer > 0 || this.specialTimer > 0 || this.isShielding || this.airDodgeTimer > 10 || !this.isActive) return;
+                this.specialTimer = 25;
 
-                if (this.type === "Gunner" || this.type === "Mage") {
-                    playSound("laser");
-                    lasers.push({ type: "plasma", x: this.facing === 1 ? this.x+this.width : 0, y: this.y+8, width: this.facing === 1 ? canvas.width : this.x, height: 20, timer: 15, owner: this, damage: dmg });
-                } else {
-                    this.vy = -12; playSound("jump");
-                    spelers.forEach(opp => {
-                        if (opp !== this && Math.abs(this.x - opp.x) < 70) this.hitOpponent(opp, dmg, this.facing * 6);
-                    });
+                if (this.type === "Brawler") {
+                    this.vy = -14; this.isGrounded = false; this.vx = this.facing * 2; playSound("jump"); triggerShake(4, 10);
+                    spelers.forEach(opp => { if (opp !== this && Math.abs(this.x - opp.x) < 60) this.hitOpponent(opp, 15, this.facing * 5, -12); });
+                } else if (this.type === "SwordFighter") {
+                    playSound("hit");
+                } else if (this.type === "Gunner") {
+                    playSound("laser"); triggerShake(6, 12);
+                    lasers.push({ type: "plasma", x: this.facing === 1 ? this.x+this.width : 0, y: this.y+8, width: this.facing === 1 ? canvas.width : this.x, height: 24, timer: 15, owner: this });
+                } else if (this.type === "Ninja") {
+                    // SHADOW TELEPORT
+                    createParticles(this.x, this.y, "purple", 15);
+                    this.x += this.facing * 140; 
+                    if (this.x < 20) this.x = 20; if (this.x > canvas.width - 50) this.x = canvas.width - 50;
+                    playSound("jump");
+                } else if (this.type === "Mage") {
+                    // LIGHTNING STRIKE
+                    triggerShake(8, 15);
+                    lasers.push({ type: "lightning", x: this.x - 10, y: 0, width: 60, height: canvas.height, timer: 20, owner: this });
+                } else if (this.type === "Viking") {
+                    // GROUND SLAM & SCHOKGOLVEN
+                    this.vy = 14; // Ram omlaag
+                    projectielen.push({ type: "wave", x: this.x, y: this.y + 20, vx: 5, damage: 10, knockback: 7, owner: this });
+                    projectielen.push({ type: "wave", x: this.x, y: this.y + 20, vx: -5, damage: 10, knockback: 7, owner: this });
+                } else if (this.type === "Alien") {
+                    // GRAVITY INVERSION FIELD
+                    lasers.push({ type: "gravity", x: this.x - 80, y: this.y - 80, width: 200, height: 200, timer: 40, owner: this });
+                } else if (this.type === "Robot") {
+                    // SELF-DESTRUCT SHIELD
+                    lasers.push({ type: "explosion", x: this.x - 50, y: this.y - 50, width: 140, height: 140, timer: 18, owner: this });
+                } else if (this.type === "Pirate") {
+                    // KANONS_KOGEL
+                    projectielen.push({ type: "cannonball", x: this.x, y: this.y + 10, vx: this.facing * 4.5, damage: 20, knockback: 12, owner: this });
+                } else if (this.type === "SonicBoy") {
+                    // BOOMBOX BLAST RINGEN
+                    lasers.push({ type: "sonic", x: this.x - 60, y: this.y - 20, width: 160, height: 100, timer: 30, owner: this });
                 }
             }
 
-            hitOpponent(opp, dmg, kx) {
+            hitOpponent(opp, dmg, kx, ky = -3.5 - (opp.percentage * 0.07)) {
+                if (opp.type === "Robot") kx *= 0.75; // Robot neemt minder knockback!
                 opp.percentage += dmg; playSound("hit");
-                opp.vx = kx; opp.vy = -4;
-                createParticles(opp.x + opp.width/2 - cameraOffset*0.3, opp.y + opp.height/2, this.color, 10);
-                
-                // Als de tegenstander dood gaat door deze klap, krijgt de Amiibo een KO punt!
-                if (opp.percentage > 120 && this.isAmiibo) {
-                    amiiboData[this.amiiboNum].kos++;
-                    if (amiiboData[this.amiiboNum].kos % 2 === 0) {
-                        amiiboData[this.amiiboNum].level++;
-                        amiiboData[this.amiiboNum].dmgBonus += 0.1;
-                    }
-                }
+                opp.vx = kx; opp.vy = ky;
+                triggerShake(dmg > 10 ? 8 : 4, 8);
+                createParticles(opp.x + opp.width/2 - cameraOffset*0.3, opp.y + opp.height/2, classStats[this.type].weaponColor, 12);
             }
         }
 
         spelers = [
-            new Player(playerMeta[0], { left: "KeyA", right: "KeyD", up: "KeyW", attack: "KeyF", special: "KeyG" }),
-            new Player(playerMeta[1], { left: "ArrowLeft", right: "ArrowRight", up: "ArrowUp", attack: "Period", special: "Slash" }),
+            new Player(playerMeta[0], { left: "KeyA", right: "KeyD", up: "KeyW", attack: "KeyF", special: "KeyG", shield: "ShiftLeft" }),
+            new Player(playerMeta[1], { left: "ArrowLeft", right: "ArrowRight", up: "ArrowUp", attack: "Period", special: "Slash", shield: "ArrowDown" }),
             new Player(playerMeta[2], null),
             new Player(playerMeta[3], null)
         ];
@@ -345,127 +463,162 @@
         window.addEventListener("keydown", (e) => { initAudio(); keys[e.code] = true; });
         window.addEventListener("keyup", (e) => { keys[e.code] = false; });
 
-        // CONTROLLER HANDLER FUNCTION
-        function handleControllerInput() {
-            if (controllerIndex === null) return;
-            let gp = navigator.getGamepads()[controllerIndex];
-            if (!gp) return;
-
-            let p1 = spelers[0];
-            // D-pad of Linker Stick links/rechts
-            if (gp.axes[0] < -0.3 || gp.buttons[14].pressed) p1.vx = -4.5;
-            if (gp.axes[0] > 0.3 || gp.buttons[15].pressed) p1.vx = 4.5;
-            
-            // Knop A (onderste knop) = Springen
-            if (gp.buttons[0].pressed) { p1.jump(); }
-            // Knop X (linker knop) of Triggers = Aanval
-            if (gp.buttons[2].pressed || gp.buttons[6].pressed) { p1.attack(); }
-            // Knop Y (bovenste knop) = Special
-            if (gp.buttons[3].pressed) { p1.special(); }
+        function triggerShake(intensity, duration) { shakeTimer = duration; shakeIntensity = intensity; }
+        function createParticles(x, y, color, amount) {
+            for(let i=0; i<amount; i++) {
+                particles.push({ x: x, y: y, vx: (Math.random()-0.5)*8, vy: (Math.random()-0.5)*8, size: Math.random()*3+2, alpha: 1, color: color });
+            }
         }
 
         function handleInput() {
             let p1 = spelers[0];
             if (p1.isActive) {
-                if (keys[p1.controls.left]) p1.vx = -4.5;
-                if (keys[p1.controls.right]) p1.vx = 4.5;
-                if (keys[p1.controls.up]) { p1.jump(); keys[p1.controls.up] = false; }
+                p1.isShielding = keys[p1.controls.shield] && p1.isGrounded;
+                if (!p1.isShielding && p1.airDodgeTimer <= 10) {
+                    if (keys[p1.controls.left]) p1.vx = -4.5;
+                    if (keys[p1.controls.right]) p1.vx = 4.5;
+                    if (keys[p1.controls.up]) { p1.jump(); keys[p1.controls.up] = false; }
+                }
                 if (keys[p1.controls.attack]) { p1.attack(); keys[p1.controls.attack] = false; }
                 if (keys[p1.controls.special]) { p1.special(); keys[p1.controls.special] = false; }
             }
-            handleControllerInput(); // Check gamepad controls
+
+            let p2 = spelers[1];
+            if (p2.isActive && !p2.isCPU) {
+                p2.isShielding = keys[p2.controls.shield] && p2.isGrounded;
+                if (!p2.isShielding && p2.airDodgeTimer <= 10) {
+                    if (keys[p2.controls.left]) p2.vx = -4.5;
+                    if (keys[p2.controls.right]) p2.vx = 4.5;
+                    if (keys[p2.controls.up]) { p2.jump(); keys[p2.controls.up] = false; }
+                }
+                if (keys[p2.controls.attack]) { p2.attack(); keys[p2.controls.attack] = false; }
+                if (keys[p2.controls.special]) { p2.special(); keys[p2.controls.special] = false; }
+            }
         }
 
         function updateCPUs() {
             spelers.forEach(p => {
                 if (!p.isActive || !p.isCPU) return;
-                let target = spelers[0];
-                if (!target.isActive) return;
 
-                if (p.x < target.x - 40) p.vx = 2 + (p.aiLevel * 0.15);
-                else if (p.x > target.x + 40) p.vx = -(2 + (p.aiLevel * 0.15));
+                let target = null, minDist = 9999;
+                spelers.forEach(opp => {
+                    if (opp === p || !opp.isActive || (p.team && opp.team === p.team)) return;
+                    let d = Math.abs(p.x - opp.x);
+                    if (d < minDist) { minDist = d; target = opp; }
+                });
 
-                if (Math.abs(p.x - target.x) < 60 && Math.random() < 0.04) {
-                    if (Math.random() < 0.3) p.special(); else p.attack();
+                if (!target) return;
+                let reactionChance = p.aiLevel * 0.09;
+
+                if (p.y > mainStage.y + 20 && p.jumpsLeft > 0 && Math.random() < reactionChance) { p.jump(); p.vx = (p.x < canvas.width/2) ? 3.5 : -3.5; return; }
+
+                if (!p.isShielding && p.airDodgeTimer <= 10 && Math.random() < reactionChance) {
+                    if (p.x < target.x - 30) p.vx = 2.2 + (p.aiLevel * 0.15);
+                    else if (p.x > target.x + 30) p.vx = -(2.2 + (p.aiLevel * 0.15));
+                }
+
+                if (minDist < 60 && Math.random() < (p.aiLevel * 0.02)) {
+                    if (Math.random() < 0.4) p.special(); else p.attack();
                 }
             });
+        }
+
+        function handleContinuousHits() {
+            spelers.forEach(p => {
+                if (!p.isActive || p.type !== "SwordFighter" || p.specialTimer <= 0) return;
+                spelers.forEach(opp => {
+                    if (opp === p || !opp.isActive || (p.team && opp.team === p.team)) return;
+                    if (Math.abs((p.x + p.width/2) - (opp.x + opp.width/2)) < 55 && Math.abs(p.y - opp.y) < 45) {
+                        opp.percentage += 0.4; opp.vx = p.facing * 2.5;
+                    }
+                });
+            });
+
+            for (let i = lasers.length - 1; i >= 0; i--) {
+                let l = lasers[i]; l.timer--;
+                
+                spelers.forEach(target => {
+                    if (!target.isActive || target === l.owner || (l.owner.team && target.team === l.owner.team)) return;
+                    if (target.x + target.width > l.x && target.x < l.x + l.width && target.y + target.height > l.y && target.y < l.y + l.height) {
+                        if (l.type === "gravity") {
+                            target.gravityFieldActive = true;
+                        } else if (l.timer === 6) {
+                            l.owner.hitOpponent(target, l.type === "lightning" ? 16 : 9, l.owner.facing * 6);
+                        }
+                    }
+                });
+                if (l.timer <= 0) lasers.splice(i, 1);
+            }
+        }
+
+        function updateProjectiles() {
+            for (let i = projectielen.length - 1; i >= 0; i--) {
+                let proj = projectielen[i]; proj.x += proj.vx;
+                
+                // Render per type projectiel
+                ctx.save();
+                if (proj.type === "shuriken") { ctx.fillStyle = "purple"; ctx.fillRect(proj.x - cameraOffset*0.3, proj.y, 10, 10); }
+                else if (proj.type === "fireball") { ctx.fillStyle = "orange"; ctx.beginPath(); ctx.arc(proj.x - cameraOffset*0.3, proj.y, 8, 0, Math.PI*2); ctx.fill(); }
+                else if (proj.type === "cannonball") { ctx.fillStyle = "black"; ctx.beginPath(); ctx.arc(proj.x - cameraOffset*0.3, proj.y, 12, 0, Math.PI*2); ctx.fill(); }
+                else if (proj.type === "wave") { ctx.fillStyle = "yellow"; ctx.fillRect(proj.x - cameraOffset*0.3, proj.y, 16, 30); }
+                else { ctx.fillStyle = "cyan"; ctx.fillRect(proj.x - cameraOffset*0.3, proj.y, 14, 5); }
+                ctx.restore();
+
+                spelers.forEach(target => {
+                    if (!target.isActive || target === proj.owner || (proj.owner.team && target.team === proj.owner.team)) return;
+                    if (proj.x > target.x && proj.x < target.x + target.width && proj.y > target.y && proj.y < target.y + target.height) {
+                        proj.owner.hitOpponent(target, proj.damage, (proj.vx > 0 ? 1 : -1) * proj.knockback);
+                        projectielen.splice(i, 1);
+                    }
+                });
+
+                if (proj.x < -100 || proj.x > canvas.width + 100) projectielen.splice(i, 1);
+            }
         }
 
         function checkRingOuts() {
             spelers.forEach(p => {
                 if (!p.isActive) return;
-                if (p.y > canvas.height || p.x < 0 || p.x > canvas.width || p.y < -60) {
-                    p.respawn();
+                if (p.y > canvas.height || p.x < 0 || p.x > canvas.width || p.y < -40) {
+                    let bx = Math.max(10, Math.min(canvas.width - 50, p.x - cameraOffset*0.3));
+                    let isVertical = (p.y > canvas.height || p.y < -40);
+                    
+                    blastEffects.push({ x: isVertical ? bx : (p.x < 0 ? 0 : canvas.width - 40), y: 0, width: isVertical ? 45 : canvas.width, height: isVertical ? canvas.height : 45, color: p.color, timer: 20 });
+                    createParticles(p.x + p.width/2 - cameraOffset*0.3, Math.max(0, Math.min(canvas.height, p.y)), p.color, 30);
+                    triggerShake(12, 18); p.respawn();
                 }
             });
 
-            if (isStoryMode) {
-                if (!spelers[0].isActive) { gameState = "GAMEOVER"; showVictoryScreen("De Computer (Game Over)"); }
-                else if (!spelers[1].isActive) {
-                    if (storyLevel < 3) {
-                        storyLevel++; advanceStory();
-                    } else { gameState = "GAMEOVER"; showVictoryScreen("Jij! Je hebt de Story Modus uitgespeeld!"); }
-                }
+            let levendeTeams = new Set(); let actieveSpelers = spelers.filter(p => p.isActive);
+            if (matchMode === "2v2") {
+                actieveSpelers.forEach(p => levendeTeams.add(p.team));
+                if (levendeTeams.size <= 1) { gameState = "GAMEOVER"; showVictoryScreen(Array.from(levendeTeams)[0]); }
             } else {
-                let actieve = spelers.filter(p => p.isActive);
-                if (actieve.length <= 1) { gameState = "GAMEOVER"; showVictoryScreen(actieve[0] ? actieve[0].name : "Gelijkspel"); }
-            }
-        }
-
-        function advanceStory() {
-            spelers[0].percentage = 0; spelers[0].stocks = 3;
-            if (storyLevel === 2) {
-                mainStage = { x: 100, y: 360, width: 600, height: 25 };
-                spelers[1].reset("Viking", true, 5, "FFA"); spelers[1].name = "Level 2 Guard 🪓";
-            } else if (storyLevel === 3) {
-                mainStage = { x: 200, y: 340, width: 400, height: 25 };
-                spelers[1].reset("Robot", true, 8, "FFA");
-                spelers[1].name = "GIGA BOSS 🤖"; spelers[1].width = 75; spelers[1].height = 100; // Gigantische eindbaas!
+                if (actieveSpelers.length <= 1) { gameState = "GAMEOVER"; showVictoryScreen(actieveSpelers[0] ? actieveSpelers[0].name : "Niemand"); }
             }
         }
 
         function showVictoryScreen(winnaar) {
             document.getElementById("victoryScreen").style.display = "flex";
-            document.getElementById("victorySub").innerText = `${winnaar} wint de match!`;
+            document.getElementById("victorySub").innerText = matchMode === "2v2" ? `Team ${winnaar} wint de strijd!` : `${winnaar} rekent iedereen af!`;
         }
 
-        function createParticles(x, y, color, amount) {
-            for(let i=0; i<amount; i++) {
-                particles.push({ x: x, y: y, vx: (Math.random()-0.5)*6, vy: (Math.random()-0.5)*6, size: Math.random()*3+2, alpha: 1, color: color });
-            }
-        }
+        function startScherm() {
+            matchMode = document.getElementById("matchMode").value; gameState = "PLAYING"; blastEffects = [];
+            let stageName = document.getElementById("stageSelect").value; softPlatforms = [];
+            if (stageName === "Battlefield") {
+                mainStage = { x: 180, y: 350, width: 440, height: 25, depth: 35 }; softPlatforms.push({ x: 230, y: 240, width: 120 }, { x: 450, y: 240, width: 120 });
+            } else if (stageName === "FinalDestination") {
+                mainStage = { x: 100, y: 360, width: 600, height: 25, depth: 40 };
+            } else { mainStage = { x: 280, y: 350, width: 240, height: 25, depth: 30 }; }
 
-        function startVersus() {
-            isStoryMode = false; gameState = "PLAYING";
-            mainStage = { x: 150, y: 340, width: 500, height: 25 };
-            
-            // Zet Amiibo namen door naar de data arrays
-            amiiboData[3].name = document.getElementById("p3AmiiboName").value;
-            amiiboData[4].name = document.getElementById("p4AmiiboName").value;
+            spelers[0].reset(document.getElementById("p1Char").value, false, 3, matchMode);
+            spelers[1].reset(document.getElementById("p2Char").value, document.getElementById("p2Control").value === "CPU", document.getElementById("p2Level").value, matchMode);
 
-            spelers[0].reset(document.getElementById("p1Char").value, false, 3, "FFA");
-            spelers[1].reset(document.getElementById("p2Char").value, true, document.getElementById("p2Level").value, "FFA");
-            
-            let p3Mode = document.getElementById("p3Control").value;
-            if (p3Mode !== "OFF") spelers[2].reset(document.getElementById("p3Char").value, true, 4, "FFA", (p3Mode==="AMIIBO"), 3); else spelers[2].isActive = false;
+            if(document.getElementById("p3Control").value !== "OFF") spelers[2].reset(document.getElementById("p3Char").value, true, document.getElementById("p3Level").value, matchMode); else spelers[2].isActive = false;
+            if(document.getElementById("p4Control").value !== "OFF") spelers[3].reset(document.getElementById("p4Char").value, true, document.getElementById("p4Level").value, matchMode); else spelers[3].isActive = false;
 
-            let p4Mode = document.getElementById("p4Control").value;
-            if (p4Mode !== "OFF") spelers[3].reset(document.getElementById("p4Char").value, true, 4, "FFA", (p4Mode==="AMIIBO"), 4); else spelers[3].isActive = false;
-
-            document.getElementById("menu").style.display = "none";
-            canvas.style.display = "block"; document.getElementById("ui").style.display = "flex";
-            gameLoop();
-        }
-
-        function startStory() {
-            isStoryMode = true; storyLevel = 1; gameState = "PLAYING";
-            mainStage = { x: 180, y: 350, width: 440, height: 25 };
-            
-            spelers[0].reset("SwordFighter", false, 3, "FFA");
-            spelers[1].reset("Brawler", true, 3, "FFA"); spelers[1].name = "Level 1 Guard 🥊";
-            spelers[2].isActive = false; spelers[3].isActive = false;
-
-            document.getElementById("storyMenu").style.display = "none";
+            document.getElementById("menu").style.display = "none"; document.getElementById("victoryScreen").style.display = "none";
             canvas.style.display = "block"; document.getElementById("ui").style.display = "flex";
             gameLoop();
         }
@@ -473,77 +626,71 @@
         function gameLoop() {
             if (gameState !== "PLAYING") return;
 
-            handleInput(); updateCPUs();
-            spelers.forEach(p => p.update());
-            checkRingOuts();
+            handleInput(); updateCPUs(); spelers.forEach(p => p.update()); checkRingOuts();
 
-            // Render
-            ctx.fillStyle = "#0c0c1e"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            // Stage draw
-            ctx.fillStyle = "#2c2c3e"; ctx.fillRect(mainStage.x, mainStage.y, mainStage.width, mainStage.height);
-
-            // Lasers & projectielen update/draw
-            for (let i = projectielen.length - 1; i >= 0; i--) {
-                let p = projectielen[i]; p.x += p.vx;
-                ctx.fillStyle = "cyan"; ctx.fillRect(p.x, p.y, 12, 6);
-                spelers.forEach(t => {
-                    if (t.isActive && t !== p.owner && p.x > t.x && p.x < t.x + t.width && p.y > t.y && p.y < t.y + t.height) {
-                        p.owner.hitOpponent(t, p.damage, p.vx > 0 ? 5 : -5); projectielen.splice(i,1);
-                    }
-                });
-                if (p.x < 0 || p.x > canvas.width) projectielen.splice(i, 1);
+            let levendeSpelers = spelers.filter(s => s.isActive);
+            if (levendeSpelers.length > 0) {
+                cameraOffset = ((levendeSpelers.reduce((sum, s) => sum + s.x, 0) / levendeSpelers.length) - canvas.width / 2) * 0.8;
             }
 
-            for (let i = lasers.length - 1; i >= 0; i--) {
-                let l = lasers[i]; l.timer--;
-                ctx.fillStyle = "rgba(0, 255, 255, 0.4)"; ctx.fillRect(l.x, l.y, l.width, l.height);
-                if (l.timer === 5) {
-                    spelers.forEach(t => {
-                        if (t.isActive && t !== l.owner && t.x > l.x && t.x < l.x + l.width) l.owner.hitOpponent(t, l.damage, 6);
-                    });
-                }
-                if (l.timer <= 0) lasers.splice(i, 1);
+            ctx.save();
+            if (shakeTimer > 0) { ctx.translate((Math.random()-0.5)*shakeIntensity, (Math.random()-0.5)*shakeIntensity); shakeTimer--; }
+
+            let skyGrad = ctx.createLinearGradient(0, 0, 0, canvas.height); skyGrad.addColorStop(0, "#060610"); skyGrad.addColorStop(1, "#1c1830");
+            ctx.fillStyle = skyGrad; ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            spelers.forEach(p => p.drawShadow());
+            let sx = mainStage.x - cameraOffset * 0.3;
+            ctx.fillStyle = "#2c2c3e"; ctx.fillRect(sx, mainStage.y, mainStage.width, mainStage.height);
+            ctx.fillStyle = "#ffaa00"; ctx.fillRect(sx, mainStage.y, mainStage.width, 3);
+
+            softPlatforms.forEach(p => { 
+                let px = p.x - cameraOffset * 0.3; ctx.fillStyle = "rgba(60,60,90,0.8)"; ctx.fillRect(px, p.y, p.width, 6); 
+            });
+
+            handleContinuousHits(); spelers.forEach(p => p.draw()); updateProjectiles();
+
+            // RENDER COOLE OM-MODUS SPECIALS / LASERS
+            lasers.forEach(l => { 
+                ctx.save();
+                if (l.type === "plasma") { ctx.shadowBlur = 15; ctx.shadowColor = "#00ffff"; ctx.fillStyle = "rgba(0, 255, 255, 0.4)"; ctx.fillRect(l.x - cameraOffset*0.3, l.y, l.width, l.height); }
+                else if (l.type === "lightning") { ctx.shadowBlur = 20; ctx.shadowColor = "yellow"; ctx.fillStyle = "white"; ctx.fillRect(l.x - cameraOffset*0.3, l.y, l.width, l.height); }
+                else if (l.type === "gravity") { ctx.fillStyle = "rgba(191, 85, 236, 0.2)"; ctx.fillRect(l.x - cameraOffset*0.3, l.y, l.width, l.height); }
+                else if (l.type === "explosion") { ctx.fillStyle = "rgba(255, 69, 0, 0.5)"; ctx.fillRect(l.x - cameraOffset*0.3, l.y, l.width, l.height); }
+                else if (l.type === "sonic") { ctx.strokeStyle = "#ff007f"; ctx.lineWidth = 4; ctx.strokeRect(l.x - cameraOffset*0.3, l.y, l.width, l.height); }
+                ctx.restore();
+            });
+
+            // SMASH BLAST STREPEN RENDERING
+            for (let i = blastEffects.length - 1; i >= 0; i--) {
+                let b = blastEffects[i]; ctx.save(); ctx.shadowBlur = 25; ctx.shadowColor = b.color;
+                ctx.fillStyle = "white"; ctx.fillRect(b.x, b.y, b.width, b.height); ctx.restore();
+                b.timer--; if (b.timer <= 0) blastEffects.splice(i, 1);
             }
 
-            spelers.forEach(p => p.draw());
-
-            // Particles draw
             for(let i=particles.length-1; i>=0; i--) {
                 let p = particles[i]; p.x += p.vx; p.y += p.vy; p.alpha -= 0.04;
                 ctx.fillStyle = p.color; ctx.globalAlpha = p.alpha; ctx.fillRect(p.x, p.y, p.size, p.size);
                 if (p.alpha <= 0) particles.splice(i, 1);
             }
-            ctx.globalAlpha = 1.0;
+            ctx.globalAlpha = 1.0; ctx.restore();
 
-            // UI text sync
             spelers.forEach((p, idx) => {
                 let uibox = document.getElementById(`ui-p${idx+1}`);
                 if (p.isActive) {
-                    uibox.style.display = "block";
-                    uibox.innerHTML = `${p.name}: ${Math.floor(p.percentage)}% <div class="stocks">${"⭐".repeat(p.stocks)}</div>`;
-                } else { uibox.innerHTML = `K.O.`; }
+                    uibox.style.display = "block"; uibox.style.borderColor = p.color;
+                    uibox.innerHTML = `${p.name} (${p.type}): ${Math.floor(p.percentage)}% <div class="stocks">${"⭐".repeat(p.stocks)}</div>`;
+                } else { uibox.innerHTML = `${p.name}: K.O.`; uibox.style.borderColor = "#333"; }
             });
 
             requestAnimationFrame(gameLoop);
         }
 
-        document.getElementById("btnStartGame").addEventListener("click", startVersus);
-        document.getElementById("btnOpenStory").addEventListener("click", () => {
-            document.getElementById("menu").style.display = "none";
-            document.getElementById("storyMenu").style.display = "flex";
-        });
-        document.getElementById("btnCloseStory").addEventListener("click", () => {
-            document.getElementById("storyMenu").style.display = "none";
-            document.getElementById("menu").style.display = "flex";
-        });
-        document.getElementById("btnStartStory").addEventListener("click", startStory);
+        document.getElementById("btnStartGame").addEventListener("click", startScherm);
         document.getElementById("btnBackToMenu").addEventListener("click", () => {
             gameState = "MENU"; document.getElementById("victoryScreen").style.display = "none";
             canvas.style.display = "none"; document.getElementById("ui").style.display = "none";
             document.getElementById("menu").style.display = "flex";
-            // Update menu met opgeslagen Amiibo stats
-            toggleAmiiboUI(3); toggleAmiiboUI(4);
         });
     });
     </script>
