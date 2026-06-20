@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super Smash Browser - All-Out Roster Edition</title>
+    <title>Super Smash Browser - All-Out Roster Controller Edition</title>
     <style>
         body {
             margin: 0; background: #05050d; color: white;
@@ -40,13 +40,15 @@
         #ui { display: none; justify-content: space-between; width: 800px; margin-top: 10px; }
         .p-ui-box { padding: 6px 12px; border-radius: 6px; background: rgba(0,0,0,0.6); width: 180px; text-align: center; font-size: 14px; font-weight: bold; border-bottom: 4px solid #fff; }
         .stocks { color: #ffaa00; font-size: 12px; margin-top: 2px; }
+        #controllerStatus { color: #00ffcc; font-size: 13px; font-weight: bold; margin-bottom: 10px; display: none; text-shadow: 0 0 10px rgba(0,255,204,0.4); }
     </style>
 </head>
 <body>
 
     <div id="menu">
         <h1 style="font-size: 30px; margin: 0 0 5px 0; color: #ff9900; text-shadow: 0 0 15px rgba(255,153,0,0.4);">SUPER SMASH BROWSER</h1>
-        <p style="color: #00ffcc; margin: 0 0 15px 0; font-weight: bold; font-size: 13px; text-shadow: 0 0 10px rgba(0,255,204,0.4);">🔥 OMNI-MODUS: 10 SPEELBARE CHARACTERS ACTIEF 🔥</p>
+        <p style="color: #ff4500; margin: 0 0 5px 0; font-weight: bold; font-size: 13px;">🔥 ALL-OUT ROSTER MODUS ACTIVATED 🔥</p>
+        <div id="controllerStatus">🎮 CONTROLLER VERBONDEN (BESTUUR P1 HIERMEE!)</div>
         
         <div style="margin-bottom: 15px; background: #131324; padding: 10px; border-radius: 8px; border: 1px solid #2a2a40;">
             <label><b>Spelmodus:</b> </label>
@@ -77,7 +79,7 @@
                     <option value="Pirate">Pirate 🏴‍☠️</option>
                     <option value="SonicBoy">Sonic Boy 🎧</option>
                 </select>
-                <select id="p1Control" disabled><option>Mens (A/D/W/F/G)</option></select>
+                <select id="p1Control" disabled><option>Toetsenbord (A/D/W/F/G) of Gamepad</option></select>
             </div>
             <div class="p-box" style="border-top: 4px solid #4444ff;">
                 <h4 style="margin:2px 0;">Speler 2</h4>
@@ -172,14 +174,24 @@
         let shakeTimer = 0, shakeIntensity = 0, cameraOffset = 0;
         let mainStage = { x: 150, y: 340, width: 500, height: 25, depth: 35 }, softPlatforms = [];
 
-        // UITGEBREIDE CHARACTER STATS VOOR ALLE 10 DE CHARACTERS
+        // Gamepad tracking variabele
+        let controllerIndex = null;
+        window.addEventListener("gamepadconnected", (e) => {
+            controllerIndex = e.gamepad.index;
+            document.getElementById("controllerStatus").style.display = "block";
+        });
+        window.addEventListener("gamepaddisconnected", () => {
+            controllerIndex = null;
+            document.getElementById("controllerStatus").style.display = "none";
+        });
+
         const classStats = {
             Brawler:      { weaponColor: "#ff4500", damage: 15, range: 45, knockback: 8.5 },
             SwordFighter: { weaponColor: "#e0e0e0", damage: 12, range: 55, knockback: 6.2 },
             Gunner:       { weaponColor: "#00ffff", damage: 5,  range: 0,  knockback: 3.8 },
             Ninja:        { weaponColor: "#bf55ec", damage: 9,  range: 40, knockback: 5.5 },
             Mage:         { weaponColor: "#4d13d1", damage: 11, range: 0,  knockback: 6.0 },
-            Viking:       { weaponColor: "#f5d76e", damage: 22, range: 60, knockback: 11.0 }, // Traag maar super harde knockback
+            Viking:       { weaponColor: "#f5d76e", damage: 22, range: 60, knockback: 11.0 },
             Alien:        { weaponColor: "#00ff66", damage: 8,  range: 45, knockback: 5.0 },
             Robot:        { weaponColor: "#95a5a6", damage: 14, range: 45, knockback: 7.5 },
             Pirate:       { weaponColor: "#f22613", damage: 13, range: 50, knockback: 8.0 },
@@ -193,6 +205,11 @@
             { id: 4, baseColor: "#eeee22", startX: 480, name: "P4" }
         ];
 
+        // Button press debouncer trackers voor controllers
+        let prevJumpPressed = false;
+        let prevAttackPressed = false;
+        let prevSpecialPressed = false;
+
         class Player {
             constructor(meta, controls) {
                 this.id = meta.id; this.startX = meta.startX; this.startY = 180;
@@ -205,7 +222,7 @@
                 
                 this.attackTimer = 0; this.specialTimer = 0; this.animFrame = 0;
                 this.respawnTimer = 0; this.isShielding = false; this.shieldHealth = 40; this.jumpsLeft = 2; this.airDodgeTimer = 0;
-                this.gravityFieldActive = false; // Specifiek voor Alien special
+                this.gravityFieldActive = false;
             }
 
             reset(type, isCPU, aiLevel, teamMode) {
@@ -244,10 +261,8 @@
                     if (this.shieldHealth < 40) this.shieldHealth += 0.08;
                 }
 
-                // Gewone zwaartekracht berekening, tenzij Alien zwaartekrachtveld actief is
                 if (this.gravityFieldActive) {
-                    this.vy -= 0.15; // Zweef omhoog!
-                    if (this.vy < -3) this.vy = -3;
+                    this.vy -= 0.15; if (this.vy < -3) this.vy = -3;
                 } else {
                     this.vy += gravity;
                 }
@@ -256,7 +271,6 @@
                 if (this.vx > 0.1 && !this.isShielding) this.facing = 1;
                 if (this.vx < -0.1 && !this.isShielding) this.facing = -1;
                 
-                // Robot heeft ingebouwde heavy armor (minder knockback / remt sneller af)
                 let friction = this.isGrounded ? (this.type === "Robot" ? 0.72 : 0.8) : 0.96;
                 this.vx *= friction;
 
@@ -285,7 +299,7 @@
                         }
                     }
                 }
-                this.gravityFieldActive = false; // Reset elke frame
+                this.gravityFieldActive = false;
             }
 
             drawShadow() {
@@ -322,13 +336,11 @@
 
                 ctx.fillStyle = this.color; ctx.fillRect(-14, -13, 28, 27);
                 
-                // Custom hoofd per character type!
                 if (this.type === "Alien") ctx.fillStyle = "#33ff33";
                 else if (this.type === "Robot") ctx.fillStyle = "#bdc3c7";
                 else ctx.fillStyle = "#ffdbac"; 
                 ctx.fillRect(-8, -28, 16, 15);
 
-                // Ogen of vizier
                 ctx.fillStyle = "#000"; 
                 if (this.type === "Ninja") { ctx.fillStyle = "purple"; ctx.fillRect(-8, -24, 16, 4); ctx.fillStyle = "white"; ctx.fillRect(4, -23, 2, 2); }
                 else if (this.type === "Robot") { ctx.fillStyle = "red"; ctx.fillRect(2, -25, 6, 2); }
@@ -337,7 +349,6 @@
 
                 let ext = 0; if (this.attackTimer > 0) ext = Math.sin((this.attackTimer/14)*Math.PI)*24;
                 
-                // UNIEKE WAPEN VISUALS
                 ctx.fillStyle = classStats[this.type].weaponColor;
                 if (this.type === "Brawler") { 
                     ctx.save(); ctx.shadowBlur = 10; ctx.shadowColor = "#ff3300"; ctx.fillStyle = "#ff2200";
@@ -352,14 +363,14 @@
                 } else if (this.type === "Gunner") { 
                     ctx.fillRect(2, -6, 14, 8); ctx.fillStyle = "#00ffff"; ctx.fillRect(16, -5, 4, 6);
                 } else if (this.type === "Ninja") {
-                    ctx.fillStyle = "#444"; ctx.fillRect(2, -2, 18 + ext*0.2, 3); // Kleine katana
+                    ctx.fillStyle = "#444"; ctx.fillRect(2, -2, 18 + ext*0.2, 3);
                 } else if (this.type === "Viking") {
-                    ctx.fillStyle = "#7f8c8d"; ctx.fillRect(4, -20, 4, 24); // Steel
-                    ctx.fillStyle = "#ecf0f1"; ctx.fillRect(6 + ext*0.2, -26, 14, 14); // Dikke bijlblad
+                    ctx.fillStyle = "#7f8c8d"; ctx.fillRect(4, -20, 4, 24);
+                    ctx.fillStyle = "#ecf0f1"; ctx.fillRect(6 + ext*0.2, -26, 14, 14);
                 } else if (this.type === "Pirate") {
-                    ctx.fillStyle = "#f1c40f"; ctx.fillRect(2, -2, 20 + ext*0.3, 5); // Sabel
+                    ctx.fillStyle = "#f1c40f"; ctx.fillRect(2, -2, 20 + ext*0.3, 5);
                 } else if (this.type === "SonicBoy") {
-                    ctx.fillStyle = "#ff007f"; ctx.fillRect(-10, -32, 20, 4); // Koptelefoon band
+                    ctx.fillStyle = "#ff007f"; ctx.fillRect(-10, -32, 20, 4);
                     ctx.fillRect(-12, -28, 4, 8); ctx.fillRect(8, -28, 4, 8);
                 }
 
@@ -370,11 +381,6 @@
                 if (this.isShielding || !this.isActive) return;
                 if (this.isGrounded) { this.vy = -11.5; this.jumpsLeft = 1; playSound("jump"); }
                 else if (this.jumpsLeft > 0) { this.vy = -10.5; this.jumpsLeft = 0; playSound("jump"); createParticles(this.x+this.width/2 - cameraOffset*0.3, this.y+this.height, "white", 4); }
-            }
-
-            triggerAirDodge(dx) {
-                if (this.isGrounded || this.airDodgeTimer > 0 || !this.isActive) return;
-                this.airDodgeTimer = 18; this.vx = dx * 7.5; this.vy = -1.5;
             }
 
             attack() {
@@ -414,39 +420,30 @@
                     playSound("laser"); triggerShake(6, 12);
                     lasers.push({ type: "plasma", x: this.facing === 1 ? this.x+this.width : 0, y: this.y+8, width: this.facing === 1 ? canvas.width : this.x, height: 24, timer: 15, owner: this });
                 } else if (this.type === "Ninja") {
-                    // SHADOW TELEPORT
-                    createParticles(this.x, this.y, "purple", 15);
-                    this.x += this.facing * 140; 
+                    createParticles(this.x, this.y, "purple", 15); this.x += this.facing * 140; 
                     if (this.x < 20) this.x = 20; if (this.x > canvas.width - 50) this.x = canvas.width - 50;
                     playSound("jump");
                 } else if (this.type === "Mage") {
-                    // LIGHTNING STRIKE
                     triggerShake(8, 15);
                     lasers.push({ type: "lightning", x: this.x - 10, y: 0, width: 60, height: canvas.height, timer: 20, owner: this });
                 } else if (this.type === "Viking") {
-                    // GROUND SLAM & SCHOKGOLVEN
-                    this.vy = 14; // Ram omlaag
+                    this.vy = 14;
                     projectielen.push({ type: "wave", x: this.x, y: this.y + 20, vx: 5, damage: 10, knockback: 7, owner: this });
                     projectielen.push({ type: "wave", x: this.x, y: this.y + 20, vx: -5, damage: 10, knockback: 7, owner: this });
                 } else if (this.type === "Alien") {
-                    // GRAVITY INVERSION FIELD
                     lasers.push({ type: "gravity", x: this.x - 80, y: this.y - 80, width: 200, height: 200, timer: 40, owner: this });
                 } else if (this.type === "Robot") {
-                    // SELF-DESTRUCT SHIELD
                     lasers.push({ type: "explosion", x: this.x - 50, y: this.y - 50, width: 140, height: 140, timer: 18, owner: this });
                 } else if (this.type === "Pirate") {
-                    // KANONS_KOGEL
                     projectielen.push({ type: "cannonball", x: this.x, y: this.y + 10, vx: this.facing * 4.5, damage: 20, knockback: 12, owner: this });
                 } else if (this.type === "SonicBoy") {
-                    // BOOMBOX BLAST RINGEN
                     lasers.push({ type: "sonic", x: this.x - 60, y: this.y - 20, width: 160, height: 100, timer: 30, owner: this });
                 }
             }
 
             hitOpponent(opp, dmg, kx, ky = -3.5 - (opp.percentage * 0.07)) {
-                if (opp.type === "Robot") kx *= 0.75; // Robot neemt minder knockback!
-                opp.percentage += dmg; playSound("hit");
-                opp.vx = kx; opp.vy = ky;
+                if (opp.type === "Robot") kx *= 0.75;
+                opp.percentage += dmg; playSound("hit"); opp.vx = kx; opp.vy = ky;
                 triggerShake(dmg > 10 ? 8 : 4, 8);
                 createParticles(opp.x + opp.width/2 - cameraOffset*0.3, opp.y + opp.height/2, classStats[this.type].weaponColor, 12);
             }
@@ -468,6 +465,39 @@
             for(let i=0; i<amount; i++) {
                 particles.push({ x: x, y: y, vx: (Math.random()-0.5)*8, vy: (Math.random()-0.5)*8, size: Math.random()*3+2, alpha: 1, color: color });
             }
+        }
+
+        function handleGamepadInput() {
+            if (controllerIndex === null) return;
+            let gp = navigator.getGamepads()[controllerIndex];
+            if (!gp) return;
+
+            let p1 = spelers[0];
+            if (!p1.isActive) return;
+
+            // Schild (L2/R2 of L1/R1 triggers)
+            p1.isShielding = (gp.buttons[6].pressed || gp.buttons[7].pressed || gp.buttons[4].pressed || gp.buttons[5].pressed) && p1.isGrounded;
+
+            if (!p1.isShielding && p1.airDodgeTimer <= 10) {
+                // Stick beweging links / rechts
+                if (gp.axes[0] < -0.3 || gp.buttons[14].pressed) p1.vx = -4.5;
+                if (gp.axes[0] > 0.3 || gp.buttons[15].pressed) p1.vx = 4.5;
+
+                // Knop A / Kruisje (onderste knop) = Springen
+                let jumpPressed = gp.buttons[0].pressed;
+                if (jumpPressed && !prevJumpPressed) { p1.jump(); }
+                prevJumpPressed = jumpPressed;
+            }
+
+            // Knop X / Vierkantje (linker knop) = Attack
+            let attackPressed = gp.buttons[2].pressed;
+            if (attackPressed && !prevAttackPressed) { p1.attack(); }
+            prevAttackPressed = attackPressed;
+
+            // Knop Y / Driehoekje (bovenste knop) = Special
+            let specialPressed = gp.buttons[3].pressed;
+            if (specialPressed && !prevSpecialPressed) { p1.special(); }
+            prevSpecialPressed = specialPressed;
         }
 
         function handleInput() {
@@ -494,6 +524,8 @@
                 if (keys[p2.controls.attack]) { p2.attack(); keys[p2.controls.attack] = false; }
                 if (keys[p2.controls.special]) { p2.special(); keys[p2.controls.special] = false; }
             }
+
+            handleGamepadInput(); // Voeg de controller controls toe voor P1
         }
 
         function updateCPUs() {
@@ -555,7 +587,6 @@
             for (let i = projectielen.length - 1; i >= 0; i--) {
                 let proj = projectielen[i]; proj.x += proj.vx;
                 
-                // Render per type projectiel
                 ctx.save();
                 if (proj.type === "shuriken") { ctx.fillStyle = "purple"; ctx.fillRect(proj.x - cameraOffset*0.3, proj.y, 10, 10); }
                 else if (proj.type === "fireball") { ctx.fillStyle = "orange"; ctx.beginPath(); ctx.arc(proj.x - cameraOffset*0.3, proj.y, 8, 0, Math.PI*2); ctx.fill(); }
@@ -650,7 +681,6 @@
 
             handleContinuousHits(); spelers.forEach(p => p.draw()); updateProjectiles();
 
-            // RENDER COOLE OM-MODUS SPECIALS / LASERS
             lasers.forEach(l => { 
                 ctx.save();
                 if (l.type === "plasma") { ctx.shadowBlur = 15; ctx.shadowColor = "#00ffff"; ctx.fillStyle = "rgba(0, 255, 255, 0.4)"; ctx.fillRect(l.x - cameraOffset*0.3, l.y, l.width, l.height); }
@@ -661,7 +691,6 @@
                 ctx.restore();
             });
 
-            // SMASH BLAST STREPEN RENDERING
             for (let i = blastEffects.length - 1; i >= 0; i--) {
                 let b = blastEffects[i]; ctx.save(); ctx.shadowBlur = 25; ctx.shadowColor = b.color;
                 ctx.fillStyle = "white"; ctx.fillRect(b.x, b.y, b.width, b.height); ctx.restore();
