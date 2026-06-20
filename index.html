@@ -147,7 +147,7 @@
             constructor(meta, controls) {
                 this.id = meta.id; this.startX = meta.startX; this.startY = 180;
                 this.x = this.startX; this.y = this.startY; this.name = meta.name;
-                this.width = 36; this.height = 54;
+                this.width = 38; this.height = 56;
                 this.type = "Brawler"; this.color = meta.baseColor; this.team = null;
                 this.vx = 0; this.vy = 0; this.percentage = 0; this.stocks = 3;
                 this.isGrounded = false; this.facing = this.id % 2 === 1 ? 1 : -1;
@@ -162,10 +162,9 @@
                 this.x = this.startX; this.y = this.startY; this.vx = 0; this.vy = 0;
                 this.percentage = 0; this.stocks = 3; this.isActive = true;
                 this.type = type; this.isCPU = isCPU; this.aiLevel = parseInt(aiLevel);
-                this.attackTimer = 0; this.specialTimer = 0; this.respawnTimer = 0;
+                this.attackTimer = 0; this.specialTimer = 0; this.animFrame = 0;
                 this.isShielding = false; this.shieldHealth = 40; this.jumpsLeft = 2; this.airDodgeTimer = 0;
                 
-                // Teams verdeling: P1 + P3 = Team Rood, P2 + P4 = Team Blauw
                 if (teamMode === "2v2") {
                     this.team = (this.id === 1 || this.id === 3) ? "ROOD" : "BLAUW";
                     this.color = this.team === "ROOD" ? (this.id === 1 ? "#ff3333" : "#ff7777") : (this.id === 2 ? "#3333ff" : "#7777ff");
@@ -199,7 +198,8 @@
                 if (this.vx < -0.1 && !this.isShielding) this.facing = -1;
                 this.vx *= this.isGrounded ? 0.8 : 0.96;
 
-                if (Math.abs(this.vx) > 0.2 && this.isGrounded) this.animFrame += 0.2;
+                // Loop-animatie frame updater
+                if (Math.abs(this.vx) > 0.2 && this.isGrounded) this.animFrame += 0.22;
                 if (this.isGrounded) this.jumpsLeft = 2;
 
                 if (this.attackTimer > 0 && --this.attackTimer === 0) this.isFinalSmashing = false;
@@ -224,11 +224,24 @@
                 }
             }
 
+            drawShadow() {
+                if (!this.isActive || this.respawnTimer % 4 >= 2 || this.airDodgeTimer > 10) return;
+                if (this.x + this.width > mainStage.x && this.x < mainStage.x + mainStage.width && this.y <= mainStage.y) {
+                    let distance = mainStage.y - (this.y + this.height);
+                    let shadowWidth = Math.max(6, this.width - (distance * 0.08));
+                    let shadowAlpha = Math.max(0, 0.35 - (distance * 0.002));
+                    ctx.fillStyle = `rgba(0, 0, 0, ${shadowAlpha})`; ctx.beginPath();
+                    ctx.ellipse(this.x + this.width/2 - cameraOffset*0.3, mainStage.y, shadowWidth, 4, 0, 0, Math.PI * 2); ctx.fill();
+                }
+            }
+
             draw() {
                 if (!this.isActive || this.respawnTimer % 4 >= 2) return;
                 if (this.airDodgeTimer > 10) ctx.globalAlpha = 0.35;
 
-                let cx = this.x + this.width / 2, cy = this.y + this.height / 2;
+                // Camera offset toepassen op de x-as voor het dynamische 2.5D effect
+                let cx = this.x + this.width / 2 - cameraOffset * 0.3;
+                let cy = this.y + this.height / 2;
 
                 if (this.isShielding) {
                     ctx.save(); ctx.beginPath(); ctx.arc(cx, cy, this.shieldHealth, 0, Math.PI*2);
@@ -237,20 +250,28 @@
                 }
 
                 ctx.save(); ctx.translate(cx, cy); ctx.scale(this.facing, 1);
-                // Benen & Lichaam
-                ctx.fillStyle = "#111"; ctx.fillRect(-10, 12, 6, 15); ctx.fillRect(4, 12, 6, 15);
-                ctx.fillStyle = this.color; ctx.fillRect(-14, -12, 28, 25);
-                // Hoofd
-                ctx.fillStyle = "#ffdbac"; ctx.fillRect(-8, -27, 16, 15);
-                ctx.fillStyle = "#000"; ctx.fillRect(4, -23, 2, 3);
+                
+                // GEANIMEERDE BENEN (zwaaien heen en weer tijdens het rennen!)
+                let legSwing = Math.sin(this.animFrame) * 11; 
+                if (!this.isGrounded) legSwing = 8; // Vaste stand in de lucht
+                ctx.fillStyle = "#11111e"; 
+                ctx.fillRect(-11, 14, 6, 14 + legSwing * 0.25); 
+                ctx.fillRect(4, 14, 6, 14 - legSwing * 0.25);
+
+                // LICHAAM
+                ctx.fillStyle = this.color; ctx.fillRect(-14, -13, 28, 27);
+                
+                // HOOFD
+                ctx.fillStyle = "#ffdbac"; ctx.fillRect(-8, -28, 16, 15);
+                ctx.fillStyle = "#000"; ctx.fillRect(4, -24, 2, 3);
 
                 // Team indicator driehoekje boven het hoofd
                 if (matchMode === "2v2") {
                     ctx.fillStyle = this.team === "ROOD" ? "red" : "blue";
-                    ctx.beginPath(); ctx.moveTo(0, -34); ctx.lineTo(-5, -42); ctx.lineTo(5, -42); ctx.fill();
+                    ctx.beginPath(); ctx.moveTo(0, -35); ctx.lineTo(-5, -43); ctx.lineTo(5, -43); ctx.fill();
                 }
 
-                // Wapen rendering
+                // WAPENS
                 let ext = 0; if (this.attackTimer > 0) ext = Math.sin((this.attackTimer/15)*Math.PI)*22;
                 ctx.fillStyle = classStats[this.type].weaponColor;
                 if (this.type === "Brawler") { ctx.fillRect(4, -4, 10+ext, 8); }
@@ -314,7 +335,7 @@
                 opp.percentage += dmg; playSound("hit");
                 opp.vx = kx; opp.vy = ky;
                 triggerShake(dmg > 10 ? 8 : 4, 8);
-                createParticles(opp.x + opp.width/2, opp.y + opp.height/2, classStats[this.type].weaponColor, 10);
+                createParticles(opp.x + opp.width/2 - cameraOffset*0.3, opp.y + opp.height/2, classStats[this.type].weaponColor, 10);
             }
         }
 
@@ -338,7 +359,6 @@
         }
 
         function handleInput() {
-            // Speler 1 (Altijd mens)
             let p1 = spelers[0];
             if (p1.isActive) {
                 p1.isShielding = keys[p1.controls.shield] && p1.isGrounded;
@@ -351,7 +371,6 @@
                 if (keys[p1.controls.special]) { p1.special(); keys[p1.controls.special] = false; }
             }
 
-            // Speler 2 (Optioneel mens)
             let p2 = spelers[1];
             if (p2.isActive && !p2.isCPU) {
                 p2.isShielding = keys[p2.controls.shield] && p2.isGrounded;
@@ -365,12 +384,10 @@
             }
         }
 
-        // Slimme CPU AI Updates gebaseerd op levels (1 - 9)
         function updateCPUs() {
             spelers.forEach(p => {
                 if (!p.isActive || !p.isCPU) return;
 
-                // Vind dichtstbijzijnde geldige vijand
                 let target = null, minDist = 9999;
                 spelers.forEach(opp => {
                     if (opp === p || !opp.isActive || (p.team && opp.team === p.team)) return;
@@ -379,31 +396,25 @@
                 });
 
                 if (!target) return;
+                let reactionChance = p.aiLevel * 0.09;
 
-                let reactionChance = p.aiLevel * 0.09; // Level 9 reageert bijna continu, Level 1 heel sloom
-
-                // 1. Herstelgedrag (terugkeren naar platform - Edge Guarding / Recovery)
                 if (p.y > mainStage.y + 20 && p.jumpsLeft > 0 && Math.random() < reactionChance) {
                     p.jump(); p.vx = (p.x < canvas.width/2) ? 3.5 : -3.5;
                     return;
                 }
 
-                // 2. Schild / Air dodge gedrag bij dreiging (Alleen hoge AI levels)
                 if (p.aiLevel >= 6 && minDist < 70 && target.attackTimer > 10 && Math.random() < (p.aiLevel * 0.05)) {
                     if (p.isGrounded) p.isShielding = true; 
                     else p.triggerAirDodge(p.x > target.x ? 1 : -1);
                     return;
                 } else { p.isShielding = false; }
 
-                // 3. Beweging richting doelwit
                 if (!p.isShielding && p.airDodgeTimer <= 10 && Math.random() < reactionChance) {
                     if (p.x < target.x - 30) p.vx = 2.2 + (p.aiLevel * 0.15);
                     else if (p.x > target.x + 30) p.vx = -(2.2 + (p.aiLevel * 0.15));
-                    
                     if (target.y < p.y - 30 && Math.random() < 0.05) p.jump();
                 }
 
-                // 4. Aanvallen
                 if (minDist < 60 && Math.random() < (p.aiLevel * 0.02)) {
                     if (Math.random() < 0.3) p.special(); else p.attack();
                 } else if (p.type === "Gunner" && minDist < 280 && Math.random() < (p.aiLevel * 0.01)) {
@@ -413,7 +424,6 @@
         }
 
         function handleContinuousHits() {
-            // Swordfighter specials tick
             spelers.forEach(p => {
                 if (!p.isActive || p.type !== "SwordFighter" || p.specialTimer <= 0) return;
                 spelers.forEach(opp => {
@@ -425,7 +435,6 @@
                 });
             });
 
-            // Lasers handler
             for (let i = lasers.length - 1; i >= 0; i--) {
                 let l = lasers[i]; l.timer--;
                 if (l.timer === 6) {
@@ -444,7 +453,9 @@
         function updateProjectiles() {
             for (let i = projectielen.length - 1; i >= 0; i--) {
                 let proj = projectielen[i]; proj.x += proj.vx;
-                ctx.fillStyle = "cyan"; ctx.fillRect(proj.x, proj.y, 14, 5);
+                
+                // Render projectiel mét camera offset
+                ctx.fillStyle = "cyan"; ctx.fillRect(proj.x - cameraOffset*0.3, proj.y, 14, 5);
 
                 spelers.forEach(target => {
                     if (!target.isActive || target === proj.owner || (proj.owner.team && target.team === proj.owner.team)) return;
@@ -462,12 +473,14 @@
         function checkRingOuts() {
             spelers.forEach(p => {
                 if (!p.isActive) return;
-                if (p.y > canvas.height || p.x < 0 || p.x > canvas.width) {
+                // Upper Blast Zone Check (y < -40) toegevoegd!
+                if (p.y > canvas.height || p.x < 0 || p.x > canvas.width || p.y < -40) {
+                    createParticles(p.x + p.width/2 - cameraOffset*0.3, Math.max(0, p.y), p.color, 25);
+                    triggerShake(10, 15);
                     p.respawn();
                 }
             });
 
-            // Check game over status
             let levendeTeams = new Set();
             let actieveSpelers = spelers.filter(p => p.isActive);
 
@@ -489,15 +502,13 @@
             matchMode = document.getElementById("matchMode").value;
             gameState = "PLAYING";
 
-            // Stage setup
             let stageName = document.getElementById("stageSelect").value; softPlatforms = [];
             if (stageName === "Battlefield") {
-                mainStage = { x: 180, y: 350, width: 440, height: 25 }; softPlatforms.push({ x: 230, y: 240, width: 120 }, { x: 450, y: 240, width: 120 });
+                mainStage = { x: 180, y: 350, width: 440, height: 25, depth: 35 }; softPlatforms.push({ x: 230, y: 240, width: 120 }, { x: 450, y: 240, width: 120 });
             } else if (stageName === "FinalDestination") {
-                mainStage = { x: 100, y: 360, width: 600, height: 25 };
-            } else { mainStage = { x: 280, y: 350, width: 240, height: 25 }; }
+                mainStage = { x: 100, y: 360, width: 600, height: 25, depth: 40 };
+            } else { mainStage = { x: 280, y: 350, width: 240, height: 25, depth: 30 }; }
 
-            // Config spelers
             spelers[0].reset(document.getElementById("p1Char").value, false, 3, matchMode);
             
             let p2Cpu = document.getElementById("p2Control").value === "CPU";
@@ -523,23 +534,60 @@
             spelers.forEach(p => p.update());
             checkRingOuts();
 
+            // CAMERA GEMIDDELDE BEREKENEN VOOR PARALLAX & SCHADUWEN
+            let levendeSpelers = spelers.filter(s => s.isActive);
+            if (levendeSpelers.length > 0) {
+                let mX = levendeSpelers.reduce((sum, s) => sum + s.x, 0) / levendeSpelers.length;
+                cameraOffset = (mX - canvas.width / 2) * 0.8;
+            }
+
             ctx.save();
             if (shakeTimer > 0) { ctx.translate((Math.random()-0.5)*shakeIntensity, (Math.random()-0.5)*shakeIntensity); shakeTimer--; }
 
-            // Draw BG & Stage
-            ctx.fillStyle = "#0c0c1e"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "#222235"; ctx.fillRect(mainStage.x, mainStage.y, mainStage.width, mainStage.height);
-            ctx.fillStyle = "#ffaa00"; ctx.fillRect(mainStage.x, mainStage.y, mainStage.width, 3);
-            softPlatforms.forEach(p => { ctx.fillStyle = "rgba(60,60,90,0.8)"; ctx.fillRect(p.x, p.y, p.width, 6); });
+            // GEANIMEERDE ACHTERGROND MET MEERDERE DIEPTE-LAGEN (Parallax)
+            let skyGrad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            skyGrad.addColorStop(0, "#060610"); skyGrad.addColorStop(0.5, "#111124"); skyGrad.addColorStop(1, "#1c1830");
+            ctx.fillStyle = skyGrad; ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Bergen / Torens op de achtergrond die langzamer meebewegen (2.5D)
+            ctx.fillStyle = "#0d0d1a"; 
+            ctx.fillRect(40 - cameraOffset * 0.1, 180, 150, 320); 
+            ctx.fillRect(630 - cameraOffset * 0.1, 150, 160, 350);
+            ctx.fillStyle = "#141426"; 
+            ctx.fillRect(170 - cameraOffset * 0.2, 230, 180, 270); 
+            ctx.fillRect(420 - cameraOffset * 0.2, 200, 200, 300);
+
+            // Karakter schaduwen renderen op de hoofdstage
+            spelers.forEach(p => p.drawShadow());
+
+            // 2.5D 3D-EFFECT HOOFDSTAGE MET SCHUINE ONDERKANT
+            let sx = mainStage.x - cameraOffset * 0.3;
+            ctx.fillStyle = "#2c2c3e"; ctx.fillRect(sx, mainStage.y, mainStage.width, mainStage.height);
+            ctx.fillStyle = "#ffaa00"; ctx.fillRect(sx, mainStage.y, mainStage.width, 3); // Gekleurde toplaag
+
+            // De schuine 3D 'buik' van het zwevende platform
+            ctx.fillStyle = "#1e1e2b"; ctx.beginPath(); 
+            ctx.moveTo(sx, mainStage.y + mainStage.height);
+            ctx.lineTo(sx + 20, mainStage.y + mainStage.height + mainStage.depth);
+            ctx.lineTo(sx + mainStage.width - 20, mainStage.y + mainStage.height + mainStage.depth);
+            ctx.lineTo(sx + mainStage.width, mainStage.y + mainStage.height); 
+            ctx.closePath(); ctx.fill();
+
+            // Soft platforms renderen met camera offset
+            softPlatforms.forEach(p => { 
+                let px = p.x - cameraOffset * 0.3;
+                ctx.fillStyle = "rgba(60,60,90,0.8)"; ctx.fillRect(px, p.y, p.width, 6); 
+                ctx.fillStyle = "#00ffcc"; ctx.fillRect(px, p.y, p.width, 1.5);
+            });
 
             handleContinuousHits();
             spelers.forEach(p => p.draw());
             updateProjectiles();
 
-            // Lasers visualizer
-            lasers.forEach(l => { ctx.fillStyle = "rgba(0, 255, 255, 0.4)"; ctx.fillRect(l.x, l.y, l.width, l.height); });
+            // Lasers handler met camera offset
+            lasers.forEach(l => { ctx.fillStyle = "rgba(0, 255, 255, 0.35)"; ctx.fillRect(l.x - cameraOffset*0.3, l.y, l.width, l.height); });
 
-            // Particles update
+            // Deeltjes / Explosies renderen
             for(let i=particles.length-1; i>=0; i--) {
                 let p = particles[i]; p.x += p.vx; p.y += p.vy; p.alpha -= 0.04;
                 ctx.fillStyle = p.color; ctx.globalAlpha = p.alpha; ctx.fillRect(p.x, p.y, p.size, p.size);
@@ -547,7 +595,7 @@
             }
             ctx.globalAlpha = 1.0; ctx.restore();
 
-            // Render HUD
+            // Render HUD onderaan het scherm
             spelers.forEach((p, idx) => {
                 let uibox = document.getElementById(`ui-p${idx+1}`);
                 if (p.isActive) {
