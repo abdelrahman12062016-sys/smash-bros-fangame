@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super Smash Browser - Overdrive Edition</title>
+    <title>Super Smash Browser - All-Out Roster Edition</title>
     <style>
         body {
             margin: 0; background: #05050d; color: white;
@@ -38,15 +38,15 @@
         }
         canvas { background: #000; border: 4px solid #222; border-radius: 8px; display: none; box-shadow: 0 15px 35px rgba(0,0,0,0.8); }
         #ui { display: none; justify-content: space-between; width: 800px; margin-top: 10px; }
-        .p-ui-box { padding: 6px 12px; border-radius: 6px; background: rgba(0,0,0,0.6); width: 180px; text-align: center; font-size: 16px; font-weight: bold; border-bottom: 4px solid #fff; }
-        .stocks { color: #ffaa00; font-size: 14px; margin-top: 2px; }
+        .p-ui-box { padding: 6px 12px; border-radius: 6px; background: rgba(0,0,0,0.6); width: 180px; text-align: center; font-size: 14px; font-weight: bold; border-bottom: 4px solid #fff; }
+        .stocks { color: #ffaa00; font-size: 12px; margin-top: 2px; }
     </style>
 </head>
 <body>
 
     <div id="menu">
         <h1 style="font-size: 30px; margin: 0 0 5px 0; color: #ff9900; text-shadow: 0 0 15px rgba(255,153,0,0.4);">SUPER SMASH BROWSER</h1>
-        <p style="color: #555577; margin: 0 0 15px 0; font-weight: bold; font-size: 12px;">FIRE FISTS & CYBER PLASMA BEAMS ACTIVE</p>
+        <p style="color: #00ffcc; margin: 0 0 15px 0; font-weight: bold; font-size: 13px; text-shadow: 0 0 10px rgba(0,255,204,0.4);">🔥 OMNI-MODUS: 10 SPEELBARE CHARACTERS ACTIEF 🔥</p>
         
         <div style="margin-bottom: 15px; background: #131324; padding: 10px; border-radius: 8px; border: 1px solid #2a2a40;">
             <label><b>Spelmodus:</b> </label>
@@ -65,30 +65,74 @@
         <div class="config-panel">
             <div class="p-box" style="border-top: 4px solid #ff4444;">
                 <h4 style="margin:2px 0;">Speler 1 (Jij)</h4>
-                <select id="p1Char"><option value="Brawler">Brawler 🥊</option><option value="SwordFighter">SwordFighter ⚔️</option><option value="Gunner">Gunner 🔫</option></select>
+                <select id="p1Char">
+                    <option value="Brawler">Brawler 🥊</option>
+                    <option value="SwordFighter">SwordFighter ⚔️</option>
+                    <option value="Gunner">Gunner 🔫</option>
+                    <option value="Ninja">Ninja 🥷</option>
+                    <option value="Mage">Mage 🧙‍♂️</option>
+                    <option value="Viking">Viking 🪓</option>
+                    <option value="Alien">Alien 👽</option>
+                    <option value="Robot">Robot 🤖</option>
+                    <option value="Pirate">Pirate 🏴‍☠️</option>
+                    <option value="SonicBoy">Sonic Boy 🎧</option>
+                </select>
                 <select id="p1Control" disabled><option>Mens (A/D/W/F/G)</option></select>
             </div>
             <div class="p-box" style="border-top: 4px solid #4444ff;">
                 <h4 style="margin:2px 0;">Speler 2</h4>
-                <select id="p2Char"><option value="Gunner">Gunner 🔫</option><option value="SwordFighter">SwordFighter ⚔️</option><option value="Brawler">Brawler 🥊</option></select>
+                <select id="p2Char">
+                    <option value="Ninja">Ninja 🥷</option>
+                    <option value="SwordFighter">SwordFighter ⚔️</option>
+                    <option value="Brawler">Brawler 🥊</option>
+                    <option value="Gunner">Gunner 🔫</option>
+                    <option value="Mage">Mage 🧙‍♂️</option>
+                    <option value="Viking">Viking 🪓</option>
+                    <option value="Alien">Alien 👽</option>
+                    <option value="Robot">Robot 🤖</option>
+                    <option value="Pirate">Pirate 🏴‍☠️</option>
+                    <option value="SonicBoy">Sonic Boy 🎧</option>
+                </select>
                 <select id="p2Control"><option value="CPU">CPU (Computer)</option><option value="Human">Mens (◄/►/▲/./\/)</option></select>
                 <select id="p2Level"><option value="3">AI Level 3</option><option value="1">AI Level 1</option><option value="6">AI Level 6</option><option value="9">AI Level 9 🔥</option></select>
             </div>
             <div class="p-box" style="border-top: 4px solid #22cc22;">
                 <h4 style="margin:2px 0;">Speler 3</h4>
-                <select id="p3Char"><option value="SwordFighter">SwordFighter ⚔️</option><option value="Brawler">Brawler 🥊</option><option value="Gunner">Gunner 🔫</option></select>
+                <select id="p3Char">
+                    <option value="Mage">Mage 🧙‍♂️</option>
+                    <option value="SwordFighter">SwordFighter ⚔️</option>
+                    <option value="Brawler">Brawler 🥊</option>
+                    <option value="Gunner">Gunner 🔫</option>
+                    <option value="Ninja">Ninja 🥷</option>
+                    <option value="Viking">Viking 🪓</option>
+                    <option value="Alien">Alien 👽</option>
+                    <option value="Robot">Robot 🤖</option>
+                    <option value="Pirate">Pirate 🏴‍☠️</option>
+                    <option value="SonicBoy">Sonic Boy 🎧</option>
+                </select>
                 <select id="p3Control"><option value="CPU">CPU (Computer)</option><option value="OFF">UIT (Geen)</option></select>
                 <select id="p3Level"><option value="3">AI Level 3</option><option value="1">AI Level 1</option><option value="6">AI Level 6</option><option value="9">AI Level 9 🔥</option></select>
             </div>
             <div class="p-box" style="border-top: 4px solid #eeee22;">
                 <h4 style="margin:2px 0;">Speler 4</h4>
-                <select id="p4Char"><option value="Brawler">Brawler 🥊</option><option value="SwordFighter">SwordFighter ⚔️</option><option value="Gunner">Gunner 🔫</option></select>
+                <select id="p4Char">
+                    <option value="Viking">Viking 🪓</option>
+                    <option value="SwordFighter">SwordFighter ⚔️</option>
+                    <option value="Brawler">Brawler 🥊</option>
+                    <option value="Gunner">Gunner 🔫</option>
+                    <option value="Ninja">Ninja 🥷</option>
+                    <option value="Mage">Mage 🧙‍♂️</option>
+                    <option value="Alien">Alien 👽</option>
+                    <option value="Robot">Robot 🤖</option>
+                    <option value="Pirate">Pirate 🏴‍☠️</option>
+                    <option value="SonicBoy">Sonic Boy 🎧</option>
+                </select>
                 <select id="p4Control"><option value="CPU">CPU (Computer)</option><option value="OFF">UIT (Geen)</option></select>
                 <select id="p4Level"><option value="3">AI Level 3</option><option value="1">AI Level 1</option><option value="6">AI Level 6</option><option value="9">AI Level 9 🔥</option></select>
             </div>
         </div>
 
-        <button class="btn" id="btnStartGame">VECHT!</button>
+        <button class="btn" id="btnStartGame">START SPECTAKEL!</button>
     </div>
 
     <div id="victoryScreen">
@@ -128,10 +172,18 @@
         let shakeTimer = 0, shakeIntensity = 0, cameraOffset = 0;
         let mainStage = { x: 150, y: 340, width: 500, height: 25, depth: 35 }, softPlatforms = [];
 
+        // UITGEBREIDE CHARACTER STATS VOOR ALLE 10 DE CHARACTERS
         const classStats = {
+            Brawler:      { weaponColor: "#ff4500", damage: 15, range: 45, knockback: 8.5 },
             SwordFighter: { weaponColor: "#e0e0e0", damage: 12, range: 55, knockback: 6.2 },
-            Brawler:      { weaponColor: "#ff4500", damage: 16, range: 45, knockback: 8.5 },
-            Gunner:       { weaponColor: "#00ffff", damage: 5,  range: 0,  knockback: 3.8 }
+            Gunner:       { weaponColor: "#00ffff", damage: 5,  range: 0,  knockback: 3.8 },
+            Ninja:        { weaponColor: "#bf55ec", damage: 9,  range: 40, knockback: 5.5 },
+            Mage:         { weaponColor: "#4d13d1", damage: 11, range: 0,  knockback: 6.0 },
+            Viking:       { weaponColor: "#f5d76e", damage: 22, range: 60, knockback: 11.0 }, // Traag maar super harde knockback
+            Alien:        { weaponColor: "#00ff66", damage: 8,  range: 45, knockback: 5.0 },
+            Robot:        { weaponColor: "#95a5a6", damage: 14, range: 45, knockback: 7.5 },
+            Pirate:       { weaponColor: "#f22613", damage: 13, range: 50, knockback: 8.0 },
+            SonicBoy:     { weaponColor: "#ff007f", damage: 7,  range: 50, knockback: 4.5 }
         };
 
         const playerMeta = [
@@ -153,6 +205,7 @@
                 
                 this.attackTimer = 0; this.specialTimer = 0; this.animFrame = 0;
                 this.respawnTimer = 0; this.isShielding = false; this.shieldHealth = 40; this.jumpsLeft = 2; this.airDodgeTimer = 0;
+                this.gravityFieldActive = false; // Specifiek voor Alien special
             }
 
             reset(type, isCPU, aiLevel, teamMode) {
@@ -161,6 +214,7 @@
                 this.type = type; this.isCPU = isCPU; this.aiLevel = parseInt(aiLevel);
                 this.attackTimer = 0; this.specialTimer = 0; this.animFrame = 0;
                 this.isShielding = false; this.shieldHealth = 40; this.jumpsLeft = 2; this.airDodgeTimer = 0;
+                this.gravityFieldActive = false;
                 
                 if (teamMode === "2v2") {
                     this.team = (this.id === 1 || this.id === 3) ? "ROOD" : "BLAUW";
@@ -190,10 +244,21 @@
                     if (this.shieldHealth < 40) this.shieldHealth += 0.08;
                 }
 
-                this.vy += gravity; this.x += this.vx; this.y += this.vy;
+                // Gewone zwaartekracht berekening, tenzij Alien zwaartekrachtveld actief is
+                if (this.gravityFieldActive) {
+                    this.vy -= 0.15; // Zweef omhoog!
+                    if (this.vy < -3) this.vy = -3;
+                } else {
+                    this.vy += gravity;
+                }
+
+                this.x += this.vx; this.y += this.vy;
                 if (this.vx > 0.1 && !this.isShielding) this.facing = 1;
                 if (this.vx < -0.1 && !this.isShielding) this.facing = -1;
-                this.vx *= this.isGrounded ? 0.8 : 0.96;
+                
+                // Robot heeft ingebouwde heavy armor (minder knockback / remt sneller af)
+                let friction = this.isGrounded ? (this.type === "Robot" ? 0.72 : 0.8) : 0.96;
+                this.vx *= friction;
 
                 if (Math.abs(this.vx) > 0.2 && this.isGrounded) this.animFrame += 0.22;
                 if (this.isGrounded) this.jumpsLeft = 2;
@@ -202,7 +267,6 @@
                 if (this.specialTimer > 0) {
                     this.specialTimer--;
                     if (this.type === "SwordFighter" && this.specialTimer > 5) this.vx = this.facing * 4.5;
-                    // Brawler laat vuurdeeltjes achter tijdens zijn vuur-wervelwind Special!
                     if (this.type === "Brawler" && this.specialTimer > 0) {
                         createParticles(this.x + this.width/2 - cameraOffset*0.3, this.y + this.height/2, "#ff6600", 2);
                     }
@@ -221,6 +285,7 @@
                         }
                     }
                 }
+                this.gravityFieldActive = false; // Reset elke frame
             }
 
             drawShadow() {
@@ -256,47 +321,46 @@
                 ctx.fillRect(4, 14, 6, 14 - legSwing * 0.25);
 
                 ctx.fillStyle = this.color; ctx.fillRect(-14, -13, 28, 27);
-                ctx.fillStyle = "#ffdbac"; ctx.fillRect(-8, -28, 16, 15);
-                ctx.fillStyle = "#000"; ctx.fillRect(4, -24, 2, 3);
+                
+                // Custom hoofd per character type!
+                if (this.type === "Alien") ctx.fillStyle = "#33ff33";
+                else if (this.type === "Robot") ctx.fillStyle = "#bdc3c7";
+                else ctx.fillStyle = "#ffdbac"; 
+                ctx.fillRect(-8, -28, 16, 15);
 
-                if (matchMode === "2v2") {
-                    ctx.fillStyle = this.team === "ROOD" ? "red" : "blue";
-                    ctx.beginPath(); ctx.moveTo(0, -35); ctx.lineTo(-5, -43); ctx.lineTo(5, -43); ctx.fill();
-                }
+                // Ogen of vizier
+                ctx.fillStyle = "#000"; 
+                if (this.type === "Ninja") { ctx.fillStyle = "purple"; ctx.fillRect(-8, -24, 16, 4); ctx.fillStyle = "white"; ctx.fillRect(4, -23, 2, 2); }
+                else if (this.type === "Robot") { ctx.fillStyle = "red"; ctx.fillRect(2, -25, 6, 2); }
+                else if (this.type === "Alien") { ctx.fillStyle = "black"; ctx.fillRect(2, -26, 5, 5); }
+                else { ctx.fillRect(4, -24, 2, 3); }
 
                 let ext = 0; if (this.attackTimer > 0) ext = Math.sin((this.attackTimer/14)*Math.PI)*24;
                 
-                // WAPENS & GLOEIENDE HANDEN LOGICA
+                // UNIEKE WAPEN VISUALS
+                ctx.fillStyle = classStats[this.type].weaponColor;
                 if (this.type === "Brawler") { 
-                    // GROTE GLOEIENDE KICKBOX HANDSCHOENEN
-                    ctx.save();
-                    ctx.shadowBlur = 10; ctx.shadowColor = "#ff3300";
-                    ctx.fillStyle = "#ff2200";
-                    // Bokshandschoen vooruit (verlengt bij aanval)
-                    ctx.fillRect(6 + ext, -5, 13, 11);
-                    ctx.fillStyle = "#ffcc00"; // Gouden details
-                    ctx.fillRect(14 + ext, -3, 5, 7);
-                    ctx.restore();
+                    ctx.save(); ctx.shadowBlur = 10; ctx.shadowColor = "#ff3300"; ctx.fillStyle = "#ff2200";
+                    ctx.fillRect(6 + ext, -5, 13, 11); ctx.restore();
                 } else if (this.type === "SwordFighter") { 
                     ctx.save(); 
-                    ctx.fillStyle = classStats[this.type].weaponColor;
                     if (this.specialTimer > 0) {
-                        let spinAngle = (this.specialTimer * 0.4) * Math.PI;
-                        ctx.rotate(spinAngle);
-                        ctx.fillStyle = "#00ffcc";
-                        ctx.fillRect(4, -3, 34, 6);
-                        ctx.strokeStyle = "rgba(0, 255, 204, 0.4)";
-                        ctx.lineWidth = 4;
-                        ctx.beginPath(); ctx.arc(0, 0, 32, 0, Math.PI*2); ctx.stroke();
-                    } else {
-                        let swingAngle = -Math.PI/4 + (this.attackTimer > 0 ? (ext * 0.05) : 0);
-                        ctx.rotate(swingAngle); 
-                        ctx.fillRect(4, -2, 28, 4); 
-                    }
+                        let spinAngle = (this.specialTimer * 0.4) * Math.PI; ctx.rotate(spinAngle);
+                        ctx.fillStyle = "#00ffcc"; ctx.fillRect(4, -3, 34, 6);
+                    } else { ctx.rotate(-Math.PI/4 + (this.attackTimer > 0 ? (ext * 0.05) : 0)); ctx.fillRect(4, -2, 28, 4); }
                     ctx.restore(); 
                 } else if (this.type === "Gunner") { 
-                    ctx.fillStyle = "#555566"; ctx.fillRect(2, -6, 14, 8); 
-                    ctx.fillStyle = "#00ffff"; ctx.fillRect(16, -5, 4, 6); // High-tech loop
+                    ctx.fillRect(2, -6, 14, 8); ctx.fillStyle = "#00ffff"; ctx.fillRect(16, -5, 4, 6);
+                } else if (this.type === "Ninja") {
+                    ctx.fillStyle = "#444"; ctx.fillRect(2, -2, 18 + ext*0.2, 3); // Kleine katana
+                } else if (this.type === "Viking") {
+                    ctx.fillStyle = "#7f8c8d"; ctx.fillRect(4, -20, 4, 24); // Steel
+                    ctx.fillStyle = "#ecf0f1"; ctx.fillRect(6 + ext*0.2, -26, 14, 14); // Dikke bijlblad
+                } else if (this.type === "Pirate") {
+                    ctx.fillStyle = "#f1c40f"; ctx.fillRect(2, -2, 20 + ext*0.3, 5); // Sabel
+                } else if (this.type === "SonicBoy") {
+                    ctx.fillStyle = "#ff007f"; ctx.fillRect(-10, -32, 20, 4); // Koptelefoon band
+                    ctx.fillRect(-12, -28, 4, 8); ctx.fillRect(8, -28, 4, 8);
                 }
 
                 ctx.restore(); ctx.globalAlpha = 1.0;
@@ -318,8 +382,13 @@
                 this.attackTimer = 14; let stats = classStats[this.type];
 
                 if (this.type === "Gunner") {
-                    playSound("laser");
-                    projectielen.push({ x: this.facing === 1 ? this.x+this.width+4 : this.x-16, y: this.y+16, vx: this.facing*10, damage: stats.damage, knockback: stats.knockback, owner: this });
+                    playSound("laser"); projectielen.push({ type: "laser", x: this.facing === 1 ? this.x+this.width+4 : this.x-16, y: this.y+16, vx: this.facing*10, damage: stats.damage, knockback: stats.knockback, owner: this });
+                } else if (this.type === "Ninja") {
+                    playSound("laser"); projectielen.push({ type: "shuriken", x: this.x, y: this.y+12, vx: this.facing*11, damage: stats.damage, knockback: stats.knockback, owner: this });
+                } else if (this.type === "Mage") {
+                    playSound("laser"); projectielen.push({ type: "fireball", x: this.x, y: this.y+10, vx: this.facing*7, damage: stats.damage, knockback: stats.knockback, owner: this });
+                } else if (this.type === "Alien") {
+                    playSound("laser"); projectielen.push({ type: "eyelaser", x: this.x, y: this.y+4, vx: this.facing*14, damage: stats.damage, knockback: stats.knockback, owner: this });
                 } else {
                     let hx = this.facing === 1 ? this.x + this.width : this.x - stats.range;
                     spelers.forEach(opp => {
@@ -334,36 +403,48 @@
 
             special() {
                 if (this.attackTimer > 0 || this.specialTimer > 0 || this.isShielding || this.airDodgeTimer > 10 || !this.isActive) return;
-                this.specialTimer = 22;
+                this.specialTimer = 25;
 
                 if (this.type === "Brawler") {
-                    // KICKBOXER VUUR-WERVELWIND OMHOOG!
-                    this.vy = -14; this.isGrounded = false; this.vx = this.facing * 2; playSound("jump");
-                    triggerShake(4, 10);
-                    spelers.forEach(opp => {
-                        if (opp === this || !opp.isActive || (this.team && opp.team === this.team)) return;
-                        if (Math.abs(this.x - opp.x) < 60 && this.y > opp.y - 40 && this.y < opp.y + opp.height + 40) {
-                            if (!opp.isShielding) this.hitOpponent(opp, 15, this.facing * 4.5, -12);
-                        }
-                    });
+                    this.vy = -14; this.isGrounded = false; this.vx = this.facing * 2; playSound("jump"); triggerShake(4, 10);
+                    spelers.forEach(opp => { if (opp !== this && Math.abs(this.x - opp.x) < 60) this.hitOpponent(opp, 15, this.facing * 5, -12); });
                 } else if (this.type === "SwordFighter") {
                     playSound("hit");
                 } else if (this.type === "Gunner") {
-                    // DYNAMISCHE CYBER PLASMA BEAM! (Dikke, flitsende stroom)
-                    playSound("laser");
-                    triggerShake(6, 12);
-                    lasers.push({ 
-                        x: this.facing === 1 ? this.x+this.width : 0, 
-                        y: this.y+8, 
-                        width: this.facing === 1 ? canvas.width : this.x, 
-                        height: 24, // Dikker gemaakt
-                        timer: 15, 
-                        owner: this 
-                    });
+                    playSound("laser"); triggerShake(6, 12);
+                    lasers.push({ type: "plasma", x: this.facing === 1 ? this.x+this.width : 0, y: this.y+8, width: this.facing === 1 ? canvas.width : this.x, height: 24, timer: 15, owner: this });
+                } else if (this.type === "Ninja") {
+                    // SHADOW TELEPORT
+                    createParticles(this.x, this.y, "purple", 15);
+                    this.x += this.facing * 140; 
+                    if (this.x < 20) this.x = 20; if (this.x > canvas.width - 50) this.x = canvas.width - 50;
+                    playSound("jump");
+                } else if (this.type === "Mage") {
+                    // LIGHTNING STRIKE
+                    triggerShake(8, 15);
+                    lasers.push({ type: "lightning", x: this.x - 10, y: 0, width: 60, height: canvas.height, timer: 20, owner: this });
+                } else if (this.type === "Viking") {
+                    // GROUND SLAM & SCHOKGOLVEN
+                    this.vy = 14; // Ram omlaag
+                    projectielen.push({ type: "wave", x: this.x, y: this.y + 20, vx: 5, damage: 10, knockback: 7, owner: this });
+                    projectielen.push({ type: "wave", x: this.x, y: this.y + 20, vx: -5, damage: 10, knockback: 7, owner: this });
+                } else if (this.type === "Alien") {
+                    // GRAVITY INVERSION FIELD
+                    lasers.push({ type: "gravity", x: this.x - 80, y: this.y - 80, width: 200, height: 200, timer: 40, owner: this });
+                } else if (this.type === "Robot") {
+                    // SELF-DESTRUCT SHIELD
+                    lasers.push({ type: "explosion", x: this.x - 50, y: this.y - 50, width: 140, height: 140, timer: 18, owner: this });
+                } else if (this.type === "Pirate") {
+                    // KANONS_KOGEL
+                    projectielen.push({ type: "cannonball", x: this.x, y: this.y + 10, vx: this.facing * 4.5, damage: 20, knockback: 12, owner: this });
+                } else if (this.type === "SonicBoy") {
+                    // BOOMBOX BLAST RINGEN
+                    lasers.push({ type: "sonic", x: this.x - 60, y: this.y - 20, width: 160, height: 100, timer: 30, owner: this });
                 }
             }
 
             hitOpponent(opp, dmg, kx, ky = -3.5 - (opp.percentage * 0.07)) {
+                if (opp.type === "Robot") kx *= 0.75; // Robot neemt minder knockback!
                 opp.percentage += dmg; playSound("hit");
                 opp.vx = kx; opp.vy = ky;
                 triggerShake(dmg > 10 ? 8 : 4, 8);
@@ -429,26 +510,14 @@
                 if (!target) return;
                 let reactionChance = p.aiLevel * 0.09;
 
-                if (p.y > mainStage.y + 20 && p.jumpsLeft > 0 && Math.random() < reactionChance) {
-                    p.jump(); p.vx = (p.x < canvas.width/2) ? 3.5 : -3.5;
-                    return;
-                }
-
-                if (p.aiLevel >= 6 && minDist < 70 && target.attackTimer > 10 && Math.random() < (p.aiLevel * 0.05)) {
-                    if (p.isGrounded) p.isShielding = true; 
-                    else p.triggerAirDodge(p.x > target.x ? 1 : -1);
-                    return;
-                } else { p.isShielding = false; }
+                if (p.y > mainStage.y + 20 && p.jumpsLeft > 0 && Math.random() < reactionChance) { p.jump(); p.vx = (p.x < canvas.width/2) ? 3.5 : -3.5; return; }
 
                 if (!p.isShielding && p.airDodgeTimer <= 10 && Math.random() < reactionChance) {
                     if (p.x < target.x - 30) p.vx = 2.2 + (p.aiLevel * 0.15);
                     else if (p.x > target.x + 30) p.vx = -(2.2 + (p.aiLevel * 0.15));
-                    if (target.y < p.y - 30 && Math.random() < 0.05) p.jump();
                 }
 
                 if (minDist < 60 && Math.random() < (p.aiLevel * 0.02)) {
-                    if (Math.random() < 0.3) p.special(); else p.attack();
-                } else if (p.type === "Gunner" && minDist < 280 && Math.random() < (p.aiLevel * 0.01)) {
                     if (Math.random() < 0.4) p.special(); else p.attack();
                 }
             });
@@ -458,10 +527,9 @@
             spelers.forEach(p => {
                 if (!p.isActive || p.type !== "SwordFighter" || p.specialTimer <= 0) return;
                 spelers.forEach(opp => {
-                    if (opp === p || !opp.isActive || opp.airDodgeTimer > 10 || (p.team && opp.team === p.team)) return;
+                    if (opp === p || !opp.isActive || (p.team && opp.team === p.team)) return;
                     if (Math.abs((p.x + p.width/2) - (opp.x + opp.width/2)) < 55 && Math.abs(p.y - opp.y) < 45) {
-                        if (opp.isShielding) opp.shieldHealth -= 0.4;
-                        else { opp.percentage += 0.5; opp.vx = p.facing * 3; opp.vy = -1.5; }
+                        opp.percentage += 0.4; opp.vx = p.facing * 2.5;
                     }
                 });
             });
@@ -469,21 +537,16 @@
             for (let i = lasers.length - 1; i >= 0; i--) {
                 let l = lasers[i]; l.timer--;
                 
-                // Activeer plasma-deeltjes om de beam heen!
-                if (Math.random() < 0.5) {
-                    let rx = l.x + Math.random() * l.width;
-                    createParticles(rx - cameraOffset*0.3, l.y + Math.random()*l.height, "#00ffff", 1);
-                }
-
-                if (l.timer === 8) {
-                    spelers.forEach(target => {
-                        if (!target.isActive || target === l.owner || (l.owner.team && target.team === l.owner.team)) return;
-                        if (target.x + target.width > l.x && target.x < l.x + l.width && target.y + target.height > l.y && target.y < l.y + l.height) {
-                            if (target.isShielding) { target.shieldHealth -= 10; }
-                            else { l.owner.hitOpponent(target, 12, l.owner.facing * 5.5); }
+                spelers.forEach(target => {
+                    if (!target.isActive || target === l.owner || (l.owner.team && target.team === l.owner.team)) return;
+                    if (target.x + target.width > l.x && target.x < l.x + l.width && target.y + target.height > l.y && target.y < l.y + l.height) {
+                        if (l.type === "gravity") {
+                            target.gravityFieldActive = true;
+                        } else if (l.timer === 6) {
+                            l.owner.hitOpponent(target, l.type === "lightning" ? 16 : 9, l.owner.facing * 6);
                         }
-                    });
-                }
+                    }
+                });
                 if (l.timer <= 0) lasers.splice(i, 1);
             }
         }
@@ -491,47 +554,42 @@
         function updateProjectiles() {
             for (let i = projectielen.length - 1; i >= 0; i--) {
                 let proj = projectielen[i]; proj.x += proj.vx;
-                ctx.fillStyle = "cyan"; ctx.fillRect(proj.x - cameraOffset*0.3, proj.y, 14, 5);
+                
+                // Render per type projectiel
+                ctx.save();
+                if (proj.type === "shuriken") { ctx.fillStyle = "purple"; ctx.fillRect(proj.x - cameraOffset*0.3, proj.y, 10, 10); }
+                else if (proj.type === "fireball") { ctx.fillStyle = "orange"; ctx.beginPath(); ctx.arc(proj.x - cameraOffset*0.3, proj.y, 8, 0, Math.PI*2); ctx.fill(); }
+                else if (proj.type === "cannonball") { ctx.fillStyle = "black"; ctx.beginPath(); ctx.arc(proj.x - cameraOffset*0.3, proj.y, 12, 0, Math.PI*2); ctx.fill(); }
+                else if (proj.type === "wave") { ctx.fillStyle = "yellow"; ctx.fillRect(proj.x - cameraOffset*0.3, proj.y, 16, 30); }
+                else { ctx.fillStyle = "cyan"; ctx.fillRect(proj.x - cameraOffset*0.3, proj.y, 14, 5); }
+                ctx.restore();
 
                 spelers.forEach(target => {
                     if (!target.isActive || target === proj.owner || (proj.owner.team && target.team === proj.owner.team)) return;
                     if (proj.x > target.x && proj.x < target.x + target.width && proj.y > target.y && proj.y < target.y + target.height) {
-                        if (target.isShielding) { target.shieldHealth -= 4; playSound("block"); }
-                        else { proj.owner.hitOpponent(target, proj.damage, (proj.vx > 0 ? 1 : -1) * proj.knockback); }
+                        proj.owner.hitOpponent(target, proj.damage, (proj.vx > 0 ? 1 : -1) * proj.knockback);
                         projectielen.splice(i, 1);
                     }
                 });
 
-                if (proj.x < -50 || proj.x > canvas.width + 50) projectielen.splice(i, 1);
+                if (proj.x < -100 || proj.x > canvas.width + 100) projectielen.splice(i, 1);
             }
         }
 
         function checkRingOuts() {
             spelers.forEach(p => {
                 if (!p.isActive) return;
-                
                 if (p.y > canvas.height || p.x < 0 || p.x > canvas.width || p.y < -40) {
                     let bx = Math.max(10, Math.min(canvas.width - 50, p.x - cameraOffset*0.3));
                     let isVertical = (p.y > canvas.height || p.y < -40);
                     
-                    blastEffects.push({
-                        x: isVertical ? bx : (p.x < 0 ? 0 : canvas.width - 40),
-                        y: 0,
-                        width: isVertical ? 45 : canvas.width,
-                        height: isVertical ? canvas.height : 45,
-                        color: p.color,
-                        timer: 20
-                    });
-
+                    blastEffects.push({ x: isVertical ? bx : (p.x < 0 ? 0 : canvas.width - 40), y: 0, width: isVertical ? 45 : canvas.width, height: isVertical ? canvas.height : 45, color: p.color, timer: 20 });
                     createParticles(p.x + p.width/2 - cameraOffset*0.3, Math.max(0, Math.min(canvas.height, p.y)), p.color, 30);
-                    triggerShake(12, 18);
-                    p.respawn();
+                    triggerShake(12, 18); p.respawn();
                 }
             });
 
-            let levendeTeams = new Set();
-            let actieveSpelers = spelers.filter(p => p.isActive);
-
+            let levendeTeams = new Set(); let actieveSpelers = spelers.filter(p => p.isActive);
             if (matchMode === "2v2") {
                 actieveSpelers.forEach(p => levendeTeams.add(p.team));
                 if (levendeTeams.size <= 1) { gameState = "GAMEOVER"; showVictoryScreen(Array.from(levendeTeams)[0]); }
@@ -542,15 +600,11 @@
 
         function showVictoryScreen(winnaar) {
             document.getElementById("victoryScreen").style.display = "flex";
-            let sub = document.getElementById("victorySub");
-            sub.innerText = matchMode === "2v2" ? `Team ${winnaar} wint de strijd!` : `${winnaar} rekent iedereen af!`;
+            document.getElementById("victorySub").innerText = matchMode === "2v2" ? `Team ${winnaar} wint de strijd!` : `${winnaar} rekent iedereen af!`;
         }
 
         function startScherm() {
-            matchMode = document.getElementById("matchMode").value;
-            gameState = "PLAYING";
-            blastEffects = [];
-
+            matchMode = document.getElementById("matchMode").value; gameState = "PLAYING"; blastEffects = [];
             let stageName = document.getElementById("stageSelect").value; softPlatforms = [];
             if (stageName === "Battlefield") {
                 mainStage = { x: 180, y: 350, width: 440, height: 25, depth: 35 }; softPlatforms.push({ x: 230, y: 240, width: 120 }, { x: 450, y: 240, width: 120 });
@@ -559,95 +613,60 @@
             } else { mainStage = { x: 280, y: 350, width: 240, height: 25, depth: 30 }; }
 
             spelers[0].reset(document.getElementById("p1Char").value, false, 3, matchMode);
-            
-            let p2Cpu = document.getElementById("p2Control").value === "CPU";
-            spelers[1].reset(document.getElementById("p2Char").value, p2Cpu, document.getElementById("p2Level").value, matchMode);
+            spelers[1].reset(document.getElementById("p2Char").value, document.getElementById("p2Control").value === "CPU", document.getElementById("p2Level").value, matchMode);
 
-            let p3Actief = document.getElementById("p3Control").value;
-            if(p3Actief !== "OFF") { spelers[2].reset(document.getElementById("p3Char").value, true, document.getElementById("p3Level").value, matchMode); } else { spelers[2].isActive = false; }
+            if(document.getElementById("p3Control").value !== "OFF") spelers[2].reset(document.getElementById("p3Char").value, true, document.getElementById("p3Level").value, matchMode); else spelers[2].isActive = false;
+            if(document.getElementById("p4Control").value !== "OFF") spelers[3].reset(document.getElementById("p4Char").value, true, document.getElementById("p4Level").value, matchMode); else spelers[3].isActive = false;
 
-            let p4Actief = document.getElementById("p4Control").value;
-            if(p4Actief !== "OFF") { spelers[3].reset(document.getElementById("p4Char").value, true, document.getElementById("p4Level").value, matchMode); } else { spelers[3].isActive = false; }
-
-            document.getElementById("menu").style.display = "none";
-            document.getElementById("victoryScreen").style.display = "none";
+            document.getElementById("menu").style.display = "none"; document.getElementById("victoryScreen").style.display = "none";
             canvas.style.display = "block"; document.getElementById("ui").style.display = "flex";
-            
             gameLoop();
         }
 
         function gameLoop() {
             if (gameState !== "PLAYING") return;
 
-            handleInput(); updateCPUs();
-            spelers.forEach(p => p.update());
-            checkRingOuts();
+            handleInput(); updateCPUs(); spelers.forEach(p => p.update()); checkRingOuts();
 
             let levendeSpelers = spelers.filter(s => s.isActive);
             if (levendeSpelers.length > 0) {
-                let mX = levendeSpelers.reduce((sum, s) => sum + s.x, 0) / levendeSpelers.length;
-                cameraOffset = (mX - canvas.width / 2) * 0.8;
+                cameraOffset = ((levendeSpelers.reduce((sum, s) => sum + s.x, 0) / levendeSpelers.length) - canvas.width / 2) * 0.8;
             }
 
             ctx.save();
             if (shakeTimer > 0) { ctx.translate((Math.random()-0.5)*shakeIntensity, (Math.random()-0.5)*shakeIntensity); shakeTimer--; }
 
-            let skyGrad = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            skyGrad.addColorStop(0, "#060610"); skyGrad.addColorStop(0.5, "#111124"); skyGrad.addColorStop(1, "#1c1830");
+            let skyGrad = ctx.createLinearGradient(0, 0, 0, canvas.height); skyGrad.addColorStop(0, "#060610"); skyGrad.addColorStop(1, "#1c1830");
             ctx.fillStyle = skyGrad; ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            ctx.fillStyle = "#0d0d1a"; ctx.fillRect(40 - cameraOffset * 0.1, 180, 150, 320); ctx.fillRect(630 - cameraOffset * 0.1, 150, 160, 350);
-            ctx.fillStyle = "#141426"; ctx.fillRect(170 - cameraOffset * 0.2, 230, 180, 270); ctx.fillRect(420 - cameraOffset * 0.2, 200, 200, 300);
-
             spelers.forEach(p => p.drawShadow());
-
             let sx = mainStage.x - cameraOffset * 0.3;
             ctx.fillStyle = "#2c2c3e"; ctx.fillRect(sx, mainStage.y, mainStage.width, mainStage.height);
             ctx.fillStyle = "#ffaa00"; ctx.fillRect(sx, mainStage.y, mainStage.width, 3);
 
-            ctx.fillStyle = "#1e1e2b"; ctx.beginPath(); 
-            ctx.moveTo(sx, mainStage.y + mainStage.height);
-            ctx.lineTo(sx + 20, mainStage.y + mainStage.height + mainStage.depth);
-            ctx.lineTo(sx + mainStage.width - 20, mainStage.y + mainStage.height + mainStage.depth);
-            ctx.lineTo(sx + mainStage.width, mainStage.y + mainStage.height); 
-            ctx.closePath(); ctx.fill();
-
             softPlatforms.forEach(p => { 
-                let px = p.x - cameraOffset * 0.3;
-                ctx.fillStyle = "rgba(60,60,90,0.8)"; ctx.fillRect(px, p.y, p.width, 6); 
-                ctx.fillStyle = "#00ffcc"; ctx.fillRect(px, p.y, p.width, 1.5);
+                let px = p.x - cameraOffset * 0.3; ctx.fillStyle = "rgba(60,60,90,0.8)"; ctx.fillRect(px, p.y, p.width, 6); 
             });
 
-            handleContinuousHits()
-            spelers.forEach(p => p.draw());
-            updateProjectiles();
+            handleContinuousHits(); spelers.forEach(p => p.draw()); updateProjectiles();
 
-            // RENDERING VAN CYBER PLASMA BEAMS
+            // RENDER COOLE OM-MODUS SPECIALS / LASERS
             lasers.forEach(l => { 
                 ctx.save();
-                ctx.shadowBlur = 15; ctx.shadowColor = "#00ffff";
-                // Kern van de laser
-                ctx.fillStyle = "white"; 
-                ctx.fillRect(l.x - cameraOffset*0.3, l.y + 4, l.width, l.height - 8); 
-                // Buitenste plasma gloed
-                ctx.fillStyle = "rgba(0, 255, 255, 0.4)"; 
-                ctx.fillRect(l.x - cameraOffset*0.3, l.y, l.width, l.height); 
+                if (l.type === "plasma") { ctx.shadowBlur = 15; ctx.shadowColor = "#00ffff"; ctx.fillStyle = "rgba(0, 255, 255, 0.4)"; ctx.fillRect(l.x - cameraOffset*0.3, l.y, l.width, l.height); }
+                else if (l.type === "lightning") { ctx.shadowBlur = 20; ctx.shadowColor = "yellow"; ctx.fillStyle = "white"; ctx.fillRect(l.x - cameraOffset*0.3, l.y, l.width, l.height); }
+                else if (l.type === "gravity") { ctx.fillStyle = "rgba(191, 85, 236, 0.2)"; ctx.fillRect(l.x - cameraOffset*0.3, l.y, l.width, l.height); }
+                else if (l.type === "explosion") { ctx.fillStyle = "rgba(255, 69, 0, 0.5)"; ctx.fillRect(l.x - cameraOffset*0.3, l.y, l.width, l.height); }
+                else if (l.type === "sonic") { ctx.strokeStyle = "#ff007f"; ctx.lineWidth = 4; ctx.strokeRect(l.x - cameraOffset*0.3, l.y, l.width, l.height); }
                 ctx.restore();
             });
 
+            // SMASH BLAST STREPEN RENDERING
             for (let i = blastEffects.length - 1; i >= 0; i--) {
-                let b = blastEffects[i];
-                ctx.save();
-                ctx.shadowBlur = 25; ctx.shadowColor = b.color;
-                ctx.fillStyle = "white"; ctx.fillRect(b.x, b.y, b.width, b.height);
-                ctx.fillStyle = b.color; ctx.globalAlpha = 0.4;
-                ctx.fillRect(b.x - 8, b.y, b.width + 16, b.height);
-                ctx.restore();
-                
-                b.timer--;
-                if (b.timer <= 0) blastEffects.splice(i, 1);
+                let b = blastEffects[i]; ctx.save(); ctx.shadowBlur = 25; ctx.shadowColor = b.color;
+                ctx.fillStyle = "white"; ctx.fillRect(b.x, b.y, b.width, b.height); ctx.restore();
+                b.timer--; if (b.timer <= 0) blastEffects.splice(i, 1);
             }
-            ctx.globalAlpha = 1.0;
 
             for(let i=particles.length-1; i>=0; i--) {
                 let p = particles[i]; p.x += p.vx; p.y += p.vy; p.alpha -= 0.04;
