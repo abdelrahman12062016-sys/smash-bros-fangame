@@ -40,15 +40,15 @@
         #ui { display: none; justify-content: space-between; width: 800px; margin-top: 10px; }
         .p-ui-box { padding: 6px 12px; border-radius: 6px; background: rgba(0,0,0,0.6); width: 180px; text-align: center; font-size: 14px; font-weight: bold; border-bottom: 4px solid #fff; }
         .stocks { color: #ffaa00; font-size: 12px; margin-top: 2px; }
-        #controllerStatus { color: #00ffcc; font-size: 13px; font-weight: bold; margin-bottom: 10px; display: none; text-shadow: 0 0 10px rgba(0,255,204,0.4); }
+        #controllerStatus { color: #00ffcc; font-size: 13px; font-weight: bold; margin-bottom: 10px; text-shadow: 0 0 10px rgba(0,255,204,0.4); }
     </style>
 </head>
 <body>
 
     <div id="menu">
         <h1 style="font-size: 30px; margin: 0 0 5px 0; color: #ff9900; text-shadow: 0 0 15px rgba(255,153,0,0.4);">SUPER SMASH BROWSER</h1>
-        <p style="color: #ff4500; margin: 0 0 5px 0; font-weight: bold; font-size: 13px;">🔥 ALL-OUT ROSTER MODUS ACTIVATED 🔥</p>
-        <div id="controllerStatus">🎮 CONTROLLER VERBONDEN (BESTUUR P1 HIERMEE!)</div>
+        <p style="color: #ff4500; margin: 0 0 5px 0; font-weight: bold; font-size: 13px;">🔥 4-CONTROLLER MODUS ACTIVATED 🔥</p>
+        <div id="controllerStatus">🎮 Aantal controllers verbonden: 0</div>
         
         <div style="margin-bottom: 15px; background: #131324; padding: 10px; border-radius: 8px; border: 1px solid #2a2a40;">
             <label><b>Spelmodus:</b> </label>
@@ -79,7 +79,10 @@
                     <option value="Pirate">Pirate 🏴‍☠️</option>
                     <option value="SonicBoy">Sonic Boy 🎧</option>
                 </select>
-                <select id="p1Control" disabled><option>Toetsenbord (A/D/W/F/G) of Gamepad</option></select>
+                <select id="p1Control">
+                    <option value="Gamepad">Controller 1 🎮</option>
+                    <option value="Human">Toetsenbord (A/D/W/F/G)</option>
+                </select>
             </div>
             <div class="p-box" style="border-top: 4px solid #4444ff;">
                 <h4 style="margin:2px 0;">Speler 2</h4>
@@ -95,7 +98,11 @@
                     <option value="Pirate">Pirate 🏴‍☠️</option>
                     <option value="SonicBoy">Sonic Boy 🎧</option>
                 </select>
-                <select id="p2Control"><option value="CPU">CPU (Computer)</option><option value="Human">Mens (◄/►/▲/./\/)</option></select>
+                <select id="p2Control">
+                    <option value="CPU">CPU (Computer)</option>
+                    <option value="Gamepad">Controller 2 🎮</option>
+                    <option value="Human">Mens (◄/►/▲/./\/)</option>
+                </select>
                 <select id="p2Level"><option value="3">AI Level 3</option><option value="1">AI Level 1</option><option value="6">AI Level 6</option><option value="9">AI Level 9 🔥</option></select>
             </div>
             <div class="p-box" style="border-top: 4px solid #22cc22;">
@@ -112,7 +119,11 @@
                     <option value="Pirate">Pirate 🏴‍☠️</option>
                     <option value="SonicBoy">Sonic Boy 🎧</option>
                 </select>
-                <select id="p3Control"><option value="CPU">CPU (Computer)</option><option value="OFF">UIT (Geen)</option></select>
+                <select id="p3Control">
+                    <option value="CPU">CPU (Computer)</option>
+                    <option value="Gamepad">Controller 3 🎮</option>
+                    <option value="OFF">UIT (Geen)</option>
+                </select>
                 <select id="p3Level"><option value="3">AI Level 3</option><option value="1">AI Level 1</option><option value="6">AI Level 6</option><option value="9">AI Level 9 🔥</option></select>
             </div>
             <div class="p-box" style="border-top: 4px solid #eeee22;">
@@ -129,7 +140,11 @@
                     <option value="Pirate">Pirate 🏴‍☠️</option>
                     <option value="SonicBoy">Sonic Boy 🎧</option>
                 </select>
-                <select id="p4Control"><option value="CPU">CPU (Computer)</option><option value="OFF">UIT (Geen)</option></select>
+                <select id="p4Control">
+                    <option value="CPU">CPU (Computer)</option>
+                    <option value="Gamepad">Controller 4 🎮</option>
+                    <option value="OFF">UIT (Geen)</option>
+                </select>
                 <select id="p4Level"><option value="3">AI Level 3</option><option value="1">AI Level 1</option><option value="6">AI Level 6</option><option value="9">AI Level 9 🔥</option></select>
             </div>
         </div>
@@ -174,16 +189,15 @@
         let shakeTimer = 0, shakeIntensity = 0, cameraOffset = 0;
         let mainStage = { x: 150, y: 340, width: 500, height: 25, depth: 35 }, softPlatforms = [];
 
-        // Gamepad tracking variabele
-        let controllerIndex = null;
-        window.addEventListener("gamepadconnected", (e) => {
-            controllerIndex = e.gamepad.index;
-            document.getElementById("controllerStatus").style.display = "block";
-        });
-        window.addEventListener("gamepaddisconnected", () => {
-            controllerIndex = null;
-            document.getElementById("controllerStatus").style.display = "none";
-        });
+        // Update status aangesloten controllers live
+        function updateGamepadStatus() {
+            let gps = navigator.getGamepads ? navigator.getGamepads() : [];
+            let count = 0;
+            for (let i = 0; i < gps.length; i++) { if (gps[i]) count++; }
+            document.getElementById("controllerStatus").innerText = `🎮 Aantal controllers verbonden: ${count}`;
+        }
+        window.addEventListener("gamepadconnected", updateGamepadStatus);
+        window.addEventListener("gamepaddisconnected", updateGamepadStatus);
 
         const classStats = {
             Brawler:      { weaponColor: "#ff4500", damage: 15, range: 45, knockback: 8.5 },
@@ -205,30 +219,33 @@
             { id: 4, baseColor: "#eeee22", startX: 480, name: "P4" }
         ];
 
-        // Button press debouncer trackers voor controllers
-        let prevJumpPressed = false;
-        let prevAttackPressed = false;
-        let prevSpecialPressed = false;
+        // Onafhankelijke knoppen trackers voor de 4 controllers (Debouncers)
+        let prevGamepadButtons = [
+            { jump: false, attack: false, special: false },
+            { jump: false, attack: false, special: false },
+            { jump: false, attack: false, special: false },
+            { jump: false, attack: false, special: false }
+        ];
 
         class Player {
-            constructor(meta, controls) {
+            constructor(meta, keyboardControls) {
                 this.id = meta.id; this.startX = meta.startX; this.startY = 180;
                 this.x = this.startX; this.y = this.startY; this.name = meta.name;
                 this.width = 38; this.height = 56;
                 this.type = "Brawler"; this.color = meta.baseColor; this.team = null;
                 this.vx = 0; this.vy = 0; this.percentage = 0; this.stocks = 3;
                 this.isGrounded = false; this.facing = this.id % 2 === 1 ? 1 : -1;
-                this.controls = controls; this.isCPU = true; this.aiLevel = 3; this.isActive = true;
+                this.kbControls = keyboardControls; this.controlMode = "CPU"; this.aiLevel = 3; this.isActive = true;
                 
                 this.attackTimer = 0; this.specialTimer = 0; this.animFrame = 0;
                 this.respawnTimer = 0; this.isShielding = false; this.shieldHealth = 40; this.jumpsLeft = 2; this.airDodgeTimer = 0;
                 this.gravityFieldActive = false;
             }
 
-            reset(type, isCPU, aiLevel, teamMode) {
+            reset(type, controlMode, aiLevel, teamMode) {
                 this.x = this.startX; this.y = this.startY; this.vx = 0; this.vy = 0;
-                this.percentage = 0; this.stocks = 3; this.isActive = true;
-                this.type = type; this.isCPU = isCPU; this.aiLevel = parseInt(aiLevel);
+                this.percentage = 0; this.stocks = 3; this.isActive = (controlMode !== "OFF");
+                this.type = type; this.controlMode = controlMode; this.aiLevel = parseInt(aiLevel);
                 this.attackTimer = 0; this.specialTimer = 0; this.animFrame = 0;
                 this.isShielding = false; this.shieldHealth = 40; this.jumpsLeft = 2; this.airDodgeTimer = 0;
                 this.gravityFieldActive = false;
@@ -449,6 +466,7 @@
             }
         }
 
+        // 4 Spelers initialiseren
         spelers = [
             new Player(playerMeta[0], { left: "KeyA", right: "KeyD", up: "KeyW", attack: "KeyF", special: "KeyG", shield: "ShiftLeft" }),
             new Player(playerMeta[1], { left: "ArrowLeft", right: "ArrowRight", up: "ArrowUp", attack: "Period", special: "Slash", shield: "ArrowDown" }),
@@ -467,260 +485,173 @@
             }
         }
 
-        function handleGamepadInput() {
-            if (controllerIndex === null) return;
-            let gp = navigator.getGamepads()[controllerIndex];
-            if (!gp) return;
+        // DE INTERNE LOOP DIE ALLE 4 CONTROLLERS APART AFLEEST
+        function handleGamepadInputs() {
+            let gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
+            
+            for (let i = 0; i < 4; i++) {
+                let p = spelers[i];
+                if (!p.isActive || p.controlMode !== "Gamepad") continue;
 
-            let p1 = spelers[0];
-            if (!p1.isActive) return;
+                let gp = gamepads[i]; // Controller index 0 t/m 3 gekoppeld aan P1 t/m P4
+                if (!gp) continue;
 
-            // Schild (L2/R2 of L1/R1 triggers)
-            p1.isShielding = (gp.buttons[6].pressed || gp.buttons[7].pressed || gp.buttons[4].pressed || gp.buttons[5].pressed) && p1.isGrounded;
+                // Schild (Triggers & Bumpers L1/L2/R1/R2)
+                p.isShielding = (gp.buttons[4].pressed || gp.buttons[5].pressed || gp.buttons[6].pressed || gp.buttons[7].pressed) && p.isGrounded;
 
-            if (!p1.isShielding && p1.airDodgeTimer <= 10) {
-                // Stick beweging links / rechts
-                if (gp.axes[0] < -0.3 || gp.buttons[14].pressed) p1.vx = -4.5;
-                if (gp.axes[0] > 0.3 || gp.buttons[15].pressed) p1.vx = 4.5;
+                if (!p.isShielding && p.airDodgeTimer <= 10) {
+                    // Analoge stick & D-pad
+                    if (gp.axes[0] < -0.3 || gp.buttons[14].pressed) p.vx = -4.5;
+                    if (gp.axes[0] > 0.3 || gp.buttons[15].pressed) p.vx = 4.5;
 
-                // Knop A / Kruisje (onderste knop) = Springen
-                let jumpPressed = gp.buttons[0].pressed;
-                if (jumpPressed && !prevJumpPressed) { p1.jump(); }
-                prevJumpPressed = jumpPressed;
+                    // Springen (Kruisje / A-Knop)
+                    let jumpPressed = gp.buttons[0].pressed;
+                    if (jumpPressed && !prevGamepadButtons[i].jump) { p.jump(); }
+                    prevGamepadButtons[i].jump = jumpPressed;
+                }
+
+                // Normal Attack (Vierkantje / X-Knop)
+                let attackPressed = gp.buttons[2].pressed;
+                if (attackPressed && !prevGamepadButtons[i].attack) { p.attack(); }
+                prevGamepadButtons[i].attack = attackPressed;
+
+                // Special Attack (Driehoekje / Y-Knop)
+                let specialPressed = gp.buttons[3].pressed;
+                if (specialPressed && !prevGamepadButtons[i].special) { p.special(); }
+                prevGamepadButtons[i].special = specialPressed;
             }
-
-            // Knop X / Vierkantje (linker knop) = Attack
-            let attackPressed = gp.buttons[2].pressed;
-            if (attackPressed && !prevAttackPressed) { p1.attack(); }
-            prevAttackPressed = attackPressed;
-
-            // Knop Y / Driehoekje (bovenste knop) = Special
-            let specialPressed = gp.buttons[3].pressed;
-            if (specialPressed && !prevSpecialPressed) { p1.special(); }
-            prevSpecialPressed = specialPressed;
         }
 
         function handleInput() {
-            let p1 = spelers[0];
-            if (p1.isActive) {
-                p1.isShielding = keys[p1.controls.shield] && p1.isGrounded;
-                if (!p1.isShielding && p1.airDodgeTimer <= 10) {
-                    if (keys[p1.controls.left]) p1.vx = -4.5;
-                    if (keys[p1.controls.right]) p1.vx = 4.5;
-                    if (keys[p1.controls.up]) { p1.jump(); keys[p1.controls.up] = false; }
+            // Toetsenbord afhandeling
+            spelers.forEach(p => {
+                if (!p.isActive || p.controlMode !== "Human" || !p.kbControls) return;
+                p.isShielding = keys[p.kbControls.shield] && p.isGrounded;
+                if (!p.isShielding && p.airDodgeTimer <= 10) {
+                    if (keys[p.kbControls.left]) p.vx = -4.5;
+                    if (keys[p.kbControls.right]) p.vx = 4.5;
+                    if (keys[p.kbControls.up]) { p.jump(); keys[p.kbControls.up] = false; }
                 }
-                if (keys[p1.controls.attack]) { p1.attack(); keys[p1.controls.attack] = false; }
-                if (keys[p1.controls.special]) { p1.special(); keys[p1.controls.special] = false; }
-            }
+                if (keys[p.kbControls.attack]) { p.attack(); keys[p.kbControls.attack] = false; }
+                if (keys[p.kbControls.special]) { p.special(); keys[p.kbControls.special] = false; }
+            });
 
-            let p2 = spelers[1];
-            if (p2.isActive && !p2.isCPU) {
-                p2.isShielding = keys[p2.controls.shield] && p2.isGrounded;
-                if (!p2.isShielding && p2.airDodgeTimer <= 10) {
-                    if (keys[p2.controls.left]) p2.vx = -4.5;
-                    if (keys[p2.controls.right]) p2.vx = 4.5;
-                    if (keys[p2.controls.up]) { p2.jump(); keys[p2.controls.up] = false; }
-                }
-                if (keys[p2.controls.attack]) { p2.attack(); keys[p2.controls.attack] = false; }
-                if (keys[p2.controls.special]) { p2.special(); keys[p2.controls.special] = false; }
-            }
-
-            handleGamepadInput(); // Voeg de controller controls toe voor P1
+            // Roep de controller input loop aan voor gamepads
+            handleGamepadInputs();
         }
 
         function updateCPUs() {
             spelers.forEach(p => {
-                if (!p.isActive || !p.isCPU) return;
-
-                let target = null, minDist = 9999;
-                spelers.forEach(opp => {
-                    if (opp === p || !opp.isActive || (p.team && opp.team === p.team)) return;
-                    let d = Math.abs(p.x - opp.x);
-                    if (d < minDist) { minDist = d; target = opp; }
-                });
-
+                if (!p.isActive || p.controlMode !== "CPU") return;
+                let target = spelers.find(o => o !== p && o.isActive && !(p.team && o.team === p.team));
                 if (!target) return;
-                let reactionChance = p.aiLevel * 0.09;
 
-                if (p.y > mainStage.y + 20 && p.jumpsLeft > 0 && Math.random() < reactionChance) { p.jump(); p.vx = (p.x < canvas.width/2) ? 3.5 : -3.5; return; }
-
-                if (!p.isShielding && p.airDodgeTimer <= 10 && Math.random() < reactionChance) {
-                    if (p.x < target.x - 30) p.vx = 2.2 + (p.aiLevel * 0.15);
-                    else if (p.x > target.x + 30) p.vx = -(2.2 + (p.aiLevel * 0.15));
+                let dist = target.x - p.x;
+                if (Math.abs(dist) > 40) {
+                    p.vx = Math.sign(dist) * (1.2 + p.aiLevel * 0.3);
                 }
 
-                if (minDist < 60 && Math.random() < (p.aiLevel * 0.02)) {
-                    if (Math.random() < 0.4) p.special(); else p.attack();
+                if (target.y < p.y - 50 && p.isGrounded && Math.random() < 0.05 * p.aiLevel) p.jump();
+                if (Math.abs(dist) < 60 && Math.abs(p.y - target.y) < 50 && Math.random() < 0.07 * p.aiLevel) {
+                    if (Math.random() < 0.25) p.special(); else p.attack();
                 }
+                if (Math.abs(dist) < 50 && target.attackTimer > 0 && Math.random() < 0.06 * p.aiLevel) {
+                    p.isShielding = true;
+                } else if (Math.random() < 0.1) { p.isShielding = false; }
             });
         }
 
-        function handleContinuousHits() {
-            spelers.forEach(p => {
-                if (!p.isActive || p.type !== "SwordFighter" || p.specialTimer <= 0) return;
-                spelers.forEach(opp => {
-                    if (opp === p || !opp.isActive || (p.team && opp.team === p.team)) return;
-                    if (Math.abs((p.x + p.width/2) - (opp.x + opp.width/2)) < 55 && Math.abs(p.y - opp.y) < 45) {
-                        opp.percentage += 0.4; opp.vx = p.facing * 2.5;
-                    }
-                });
-            });
+        function gameLoop() {
+            if (gameState !== "GAME") return;
 
-            for (let i = lasers.length - 1; i >= 0; i--) {
-                let l = lasers[i]; l.timer--;
-                
-                spelers.forEach(target => {
-                    if (!target.isActive || target === l.owner || (l.owner.team && target.team === l.owner.team)) return;
-                    if (target.x + target.width > l.x && target.x < l.x + l.width && target.y + target.height > l.y && target.y < l.y + l.height) {
-                        if (l.type === "gravity") {
-                            target.gravityFieldActive = true;
-                        } else if (l.timer === 6) {
-                            l.owner.hitOpponent(target, l.type === "lightning" ? 16 : 9, l.owner.facing * 6);
-                        }
-                    }
-                });
-                if (l.timer <= 0) lasers.splice(i, 1);
-            }
-        }
+            handleInput();
+            updateCPUs();
 
-        function updateProjectiles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Camera shake berekenen
+            if (shakeTimer > 0) {
+                cameraOffset = (Math.random() - 0.5) * shakeIntensity;
+                shakeTimer--;
+            } else { cameraOffset = 0; }
+
+            // Projectielen updaten
             for (let i = projectielen.length - 1; i >= 0; i--) {
-                let proj = projectielen[i]; proj.x += proj.vx;
-                
-                ctx.save();
-                if (proj.type === "shuriken") { ctx.fillStyle = "purple"; ctx.fillRect(proj.x - cameraOffset*0.3, proj.y, 10, 10); }
-                else if (proj.type === "fireball") { ctx.fillStyle = "orange"; ctx.beginPath(); ctx.arc(proj.x - cameraOffset*0.3, proj.y, 8, 0, Math.PI*2); ctx.fill(); }
-                else if (proj.type === "cannonball") { ctx.fillStyle = "black"; ctx.beginPath(); ctx.arc(proj.x - cameraOffset*0.3, proj.y, 12, 0, Math.PI*2); ctx.fill(); }
-                else if (proj.type === "wave") { ctx.fillStyle = "yellow"; ctx.fillRect(proj.x - cameraOffset*0.3, proj.y, 16, 30); }
-                else { ctx.fillStyle = "cyan"; ctx.fillRect(proj.x - cameraOffset*0.3, proj.y, 14, 5); }
-                ctx.restore();
+                let proj = projectielen[i];
+                proj.x += proj.vx;
+                ctx.fillStyle = classStats[proj.owner.type].weaponColor;
+                ctx.fillRect(proj.x - cameraOffset*0.3, proj.y, 12, 12);
 
-                spelers.forEach(target => {
-                    if (!target.isActive || target === proj.owner || (proj.owner.team && target.team === proj.owner.team)) return;
-                    if (proj.x > target.x && proj.x < target.x + target.width && proj.y > target.y && proj.y < target.y + target.height) {
-                        proj.owner.hitOpponent(target, proj.damage, (proj.vx > 0 ? 1 : -1) * proj.knockback);
+                spelers.forEach(opp => {
+                    if (!opp.isActive || opp === proj.owner || (proj.owner.team && opp.team === proj.owner.team)) return;
+                    if (proj.x < opp.x + opp.width && proj.x + 12 > opp.x && proj.y < opp.y + opp.height && proj.y + 12 > opp.y) {
+                        proj.owner.hitOpponent(opp, proj.damage, Math.sign(proj.vx) * proj.knockback);
                         projectielen.splice(i, 1);
                     }
                 });
 
-                if (proj.x < -100 || proj.x > canvas.width + 100) projectielen.splice(i, 1);
+                if (proj.x < 0 || proj.x > canvas.width) projectielen.splice(i, 1);
             }
-        }
 
-        function checkRingOuts() {
+            // Spelers updaten & uittekenen
             spelers.forEach(p => {
                 if (!p.isActive) return;
-                if (p.y > canvas.height || p.x < 0 || p.x > canvas.width || p.y < -40) {
-                    let bx = Math.max(10, Math.min(canvas.width - 50, p.x - cameraOffset*0.3));
-                    let isVertical = (p.y > canvas.height || p.y < -40);
-                    
-                    blastEffects.push({ x: isVertical ? bx : (p.x < 0 ? 0 : canvas.width - 40), y: 0, width: isVertical ? 45 : canvas.width, height: isVertical ? canvas.height : 45, color: p.color, timer: 20 });
-                    createParticles(p.x + p.width/2 - cameraOffset*0.3, Math.max(0, Math.min(canvas.height, p.y)), p.color, 30);
-                    triggerShake(12, 18); p.respawn();
+                p.update();
+                p.drawShadow();
+                p.draw();
+
+                if (p.x < -100 || p.x > canvas.width + 100 || p.y < -100 || p.y > canvas.height + 100) {
+                    p.respawn();
+                }
+
+                let uiBox = document.getElementById(`ui-${p.name.toLowerCase()}`);
+                if (p.isActive) {
+                    uiBox.innerHTML = `${p.name}: ${p.percentage}% <div class="stocks">${"⭐".repeat(p.stocks)}</div>`;
+                } else {
+                    uiBox.innerHTML = `${p.name}: K.O.`;
                 }
             });
 
-            let levendeTeams = new Set(); let actieveSpelers = spelers.filter(p => p.isActive);
-            if (matchMode === "2v2") {
-                actieveSpelers.forEach(p => levendeTeams.add(p.team));
-                if (levendeTeams.size <= 1) { gameState = "GAMEOVER"; showVictoryScreen(Array.from(levendeTeams)[0]); }
-            } else {
-                if (actieveSpelers.length <= 1) { gameState = "GAMEOVER"; showVictoryScreen(actieveSpelers[0] ? actieveSpelers[0].name : "Niemand"); }
+            // Hoofdstage tekenen
+            ctx.fillStyle = "#1e1e38";
+            ctx.fillRect(mainStage.x - cameraOffset * 0.3, mainStage.y, mainStage.width, mainStage.height);
+
+            // Winnaar controleren
+            let actieven = spelers.filter(p => p.isActive);
+            if (actieven.length <= 1) {
+                gameState = "MENU";
+                document.getElementById("gameCanvas").style.display = "none";
+                document.getElementById("ui").style.display = "none";
+                document.getElementById("victoryScreen").style.display = "flex";
+                document.getElementById("victoryTitle").innerText = actieven.length === 1 ? `${actieven[0].name} WINT!` : "GELIJKSPEL!";
             }
-        }
-
-        function showVictoryScreen(winnaar) {
-            document.getElementById("victoryScreen").style.display = "flex";
-            document.getElementById("victorySub").innerText = matchMode === "2v2" ? `Team ${winnaar} wint de strijd!` : `${winnaar} rekent iedereen af!`;
-        }
-
-        function startScherm() {
-            matchMode = document.getElementById("matchMode").value; gameState = "PLAYING"; blastEffects = [];
-            let stageName = document.getElementById("stageSelect").value; softPlatforms = [];
-            if (stageName === "Battlefield") {
-                mainStage = { x: 180, y: 350, width: 440, height: 25, depth: 35 }; softPlatforms.push({ x: 230, y: 240, width: 120 }, { x: 450, y: 240, width: 120 });
-            } else if (stageName === "FinalDestination") {
-                mainStage = { x: 100, y: 360, width: 600, height: 25, depth: 40 };
-            } else { mainStage = { x: 280, y: 350, width: 240, height: 25, depth: 30 }; }
-
-            spelers[0].reset(document.getElementById("p1Char").value, false, 3, matchMode);
-            spelers[1].reset(document.getElementById("p2Char").value, document.getElementById("p2Control").value === "CPU", document.getElementById("p2Level").value, matchMode);
-
-            if(document.getElementById("p3Control").value !== "OFF") spelers[2].reset(document.getElementById("p3Char").value, true, document.getElementById("p3Level").value, matchMode); else spelers[2].isActive = false;
-            if(document.getElementById("p4Control").value !== "OFF") spelers[3].reset(document.getElementById("p4Char").value, true, document.getElementById("p4Level").value, matchMode); else spelers[3].isActive = false;
-
-            document.getElementById("menu").style.display = "none"; document.getElementById("victoryScreen").style.display = "none";
-            canvas.style.display = "block"; document.getElementById("ui").style.display = "flex";
-            gameLoop();
-        }
-
-        function gameLoop() {
-            if (gameState !== "PLAYING") return;
-
-            handleInput(); updateCPUs(); spelers.forEach(p => p.update()); checkRingOuts();
-
-            let levendeSpelers = spelers.filter(s => s.isActive);
-            if (levendeSpelers.length > 0) {
-                cameraOffset = ((levendeSpelers.reduce((sum, s) => sum + s.x, 0) / levendeSpelers.length) - canvas.width / 2) * 0.8;
-            }
-
-            ctx.save();
-            if (shakeTimer > 0) { ctx.translate((Math.random()-0.5)*shakeIntensity, (Math.random()-0.5)*shakeIntensity); shakeTimer--; }
-
-            let skyGrad = ctx.createLinearGradient(0, 0, 0, canvas.height); skyGrad.addColorStop(0, "#060610"); skyGrad.addColorStop(1, "#1c1830");
-            ctx.fillStyle = skyGrad; ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            spelers.forEach(p => p.drawShadow());
-            let sx = mainStage.x - cameraOffset * 0.3;
-            ctx.fillStyle = "#2c2c3e"; ctx.fillRect(sx, mainStage.y, mainStage.width, mainStage.height);
-            ctx.fillStyle = "#ffaa00"; ctx.fillRect(sx, mainStage.y, mainStage.width, 3);
-
-            softPlatforms.forEach(p => { 
-                let px = p.x - cameraOffset * 0.3; ctx.fillStyle = "rgba(60,60,90,0.8)"; ctx.fillRect(px, p.y, p.width, 6); 
-            });
-
-            handleContinuousHits(); spelers.forEach(p => p.draw()); updateProjectiles();
-
-            lasers.forEach(l => { 
-                ctx.save();
-                if (l.type === "plasma") { ctx.shadowBlur = 15; ctx.shadowColor = "#00ffff"; ctx.fillStyle = "rgba(0, 255, 255, 0.4)"; ctx.fillRect(l.x - cameraOffset*0.3, l.y, l.width, l.height); }
-                else if (l.type === "lightning") { ctx.shadowBlur = 20; ctx.shadowColor = "yellow"; ctx.fillStyle = "white"; ctx.fillRect(l.x - cameraOffset*0.3, l.y, l.width, l.height); }
-                else if (l.type === "gravity") { ctx.fillStyle = "rgba(191, 85, 236, 0.2)"; ctx.fillRect(l.x - cameraOffset*0.3, l.y, l.width, l.height); }
-                else if (l.type === "explosion") { ctx.fillStyle = "rgba(255, 69, 0, 0.5)"; ctx.fillRect(l.x - cameraOffset*0.3, l.y, l.width, l.height); }
-                else if (l.type === "sonic") { ctx.strokeStyle = "#ff007f"; ctx.lineWidth = 4; ctx.strokeRect(l.x - cameraOffset*0.3, l.y, l.width, l.height); }
-                ctx.restore();
-            });
-
-            for (let i = blastEffects.length - 1; i >= 0; i--) {
-                let b = blastEffects[i]; ctx.save(); ctx.shadowBlur = 25; ctx.shadowColor = b.color;
-                ctx.fillStyle = "white"; ctx.fillRect(b.x, b.y, b.width, b.height); ctx.restore();
-                b.timer--; if (b.timer <= 0) blastEffects.splice(i, 1);
-            }
-
-            for(let i=particles.length-1; i>=0; i--) {
-                let p = particles[i]; p.x += p.vx; p.y += p.vy; p.alpha -= 0.04;
-                ctx.fillStyle = p.color; ctx.globalAlpha = p.alpha; ctx.fillRect(p.x, p.y, p.size, p.size);
-                if (p.alpha <= 0) particles.splice(i, 1);
-            }
-            ctx.globalAlpha = 1.0; ctx.restore();
-
-            spelers.forEach((p, idx) => {
-                let uibox = document.getElementById(`ui-p${idx+1}`);
-                if (p.isActive) {
-                    uibox.style.display = "block"; uibox.style.borderColor = p.color;
-                    uibox.innerHTML = `${p.name} (${p.type}): ${Math.floor(p.percentage)}% <div class="stocks">${"⭐".repeat(p.stocks)}</div>`;
-                } else { uibox.innerHTML = `${p.name}: K.O.`; uibox.style.borderColor = "#333"; }
-            });
 
             requestAnimationFrame(gameLoop);
         }
 
-        document.getElementById("btnStartGame").addEventListener("click", startScherm);
-        document.getElementById("btnBackToMenu").addEventListener("click", () => {
-            gameState = "MENU"; document.getElementById("victoryScreen").style.display = "none";
-            canvas.style.display = "none"; document.getElementById("ui").style.display = "none";
-            document.getElementById("menu").style.display = "flex";
+        document.getElementById("btnStartGame").addEventListener("click", () => {
+            initAudio();
+            matchMode = document.getElementById("matchMode").value;
+            
+            spelers[0].reset(document.getElementById("p1Char").value, document.getElementById("p1Control").value, 3, matchMode);
+            spelers[1].reset(document.getElementById("p2Char").value, document.getElementById("p2Control").value, document.getElementById("p2Level").value, matchMode);
+            spelers[2].reset(document.getElementById("p3Char").value, document.getElementById("p3Control").value, document.getElementById("p3Level").value, matchMode);
+            spelers[3].reset(document.getElementById("p4Char").value, document.getElementById("p4Control").value, document.getElementById("p4Level").value, matchMode);
+
+            document.getElementById("menu").style.display = "none";
+            document.getElementById("gameCanvas").style.display = "block";
+            document.getElementById("ui").style.display = "flex";
+            gameState = "GAME";
+            gameLoop();
         });
+
+        document.getElementById("btnBackToMenu").addEventListener("click", () => {
+            document.getElementById("victoryScreen").style.display = "none";
+            document.getElementById("menu").style.display = "flex";
+            updateGamepadStatus();
+        });
+
+        updateGamepadStatus();
     });
     </script>
 </body>
