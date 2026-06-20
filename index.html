@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super Smash Browser - Werkend Prototype</title>
+    <title>Super Smash Browser - Character Select</title>
     <style>
         body {
             margin: 0; background: #111; color: white;
@@ -20,11 +20,20 @@
         }
         .btn {
             background: #ff4500; color: white; border: none;
-            padding: 15px 30px; margin: 10px; font-size: 18px;
+            padding: 12px 25px; margin: 10px; font-size: 16px;
             cursor: pointer; font-weight: bold; border-radius: 5px;
-            width: 300px; transition: 0.2s;
+            width: 250px; transition: 0.2s;
         }
         .btn:hover { background: #ff6347; transform: scale(1.05); }
+        .select-container {
+            display: flex; gap: 40px; margin-bottom: 20px;
+        }
+        .select-box {
+            background: #222; border: 2px dashed #555; padding: 15px; border-radius: 5px; text-align: center;
+        }
+        select {
+            padding: 8px; font-size: 16px; margin-top: 10px; background: #333; color: white; border: 1px solid #666;
+        }
         canvas { background: #222; border: 4px solid #fff; display: none; }
         #ui { display: none; justify-content: space-around; width: 800px; margin-top: 10px; font-size: 24px; font-weight: bold; }
     </style>
@@ -32,11 +41,32 @@
 <body>
 
     <div id="menu">
-        <h1 style="font-size: 42px; margin-bottom: 30px; letter-spacing: 2px;">SUPER SMASH BROWSER</h1>
+        <h1 style="font-size: 36px; margin-bottom: 20px; letter-spacing: 2px;">SUPER SMASH BROWSER</h1>
+        
+        <div class="select-container">
+            <div class="select-box">
+                <h3>Speler 1</h3>
+                <select id="p1Char">
+                    <option value="SwordFighter">SwordFighter (Zwaard)</option>
+                    <option value="Brawler">Brawler (Vuisten)</option>
+                    <option value="Gunner">Gunner (Wapen)</option>
+                </select>
+            </div>
+            <div class="select-box">
+                <h3>Speler 2 / CPU</h3>
+                <select id="p2Char">
+                    <option value="Brawler">Brawler (Vuisten)</option>
+                    <option value="SwordFighter">SwordFighter (Zwaard)</option>
+                    <option value="Gunner">Gunner (Wapen)</option>
+                </select>
+            </div>
+        </div>
+
         <button class="btn" id="btnLocal">2 SPELERS (LOKAAL)</button>
         <button class="btn" id="btnCPU">SPELEN VS CPU</button>
-        <p style="color: #aaa; margin-top: 20px;">P1: A-D (Lopen), W (Springen), F (Aanvallen)</p>
-        <p style="color: #aaa;">P2: Pijltjes (Lopen), Omhoog (Springen), Punt/Period . (Aanvallen)</p>
+        
+        <p style="color: #aaa; font-size: 14px; margin-top: 15px;">P1: A-D (Lopen), W (Springen), F (Aanvallen)</p>
+        <p style="color: #aaa; font-size: 14px;">P2: Pijltjes (Lopen), Omhoog (Springen), Punt . (Aanvallen)</p>
     </div>
 
     <canvas id="gameCanvas" width="800" height="500"></canvas>
@@ -57,16 +87,30 @@
 
         const stage = { x: 150, y: 350, width: 500, height: 40 };
 
+        // Stats per klasse
+        const classStats = {
+            SwordFighter: { color: "#ff3333", damage: 12, range: 45, knockback: 8 },
+            Brawler:      { color: "#33ff33", damage: 18, range: 25, knockback: 12 },
+            Gunner:       { color: "#3333ff", damage: 7,  range: 0,  knockback: 5 } // Maakt projectielen aan
+        };
+
         class Player {
-            constructor(x, y, color, type, controls) {
+            constructor(x, y, controls) {
                 this.x = x; this.y = y;
                 this.width = 40; this.height = 60;
-                this.color = color; this.type = type;
+                this.type = "Brawler"; 
+                this.color = "#fff";
                 this.vx = 0; this.vy = 0;
                 this.percentage = 0;
                 this.isGrounded = false;
                 this.controls = controls;
                 this.facing = 1; 
+            }
+
+            // Methode om de gekozen klasse in te stellen
+            setClass(type) {
+                this.type = type;
+                this.color = classStats[type].color;
             }
 
             update() {
@@ -95,7 +139,7 @@
                 ctx.fillStyle = this.color;
                 ctx.fillRect(this.x, this.y, this.width, this.height);
                 
-                // Oog/Wapen richting
+                // Richtingaanwijzer (wapen/vizier)
                 ctx.fillStyle = "white";
                 ctx.fillRect(this.facing === 1 ? this.x + this.width - 8 : this.x + 3, this.y + 15, 5, 5);
             }
@@ -103,24 +147,38 @@
             jump() { if (this.isGrounded) this.vy = -12; }
 
             attack(opponent) {
-                // Simpele hitbox check direct voor de speler
-                let hitzoneX = this.facing === 1 ? this.x + this.width : this.x - 30;
-                if (hitzoneX < opponent.x + opponent.width && hitzoneX + 30 > opponent.x &&
-                    this.y < opponent.y + opponent.height && this.y + this.height > opponent.y) {
-                    
-                    opponent.percentage += 12;
-                    let knockback = 4 + (opponent.percentage * 0.12);
-                    opponent.vx = this.facing * knockback;
-                    opponent.vy = -3 - (opponent.percentage * 0.08);
+                const stats = classStats[this.type];
+
+                if (this.type === "Gunner") {
+                    // Gunner schiet een kogel
+                    projectielen.push({
+                        x: this.facing === 1 ? this.x + this.width : this.x - 15,
+                        y: this.y + 25,
+                        vx: this.facing * 10,
+                        damage: stats.damage,
+                        knockback: stats.knockback,
+                        owner: this
+                    });
+                } else {
+                    // SwordFighter en Brawler gebruiken fysieke hitboxes
+                    let hitzoneX = this.facing === 1 ? this.x + this.width : this.x - stats.range;
+                    if (hitzoneX < opponent.x + opponent.width && hitzoneX + stats.range > opponent.x &&
+                        this.y < opponent.y + opponent.height && this.y + this.height > opponent.y) {
+                        
+                        opponent.percentage += stats.damage;
+                        let finalKnockback = stats.knockback + (opponent.percentage * 0.12);
+                        opponent.vx = this.facing * finalKnockback;
+                        opponent.vy = -3 - (opponent.percentage * 0.08);
+                    }
                 }
             }
         }
 
-        // Spelers initialiseren
-        const p1 = new Player(250, 200, "#ff3333", "SwordFighter", { left: "KeyA", right: "KeyD", up: "KeyW", attack: "KeyF" });
-        const p2 = new Player(500, 200, "#3333ff", "Brawler", { left: "ArrowLeft", right: "ArrowRight", up: "ArrowUp", attack: "Period" });
+        // Spelers initialiseren (zonder klasse, die zetten we bij de start)
+        const p1 = new Player(250, 200, { left: "KeyA", right: "KeyD", up: "KeyW", attack: "KeyF" });
+        const p2 = new Player(500, 200, { left: "ArrowLeft", right: "ArrowRight", up: "ArrowUp", attack: "Period" });
 
-        // Toetsenbord input registreren
+        // Toetsenbord inputs
         const keys = {};
         window.addEventListener("keydown", (e) => { keys[e.code] = true; });
         window.addEventListener("keyup", (e) => { keys[e.code] = false; });
@@ -132,7 +190,7 @@
             if (keys[p1.controls.up]) p1.jump();
             if (keys[p1.controls.attack]) { p1.attack(p2); keys[p1.controls.attack] = false; }
 
-            // Speler 2 (Alleen besturen als het GEEN CPU game is)
+            // Speler 2 (Alleen als het GEEN CPU game is)
             if (!isCPUGame) {
                 if (keys[p2.controls.left]) p2.vx = -5;
                 if (keys[p2.controls.right]) p2.vx = 5;
@@ -144,16 +202,48 @@
         function updateCPU() {
             if (!isCPUGame) return;
 
-            // Loop simpelweg naar P1 toe
-            if (p2.x < p1.x - 30) p2.vx = 2.5;
-            else if (p2.x > p1.x + 30) p2.vx = -2.5;
+            // Loop naar P1 toe
+            if (p2.x < p1.x - 40) p2.vx = 2.5;
+            else if (p2.x > p1.x + 40) p2.vx = -2.5;
 
             // Spring willekeurig als P1 hoger is
             if (p1.y < p2.y - 40 && Math.random() < 0.03) p2.jump();
 
-            // Val aan als de CPU dichtbij genoeg staat
-            if (Math.abs(p2.x - p1.x) < 50 && Math.random() < 0.08) {
+            // Val aan op basis van klasse-bereik
+            let attackRange = p2.type === "Gunner" ? 250 : 60;
+            if (Math.abs(p2.x - p1.x) < attackRange && Math.random() < 0.05) {
                 p2.attack(p1);
+            }
+        }
+
+        function updateProjectiles() {
+            for (let i = projectielen.length - 1; i >= 0; i--) {
+                let proj = projectielen[i];
+                proj.x += proj.vx;
+
+                // Teken de kogel
+                ctx.fillStyle = "yellow";
+                ctx.fillRect(proj.x, proj.y, 15, 8);
+
+                let target = (proj.owner === p1) ? p2 : p1;
+                
+                // Check of de kogel de tegenstander raakt
+                if (proj.x > target.x && proj.x < target.x + target.width && 
+                    proj.y > target.y && proj.y < target.y + target.height) {
+                    
+                    target.percentage += proj.damage;
+                    let kb = proj.knockback + (target.percentage * 0.1);
+                    target.vx = (proj.vx > 0 ? 1 : -1) * kb;
+                    target.vy = -3;
+                    
+                    projectielen.splice(i, 1);
+                    continue;
+                }
+
+                // Kogel verwijderen buiten beeld
+                if (proj.x < 0 || proj.x > canvas.width) {
+                    projectielen.splice(i, 1);
+                }
             }
         }
 
@@ -161,12 +251,15 @@
             isCPUGame = vsCPU;
             gameState = "PLAYING";
             
-            // Schakel UI elementen om via DOM
+            // Haal de gekozen klasses op uit de menu dropdowns
+            p1.setClass(document.getElementById("p1Char").value);
+            p2.setClass(document.getElementById("p2Char").value);
+
+            // Schakel UI om
             document.getElementById("menu").style.display = "none";
             canvas.style.display = "block";
             document.getElementById("ui").style.display = "flex";
             
-            // Start de loop pas na de klik
             gameLoop();
         }
 
@@ -175,30 +268,28 @@
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Input en AI berekenen
             handleInput();
             updateCPU();
 
-            // Physics updaten
             p1.update();
             p2.update();
 
-            // Teken de Harde Grond (Stage)
+            // Teken de Stage (Platform)
             ctx.fillStyle = "#666";
             ctx.fillRect(stage.x, stage.y, stage.width, stage.height);
 
-            // Teken Spelers
             p1.draw();
             p2.draw();
+            updateProjectiles();
 
-            // Schade-UI bijwerken
-            document.getElementById("p1-ui").innerText = `Speler 1: ${p1.percentage}%`;
-            document.getElementById("p2-ui").innerText = `${isCPUGame ? 'CPU' : 'Speler 2'}: ${p2.percentage}%`;
+            // UI percentages en klassenaam updaten
+            document.getElementById("p1-ui").innerText = `Speler 1 (${p1.type}): ${p1.percentage}%`;
+            document.getElementById("p2-ui").innerText = `${isCPUGame ? 'CPU' : 'Speler 2'} (${p2.type}): ${p2.percentage}%`;
 
             requestAnimationFrame(gameLoop);
         }
 
-        // Event listeners direct koppelen zodra de DOM geladen is
+        // Knoppen activeren via JavaScript Event Listeners
         document.getElementById("btnLocal").addEventListener("click", () => startScherm(false));
         document.getElementById("btnCPU").addEventListener("click", () => startScherm(true));
     });
