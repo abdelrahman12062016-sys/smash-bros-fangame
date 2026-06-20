@@ -3,59 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super Smash Browser - Victory Screen Edition</title>
+    <title>Super Smash Browser - 2.5D Smash Edition</title>
     <style>
         body {
-            margin: 0; background: #111; color: white;
+            margin: 0; background: #05050d; color: white;
             font-family: 'Segoe UI', Arial, sans-serif; display: flex;
             flex-direction: column; align-items: center; justify-content: center;
             height: 100vh; overflow: hidden;
         }
         #menu, #victoryScreen {
-            position: absolute; background: rgba(15, 15, 25, 0.98);
+            position: absolute; background: rgba(10, 10, 20, 0.98);
             width: 800px; height: 500px; display: flex;
             flex-direction: column; align-items: center; justify-content: center;
-            border: 4px solid #ffaa00; z-index: 10;
-            box-shadow: 0 0 40px rgba(255, 170, 0, 0.3);
-            border-radius: 10px;
+            border: 4px solid #ff9900; z-index: 10;
+            box-shadow: 0 0 40px rgba(255, 153, 0, 0.3);
+            border-radius: 12px;
         }
         #victoryScreen {
-            display: none; background: rgba(10, 10, 15, 0.95); border-color: #00ffcc;
-            box-shadow: 0 0 40px rgba(0, 255, 204, 0.3);
+            display: none; background: rgba(5, 5, 10, 0.96); border-color: #00ffcc;
+            box-shadow: 0 0 40px rgba(0, 255, 204, 0.4);
         }
         .btn {
-            background: linear-gradient(135deg, #ffaa00, #ff5500); color: white; border: none;
+            background: linear-gradient(135deg, #ff9900, #ff4500); color: white; border: none;
             padding: 15px 30px; margin: 10px; font-size: 18px;
-            cursor: pointer; font-weight: bold; border-radius: 5px;
-            width: 300px; transition: 0.2s; box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            cursor: pointer; font-weight: bold; border-radius: 6px;
+            width: 300px; transition: 0.2s; box-shadow: 0 5px 15px rgba(0,0,0,0.5);
         }
         .btn:hover { transform: scale(1.05); filter: brightness(1.2); }
-        .btn-victory {
-            background: linear-gradient(135deg, #00ffcc, #0099ff);
-        }
+        .btn-victory { background: linear-gradient(135deg, #00ffcc, #0099ff); }
         .select-container { display: flex; gap: 40px; margin-bottom: 30px; }
         .select-box {
-            background: #1a1a24; border: 2px solid #333; padding: 20px; border-radius: 8px; text-align: center;
+            background: #131324; border: 2px solid #2a2a40; padding: 20px; border-radius: 8px; text-align: center;
         }
         select {
             padding: 10px; font-size: 16px; margin-top: 12px; background: #222; color: white; border: 1px solid #555;
             border-radius: 4px; cursor: pointer;
         }
-        canvas { background: linear-gradient(to bottom, #151624, #0a0b12); border: 4px solid #333; border-radius: 6px; display: none; }
+        canvas { background: #000; border: 4px solid #222; border-radius: 8px; display: none; box-shadow: 0 15px 35px rgba(0,0,0,0.8); }
         #ui { display: none; justify-content: space-around; width: 800px; margin-top: 15px; font-size: 26px; font-weight: bold; }
-        .p-ui-box { padding: 10px 20px; border-radius: 8px; background: rgba(0,0,0,0.4); min-width: 250px; text-align: center; transition: 0.1s; }
+        .p-ui-box { padding: 10px 20px; border-radius: 8px; background: rgba(0,0,0,0.5); min-width: 250px; text-align: center; }
         .final-smash-ready { animation: glow 0.5s infinite alternate; border-color: #ffaa00 !important; }
-        @keyframes glow { from { box-shadow: 0 0 10px #ffaa00; } to { box-shadow: 0 0 25px #ff5500; } }
+        @keyframes glow { from { box-shadow: 0 0 10px #ffaa00; } to { box-shadow: 0 0 25px #ff4500; } }
     </style>
 </head>
 <body>
 
     <div id="menu">
-        <h1 style="font-size: 40px; margin-bottom: 5px; color: #ffaa00; text-shadow: 0 0 10px rgba(255,170,0,0.5);">SUPER SMASH BROWSER</h1>
-        <p style="color: #666; margin-bottom: 25px;">Final Smash & Victory Screen Edition</p>
+        <h1 style="font-size: 42px; margin-bottom: 5px; color: #ff9900; text-shadow: 0 0 15px rgba(255,153,0,0.4); letter-spacing: 1px;">SUPER SMASH BROWSER</h1>
+        <p style="color: #555577; margin-bottom: 25px; font-weight: bold;">2.5D DEPTH EDITION</p>
         
         <div class="select-container">
-            <div class="select-box" style="border-top: 4px solid #ff3333;">
+            <div class="select-box" style="border-top: 4px solid #ff4444;">
                 <h3>Speler 1</h3>
                 <select id="p1Char">
                     <option value="Brawler">Brawler 🥊</option>
@@ -63,7 +61,7 @@
                     <option value="Gunner">Gunner 🔫</option>
                 </select>
             </div>
-            <div class="select-box" style="border-top: 4px solid #3333ff;">
+            <div class="select-box" style="border-top: 4px solid #4444ff;">
                 <h3>Speler 2 / CPU</h3>
                 <select id="p2Char">
                     <option value="SwordFighter">SwordFighter ⚔️</option>
@@ -78,15 +76,15 @@
     </div>
 
     <div id="victoryScreen">
-        <h1 id="victoryTitle" style="font-size: 50px; color: #00ffcc; text-shadow: 0 0 20px rgba(0,255,204,0.6); margin-bottom: 10px;">VICTORY!</h1>
-        <p id="victorySub" style="font-size: 20px; color: #aaa; margin-bottom: 30px;">Speler 1 wint de match!</p>
+        <h1 id="victoryTitle" style="font-size: 50px; color: #00ffcc; text-shadow: 0 0 20px rgba(0,255,204,0.5); margin-bottom: 10px;">VICTORY!</h1>
+        <p id="victorySub" style="font-size: 20px; color: #8a8a9e; margin-bottom: 30px;">Speler 1 wint de match!</p>
         <button class="btn btn-victory" id="btnBackToMenu">TERUG NAAR MENU</button>
     </div>
 
     <canvas id="gameCanvas" width="800" height="500"></canvas>
     <div id="ui">
-        <div id="p1-ui" class="p-ui-box" style="border-bottom: 4px solid #ff3333;">Speler 1: 0%</div>
-        <div id="p2-ui" class="p-ui-box" style="border-bottom: 4px solid #3333ff;">Speler 2: 0%</div>
+        <div id="p1-ui" class="p-ui-box" style="border-bottom: 4px solid #ff4444;">Speler 1: 0%</div>
+        <div id="p2-ui" class="p-ui-box" style="border-bottom: 4px solid #4444ff;">Speler 2: 0%</div>
     </div>
 
     <script>
@@ -98,8 +96,9 @@
         let gameState = "MENU";
         let isCPUGame = false;
         let projectielen = [];
+        let cameraOffset = 0; // Voor het parallax effect bij beweging
 
-        const stage = { x: 150, y: 350, width: 500, height: 30 };
+        const stage = { x: 150, y: 340, width: 500, height: 25, depth: 35 };
 
         const classStats = {
             SwordFighter: { color: "#ff5555", weaponColor: "#e0e0e0", damage: 14, range: 55, knockback: 7 },
@@ -109,7 +108,7 @@
 
         class Player {
             constructor(x, y, controls) {
-                this.startX = x; this.startY = y; // Sla startposities op voor resets
+                this.startX = x; this.startY = y;
                 this.x = x; this.y = y;
                 this.width = 40; this.height = 60;
                 this.type = "Brawler"; 
@@ -162,6 +161,21 @@
                 } else { this.isGrounded = false; }
             }
 
+            drawShadow() {
+                // SPREAD SHADOW EFFECT (Alleen als de speler boven de stage zweeft)
+                if (this.x + this.width > stage.x && this.x < stage.x + stage.width && this.y <= stage.y) {
+                    let distance = stage.y - (this.y + this.height);
+                    let shadowWidth = Math.max(10, this.width - (distance * 0.1));
+                    let shadowAlpha = Math.max(0, 0.4 - (distance * 0.002));
+
+                    ctx.fillStyle = `rgba(0, 0, 0, ${shadowAlpha})`;
+                    ctx.beginPath();
+                    // Teken een elliptische schaduw plat op het platform
+                    ctx.ellipse(this.x + this.width/2, stage.y, shadowWidth, 6, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
             draw() {
                 let centerX = this.x + this.width / 2;
                 let centerY = this.y + this.height / 2;
@@ -179,12 +193,14 @@
 
                 // BENEN
                 let legSwing = Math.sin(this.animFrame) * 10;
-                ctx.fillStyle = "#222";
+                ctx.fillStyle = "#151525";
                 if (!this.isGrounded) legSwing = 8;
                 ctx.fillRect(-12, 15, 8, 15 + legSwing * 0.3); 
                 ctx.fillRect(4, 15, 8, 15 - legSwing * 0.3);
 
-                // LICHAAM
+                // LICHAAM (Met klein schaduwrandje van 2.5D diepte)
+                ctx.fillStyle = "rgba(0,0,0,0.2)";
+                ctx.fillRect(-13, -13, 30, 32); 
                 ctx.fillStyle = this.color;
                 ctx.fillRect(-15, -15, 30, 32);
 
@@ -217,7 +233,7 @@
                     } else {
                         ctx.rotate(-Math.PI / 4);
                     }
-                    ctx.fillStyle = "#555";
+                    ctx.fillStyle = "#444";
                     ctx.fillRect(0, -2, 6, 4);
                     ctx.fillStyle = this.isFinalSmashing ? "#ffaa00" : weaponColor;
                     ctx.fillRect(6, -3, 32 * sizeMultiplier, 6 * sizeMultiplier);
@@ -353,7 +369,6 @@
             }
         }
 
-        // --- NEW: CHECK VOOR RING OUTS & TOON VICTORY SCHERM ---
         function checkGameOver() {
             let p1Dead = (p1.y > canvas.height || p1.x < 0 || p1.x > canvas.width);
             let p2Dead = (p2.y > canvas.height || p2.x < 0 || p2.x > canvas.width);
@@ -375,18 +390,70 @@
                     sub.innerText = `Speler 1 (${p1.type}) wint de match!`;
                 }
 
-                // Toon het overwinningsscherm overlay
                 document.getElementById("victoryScreen").style.display = "flex";
             }
+        }
+
+        // --- NEW: 3D EN PARALLAX LOGICA ---
+        function drawAchtergrond() {
+            // Bereken camera offset op basis van het gemiddelde middelpunt van beide spelers
+            let spelerMidden = (p1.x + p2.x) / 2;
+            cameraOffset = (spelerMidden - canvas.width / 2) * 0.08; // Subtiele parallax factor
+
+            // 1. Lucht verloop
+            let skyGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            skyGradient.addColorStop(0, "#080914");
+            skyGradient.addColorStop(0.5, "#131428");
+            skyGradient.addColorStop(1, "#201c38");
+            ctx.fillStyle = skyGradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // 2. Parallax 3D Bergen / Torens op de achtergrond
+            ctx.fillStyle = "#10101f";
+            ctx.fillRect(0 - cameraOffset * 0.3, 200, 180, 300);
+            ctx.fillRect(250 - cameraOffset * 0.3, 140, 120, 360);
+            ctx.fillRect(550 - cameraOffset * 0.3, 180, 200, 320);
+
+            ctx.fillStyle = "#16162b";
+            ctx.fillRect(100 - cameraOffset * 0.6, 250, 200, 250);
+            ctx.fillRect(400 - cameraOffset * 0.6, 220, 160, 280);
+        }
+
+        function draw3DStage() {
+            // 1. De Bovenkant (waar je op staat)
+            ctx.fillStyle = "#2c2c3e";
+            ctx.fillRect(stage.x, stage.y, stage.width, stage.height);
+
+            // Neon gloed randje bovenop
+            ctx.fillStyle = "#ffaa00";
+            ctx.fillRect(stage.x, stage.y, stage.width, 3);
+
+            // 2. De 3D Zijkant (Isometrisch schuin effect naar onderen trekken)
+            ctx.fillStyle = "#1e1e2b";
+            ctx.beginPath();
+            ctx.moveTo(stage.x, stage.y + stage.height);
+            ctx.lineTo(stage.x + 20, stage.y + stage.height + stage.depth);
+            ctx.lineTo(stage.x + stage.width - 20, stage.y + stage.height + stage.depth);
+            ctx.lineTo(stage.x + stage.width, stage.y + stage.height);
+            ctx.closePath();
+            ctx.fill();
+
+            // 3. Schaduwvlak onderkant van de stage om hem te laten "zweven"
+            ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+            ctx.beginPath();
+            ctx.moveTo(stage.x + 20, stage.y + stage.height + stage.depth);
+            ctx.lineTo(stage.x + stage.width - 20, stage.y + stage.height + stage.depth);
+            ctx.lineTo(stage.x + stage.width - 10, stage.y + stage.height + stage.depth + 15);
+            ctx.lineTo(stage.x + 10, stage.y + stage.height + stage.depth + 15);
+            ctx.closePath();
+            ctx.fill();
         }
 
         function startScherm(vsCPU) {
             isCPUGame = vsCPU;
             gameState = "PLAYING";
             
-            p1.reset();
-            p2.reset();
-
+            p1.reset(); p2.reset();
             p1.setClass(document.getElementById("p1Char").value);
             p2.setClass(document.getElementById("p2Char").value);
 
@@ -409,37 +476,33 @@
         function gameLoop() {
             if (gameState !== "PLAYING") return;
 
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
+            // Update logica
             handleInput();
             updateCPU();
-
             p1.update();
             p2.update();
-            
-            // Check na het verplaatsen of er iemand dood is gegaan
             checkGameOver();
 
-            // Grid
-            ctx.strokeStyle = "rgba(255,255,255,0.02)";
-            for(let i=0; i<canvas.width; i+=40) { ctx.strokeRect(i, 0, 40, canvas.height); }
-
-            // Stage 
-            ctx.fillStyle = "#333";
-            ctx.fillRect(stage.x, stage.y, stage.width, stage.height);
-            ctx.fillStyle = "#ffaa00";
-            ctx.fillRect(stage.x, stage.y, stage.width, 4); 
+            // Render logica (Met diepte lagen)
+            drawAchtergrond();
+            
+            // Schaduwen moeten onder de spelers/stage getekend worden
+            p1.drawShadow();
+            p2.drawShadow();
+            
+            draw3DStage(); // Teken de zwevende 3D stage
 
             p1.draw();
             p2.draw();
             updateProjectiles();
 
             if (screenFlashTimer > 0) {
-                ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
+                ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
                 screenFlashTimer--;
             }
 
+            // UI updates
             let p1UI = document.getElementById("p1-ui");
             let p2UI = document.getElementById("p2-ui");
 
