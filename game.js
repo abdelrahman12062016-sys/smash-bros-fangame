@@ -37,7 +37,7 @@ class Player {
             this.y = stage.y - this.height; this.vy = 0; this.isGrounded = true;
         } else { this.isGrounded = false; }
 
-        // Respawn
+        // Respawn (Ring Out)
         if (this.y > canvas.height || this.x < 0 || this.x > canvas.width) {
             this.x = canvas.width / 2; this.y = 100; this.vx = 0; this.vy = 0; this.percentage = 0;
         }
@@ -47,7 +47,7 @@ class Player {
         ctx.fillStyle = this.color;
         ctx.fillRect(this.x, this.y, this.width, this.height);
         
-        // Teken een vizier/wapen om de richting te zien
+        // Richtingaanwijzer (wapen)
         ctx.fillStyle = "white";
         ctx.fillRect(this.facing === 1 ? this.x + this.width - 5 : this.x, this.y + 20, 5, 10);
     }
@@ -56,20 +56,16 @@ class Player {
 
     attack(opponent) {
         if (this.type === "SwordFighter") {
-            // Groot bereik (zwaard)
-            let reach = this.facing === 1 ? this.width + 40 : -40;
             if (checkHit(this.x + (this.facing === 1 ? this.width : -40), this.y, 40, this.height, opponent)) {
                 applyDamage(opponent, 12, this.facing, 8);
             }
         } 
         else if (this.type === "Brawler") {
-            // Dichtbij, maar deelt harde klappen uit
             if (checkHit(this.x - 10, this.y, this.width + 20, this.height, opponent)) {
                 applyDamage(opponent, 18, this.facing, 12);
             }
         } 
         else if (this.type === "Gunner") {
-            // Schiet een kogel
             projectielen.push({
                 x: this.facing === 1 ? this.x + this.width : this.x - 15,
                 y: this.y + 25,
@@ -81,7 +77,6 @@ class Player {
     }
 }
 
-// Hulpsubfuncties voor gevechten
 function checkHit(ax, ay, aw, ah, opponent) {
     return ax < opponent.x + opponent.width && ax + aw > opponent.x &&
            ay < opponent.y + opponent.height && ay + ah > opponent.y;
@@ -93,23 +88,23 @@ function applyDamage(target, damage, direction, baseKnockback) {
     target.vy = -4 - (target.percentage * 0.1);
 }
 
-// Aanmaken spelers (P1 = SwordFighter, P2/CPU = Brawler)
+// Spelers definiëren (P1 is SwordFighter, P2/CPU is Brawler)
 const p1 = new Player(200, 200, "#ff3333", "SwordFighter", { left: "KeyA", right: "KeyD", up: "KeyW", attack: "KeyF" });
 const p2 = new Player(560, 200, "#3333ff", "Brawler", { left: "ArrowLeft", right: "ArrowRight", up: "ArrowUp", attack: "Period" });
 
-// Input regelen
+// Input regelen via toetsenbord
 const keys = {};
 window.addEventListener("keydown", (e) => { keys[e.code] = true; });
 window.addEventListener("keyup", (e) => { keys[e.code] = false; });
 
 function handleInput() {
-    // Speler 1 besturing
+    // Speler 1 Besturing (A, D, W, F)
     if (keys[p1.controls.left]) p1.vx = -5;
     if (keys[p1.controls.right]) p1.vx = 5;
     if (keys[p1.controls.up]) p1.jump();
     if (keys[p1.controls.attack]) { p1.attack(p2); keys[p1.controls.attack] = false; }
 
-    // Speler 2 besturing (alleen als het GEEN CPU game is)
+    // Speler 2 Besturing (Pijltjes + Punt-toets) -> Alleen als het GEEN CPU is
     if (!isCPUGame) {
         if (keys[p2.controls.left]) p2.vx = -5;
         if (keys[p2.controls.right]) p2.vx = 5;
@@ -122,30 +117,25 @@ function handleInput() {
 function updateCPU() {
     if (!isCPUGame) return;
 
-    // Loop richting P1
     if (p2.x < p1.x - 20) p2.vx = 3;
     else if (p2.x > p1.x + 20) p2.vx = -3;
 
-    // Spring als P1 hoger staat
     if (p1.y < p2.y - 50 && Math.random() < 0.05) p2.jump();
 
-    // Val aan als de CPU dichtbij is
-    if (Math.abs(p2.x - p1.x) < 60 && Math.random() < 0.1) {
+    if (Math.abs(p2.x - p1.x) < 60 && Math.random() < 0.07) {
         p2.attack(p1);
     }
 }
 
-// Projectielen updaten (voor de Gunner)
+// Kogels van de Gunner verwerken
 function updateProjectiles() {
     for (let i = projectielen.length - 1; i >= 0; i--) {
         let proj = projectielen[i];
         proj.x += proj.vx;
 
-        // Tekenen
         ctx.fillStyle = "yellow";
         ctx.fillRect(proj.x, proj.y, 15, 8);
 
-        // Check collision met tegenstander
         let target = (proj.owner === p1) ? p2 : p1;
         if (proj.x > target.x && proj.x < target.x + target.width && proj.y > target.y && proj.y < target.y + target.height) {
             applyDamage(target, proj.damage, proj.vx > 0 ? 1 : -1, 5);
@@ -153,39 +143,26 @@ function updateProjectiles() {
             continue;
         }
 
-        // Verwijder buiten beeld
         if (proj.x < 0 || proj.x > canvas.width) {
             projectielen.splice(i, 1);
         }
     }
 }
 
-// Schermwissels (Menu naar Game)
-function startGameUI() {
+// Start het spel en activeer de schermen
+function startScherm(vsCPU) {
+    isCPUGame = vsCPU;
+    
+    // Verberg menu, toon game elementen
     document.getElementById("menu").style.display = "none";
     canvas.style.display = "block";
     document.getElementById("ui").style.display = "flex";
+    
     gameState = "PLAYING";
     gameLoop();
 }
 
-function startCPUGame() {
-    isCPUGame = true;
-    p2.type = "Brawler"; // Je kunt dit veranderen naar "Gunner" of "SwordFighter"
-    document.getElementById("p2-ui").innerText = `CPU (Brawler): 0%`;
-    startGameUI();
-}
-
-function createOnlineRoom() {
-    const code = document.getElementById("roomCode").value;
-    if(!code) { alert("Voer eerst een Room Code in!"); return; }
-    alert(`Verbinden met room: ${code}... (Hier koppel je later Socket.io aan!)`);
-    isCPUGame = false;
-    document.getElementById("p2-ui").innerText = `Speler 2: 0%`;
-    startGameUI();
-}
-
-// Hoofd Loop
+// Game Loop
 function gameLoop() {
     if (gameState !== "PLAYING") return;
 
@@ -197,7 +174,7 @@ function gameLoop() {
     p1.update();
     p2.update();
 
-    // Teken Stage
+    // Teken Stage (Platform)
     ctx.fillStyle = "#555";
     ctx.fillRect(stage.x, stage.y, stage.width, stage.height);
 
@@ -205,8 +182,13 @@ function gameLoop() {
     p2.draw();
     updateProjectiles();
 
+    // UI percentages updaten
     document.getElementById("p1-ui").innerText = `Speler 1 (${p1.type}): ${p1.percentage}%`;
     document.getElementById("p2-ui").innerText = `${isCPUGame ? 'CPU' : 'Speler 2'} (${p2.type}): ${p2.percentage}%`;
 
     requestAnimationFrame(gameLoop);
 }
+
+// Knoppen activeren via JavaScript Event Listeners (VEILIGER & WERKT ALTIJD)
+document.getElementById("btnLocal").addEventListener("click", () => startScherm(false));
+document.getElementById("btnCPU").addEventListener("click", () => startScherm(true));
