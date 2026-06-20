@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super Smash Browser - Animated Classes</title>
+    <title>Super Smash Browser - Final Smash Edition</title>
     <style>
         body {
             margin: 0; background: #111; color: white;
@@ -15,12 +15,12 @@
             position: absolute; background: rgba(15, 15, 25, 0.98);
             width: 800px; height: 500px; display: flex;
             flex-direction: column; align-items: center; justify-content: center;
-            border: 4px solid #ff4500; z-index: 10;
-            box-shadow: 0 0 40px rgba(255, 69, 0, 0.3);
+            border: 4px solid #ffaa00; z-index: 10;
+            box-shadow: 0 0 40px rgba(255, 170, 0, 0.3);
             border-radius: 10px;
         }
         .btn {
-            background: linear-gradient(135deg, #ff4500, #ff6347); color: white; border: none;
+            background: linear-gradient(135deg, #ffaa00, #ff5500); color: white; border: none;
             padding: 15px 30px; margin: 10px; font-size: 18px;
             cursor: pointer; font-weight: bold; border-radius: 5px;
             width: 300px; transition: 0.2s; box-shadow: 0 4px 15px rgba(0,0,0,0.4);
@@ -29,22 +29,23 @@
         .select-container { display: flex; gap: 40px; margin-bottom: 30px; }
         .select-box {
             background: #1a1a24; border: 2px solid #333; padding: 20px; border-radius: 8px; text-align: center;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
         }
         select {
             padding: 10px; font-size: 16px; margin-top: 12px; background: #222; color: white; border: 1px solid #555;
             border-radius: 4px; cursor: pointer;
         }
-        canvas { background: linear-gradient(to bottom, #1a1c2e, #0f101b); border: 4px solid #333; border-radius: 6px; display: none; box-shadow: 0 10px 30px rgba(0,0,0,0.7); }
-        #ui { display: none; justify-content: space-around; width: 800px; margin-top: 15px; font-size: 26px; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); }
-        .p-ui-box { padding: 10px 20px; border-radius: 8px; background: rgba(0,0,0,0.4); min-width: 250px; text-align: center; }
+        canvas { background: linear-gradient(to bottom, #151624, #0a0b12); border: 4px solid #333; border-radius: 6px; display: none; }
+        #ui { display: none; justify-content: space-around; width: 800px; margin-top: 15px; font-size: 26px; font-weight: bold; }
+        .p-ui-box { padding: 10px 20px; border-radius: 8px; background: rgba(0,0,0,0.4); min-width: 250px; text-align: center; transition: 0.1s; }
+        .final-smash-ready { animation: glow 0.5s infinite alternate; border-color: #ffaa00 !important; }
+        @keyframes glow { from { box-shadow: 0 0 10px #ffaa00; } to { box-shadow: 0 0 25px #ff5500; } }
     </style>
 </head>
 <body>
 
     <div id="menu">
-        <h1 style="font-size: 40px; margin-bottom: 5px; color: #ff4500; text-shadow: 0 0 10px rgba(255,69,0,0.5);">SUPER SMASH BROWSER</h1>
-        <p style="color: #666; margin-bottom: 25px;">Animated Edition</p>
+        <h1 style="font-size: 40px; margin-bottom: 5px; color: #ffaa00; text-shadow: 0 0 10px rgba(255,170,0,0.5);">SUPER SMASH BROWSER</h1>
+        <p style="color: #666; margin-bottom: 25px;">Final Smash Edition (100% - 230% Random Trigger)</p>
         
         <div class="select-container">
             <div class="select-box" style="border-top: 4px solid #ff3333;">
@@ -67,9 +68,6 @@
 
         <button class="btn" id="btnLocal">2 SPELERS (LOKAAL)</button>
         <button class="btn" id="btnCPU">SPELEN VS CPU</button>
-        
-        <p style="color: #888; font-size: 13px; margin-top: 20px;">P1: A-D (Lopen), W (Springen), F (Aanvallen)</p>
-        <p style="color: #888; font-size: 13px;">P2: Pijltjes (Lopen), Omhoog (Springen), Punt . (Aanvallen)</p>
     </div>
 
     <canvas id="gameCanvas" width="800" height="500"></canvas>
@@ -108,9 +106,9 @@
                 this.controls = controls;
                 this.facing = 1; 
                 
-                // Animatie variabelen
                 this.attackTimer = 0;
                 this.animFrame = 0;
+                this.isFinalSmashing = false; // Checkt of de huidige aanval een Final Smash is
             }
 
             setClass(type) {
@@ -128,13 +126,12 @@
 
                 this.vx *= this.isGrounded ? 0.8 : 0.95;
 
-                // Loop-animatie frame omhoog gooien als we bewegen
-                if (Math.abs(this.vx) > 0.2 && this.isGrounded) {
-                    this.animFrame += 0.2;
-                }
+                if (Math.abs(this.vx) > 0.2 && this.isGrounded) this.animFrame += 0.2;
 
-                // Aanvalstimer afbouwen
-                if (this.attackTimer > 0) this.attackTimer--;
+                if (this.attackTimer > 0) {
+                    this.attackTimer--;
+                    if (this.attackTimer === 0) this.isFinalSmashing = false; // Reset status na aanval
+                }
 
                 // Stage Collision
                 if (this.x + this.width > stage.x && this.x < stage.x + stage.width &&
@@ -153,108 +150,118 @@
                 let centerY = this.y + this.height / 2;
                 let weaponColor = classStats[this.type].weaponColor;
 
+                // Als deze speler een Final Smash doet, krijgt hij een vurige gloed rond zijn lichaam
+                if (this.isFinalSmashing) {
+                    ctx.save();
+                    ctx.shadowBlur = 30;
+                    ctx.shadowColor = "#ffaa00";
+                }
+
                 ctx.save();
                 ctx.translate(centerX, centerY);
-                ctx.scale(this.facing, 1); // Zorgt ervoor dat alles automatisch omdraait naar links/rechts
+                ctx.scale(this.facing, 1);
 
-                // --- 1. BENEN (Lopen animatie op basis van Sinus)
+                // BENEN
                 let legSwing = Math.sin(this.animFrame) * 10;
                 ctx.fillStyle = "#222";
-                if (!this.isGrounded) legSwing = 8; // Spring-houding
+                if (!this.isGrounded) legSwing = 8;
                 ctx.fillRect(-12, 15, 8, 15 + legSwing * 0.3); 
                 ctx.fillRect(4, 15, 8, 15 - legSwing * 0.3);
 
-                // --- 2. LICHAAM
+                // LICHAAM
                 ctx.fillStyle = this.color;
                 ctx.fillRect(-15, -15, 30, 32);
 
-                // --- 3. HOOFD
-                ctx.fillStyle = "#ffdbac"; // Huidskleur
+                // HOOFD
+                ctx.fillStyle = "#ffdbac";
                 ctx.fillRect(-10, -33, 20, 18);
-                // Oog (kijkt altijd de goede kant op door de scale)
                 ctx.fillStyle = "#000";
                 ctx.fillRect(4, -28, 3, 4);
 
-                // --- 4. WAPEN / ARM ANIMATIE
-                ctx.fillStyle = weaponColor;
-                
-                let ext = 0; // Hoeveel de arm uitschuift bij een aanval
+                // WAPEN / ARM LOGICA MET ANIMATIE
+                let ext = 0;
+                let sizeMultiplier = this.isFinalSmashing ? 2.5 : 1.0; // Maak het wapen gigantisch tijdens Final Smash!
+
                 if (this.attackTimer > 0) {
-                    ext = Math.sin((this.attackTimer / 12) * Math.PI) * 25; // Punch/Slash beweging
+                    ext = Math.sin((this.attackTimer / 15) * Math.PI) * (25 * sizeMultiplier);
                 }
 
                 if (this.type === "Brawler") {
-                    // Kickbox handschoenen!
-                    ctx.fillStyle = weaponColor; // Rood
-                    // Achterste arm
-                    ctx.fillRect(-5, -5, 15, 8);
-                    // Voorste arm (slaat uit!)
-                    ctx.fillStyle = weaponColor;
-                    ctx.fillRect(5, -8, 12 + ext, 10); // Arm
-                    ctx.fillStyle = "#fff"; // Grote witte boksbal-vuisthandschoen
+                    ctx.fillStyle = this.isFinalSmashing ? "#ffaa00" : weaponColor;
+                    ctx.fillRect(5, -8, (12 + ext), 10 * sizeMultiplier);
                     ctx.beginPath();
-                    ctx.arc(17 + ext, -3, 8, 0, Math.PI * 2);
+                    ctx.arc(17 + ext, -3, 8 * sizeMultiplier, 0, Math.PI * 2);
                     ctx.fill();
                 } 
                 else if (this.type === "SwordFighter") {
-                    // Zwaardvechter met zwaai-animatie
                     ctx.save();
                     ctx.translate(8, -2);
                     if (this.attackTimer > 0) {
-                        // Zwaai het zwaard omlaag tijdens aanval
-                        ctx.rotate((ext / 25) * Math.PI / 2 - Math.PI/4);
+                        ctx.rotate((ext / (25 * sizeMultiplier)) * Math.PI / 2 - Math.PI/4);
                     } else {
-                        ctx.rotate(-Math.PI / 4); // Rustpositie (schuin omhoog)
+                        ctx.rotate(-Math.PI / 4);
                     }
-                    // Het Zwaard zelf
-                    ctx.fillStyle = "#555"; // Handvat
+                    ctx.fillStyle = "#555";
                     ctx.fillRect(0, -2, 6, 4);
-                    ctx.fillStyle = weaponColor; // Kling
-                    ctx.fillRect(6, -3, 32, 6);
+                    ctx.fillStyle = this.isFinalSmashing ? "#ffaa00" : weaponColor;
+                    ctx.fillRect(6, -3, 32 * sizeMultiplier, 6 * sizeMultiplier);
                     ctx.restore();
                 } 
                 else if (this.type === "Gunner") {
-                    // Mega Man-achtige Arm Cannon!
                     ctx.fillStyle = this.color;
-                    ctx.fillRect(2, -7, 15, 10); // Bovenarm
-                    ctx.fillStyle = weaponColor;
-                    ctx.fillRect(14, -9, 14 + (ext * 0.2), 14); // De dikke Arm Gun
-                    // Lichtgevende loop
+                    ctx.fillRect(2, -7, 15, 10);
+                    ctx.fillStyle = this.isFinalSmashing ? "#ffaa00" : weaponColor;
+                    ctx.fillRect(14, -9, 14 + (ext * 0.2), 14 * sizeMultiplier);
                     ctx.fillStyle = "cyan";
-                    ctx.fillRect(26 + (ext * 0.2), -6, 3, 8);
+                    ctx.fillRect(26 + (ext * 0.2), -6, 3, 8 * sizeMultiplier);
                 }
 
                 ctx.restore();
+                if (this.isFinalSmashing) ctx.restore(); // Herstel de schaduw-gloed
             }
 
             jump() { if (this.isGrounded) this.vy = -12; }
 
             attack(opponent) {
-                if (this.attackTimer > 0) return; // Kan niet aanvallen tijdens huidige animatie
+                if (this.attackTimer > 0) return; 
                 
-                this.attackTimer = 12; // Start animatie (duurt 12 frames)
-                const stats = classStats[this.type];
+                this.attackTimer = 15; // Iets langere animatietijd voor de impact
+                let stats = Object.assign({}, classStats[this.type]); // Kopieer basis-stats
+
+                // --- GOUDEN REGEL: EEN RANDOM KANS OP FINAL SMASH TUSSEN 100 EN 230 PERCENT ---
+                if (this.percentage >= 100 && this.percentage <= 230) {
+                    // 25% kans (0.25) bij elke klap dat het een Final Smash wordt
+                    if (Math.random() < 0.25) {
+                        this.isFinalSmashing = true;
+                        stats.damage *= 2.5;     // Deelt 2.5x zoveel schade uit
+                        stats.knockback *= 3.0;  // Schiet de vijand 3x zo ver weg
+                        stats.range *= 2.0;      // Groter bereik van de hitbox
+                    }
+                }
 
                 if (this.type === "Gunner") {
-                    // Schiet een lichtgevende energiekogel
+                    // Gunner schiet een gewone of GIGANTISCHE plasma kogel
                     projectielen.push({
                         x: this.facing === 1 ? this.x + this.width + 10 : this.x - 25,
-                        y: this.y + 20,
-                        vx: this.facing * 11,
+                        y: this.isFinalSmashing ? this.y : this.y + 20,
+                        vx: this.facing * (this.isFinalSmashing ? 14 : 11),
                         damage: stats.damage,
                         knockback: stats.knockback,
+                        isMega: this.isFinalSmashing,
                         owner: this
                     });
                 } else {
-                    // Berekening klappen voor zwaard en vuist
+                    // Hitbox check voor fysieke klassen (Brawler & SwordFighter)
                     let hitzoneX = this.facing === 1 ? this.x + this.width : this.x - stats.range;
                     if (hitzoneX < opponent.x + opponent.width && hitzoneX + stats.range > opponent.x &&
                         this.y < opponent.y + opponent.height && this.y + this.height > opponent.y) {
                         
                         opponent.percentage += stats.damage;
-                        let finalKnockback = stats.knockback + (opponent.percentage * 0.14);
+                        let finalKnockback = stats.knockback + (opponent.percentage * 0.16);
                         opponent.vx = this.facing * finalKnockback;
-                        opponent.vy = -4 - (opponent.percentage * 0.08);
+                        opponent.vy = -5 - (opponent.percentage * 0.1);
+                        
+                        if (this.isFinalSmashing) flashScreen(); // Scherm flitst bij Final Smash impact!
                     }
                 }
             }
@@ -266,6 +273,9 @@
         const keys = {};
         window.addEventListener("keydown", (e) => { keys[e.code] = true; });
         window.addEventListener("keyup", (e) => { keys[e.code] = false; });
+
+        let screenFlashTimer = 0;
+        function flashScreen() { screenFlashTimer = 6; } // Laat het scherm 6 frames wit flitsen
 
         function handleInput() {
             if (keys[p1.controls.left]) p1.vx = -5;
@@ -300,27 +310,28 @@
                 let proj = projectielen[i];
                 proj.x += proj.vx;
 
-                // Plasma kogel gloed effect
-                ctx.fillStyle = "cyan";
-                ctx.fillRect(proj.x, proj.y, 16, 6);
-                ctx.fillStyle = "white";
-                ctx.fillRect(proj.x + 3, proj.y + 1, 10, 4);
+                // Teken kogel (Mega groot als het een Final Smash kogel is!)
+                let pSize = proj.isMega ? 30 : 6;
+                ctx.fillStyle = proj.isMega ? "#ffaa00" : "cyan";
+                ctx.fillRect(proj.x, proj.y, proj.isMega ? 60 : 16, pSize);
 
                 let target = (proj.owner === p1) ? p2 : p1;
                 
                 if (proj.x > target.x && proj.x < target.x + target.width && 
-                    proj.y > target.y && proj.y < target.y + target.height) {
+                    proj.y > target.y && proj.y < target.y + target.height + (proj.isMega ? 20 : 0)) {
                     
                     target.percentage += proj.damage;
-                    let kb = proj.knockback + (target.percentage * 0.1);
+                    let kb = proj.knockback + (target.percentage * 0.12);
                     target.vx = (proj.vx > 0 ? 1 : -1) * kb;
-                    target.vy = -3.5;
+                    target.vy = proj.isMega ? -6 : -3.5;
+                    
+                    if (proj.isMega) flashScreen();
                     
                     projectielen.splice(i, 1);
                     continue;
                 }
 
-                if (proj.x < 0 || proj.x > canvas.width) {
+                if (proj.x < -100 || proj.x > canvas.width + 100) {
                     projectielen.splice(i, 1);
                 }
             }
@@ -351,26 +362,40 @@
             p1.update();
             p2.update();
 
-            // Sfeervolle achtergrondgrid (Gridlijntjes)
-            ctx.strokeStyle = "rgba(255,255,255,0.03)";
+            // Grid op de achtergrond
+            ctx.strokeStyle = "rgba(255,255,255,0.02)";
             for(let i=0; i<canvas.width; i+=40) { ctx.strokeRect(i, 0, 40, canvas.height); }
 
-            // Teken de Stage (Zwevend platform met neon randje)
+            // Stage (Neon platform)
             ctx.fillStyle = "#333";
             ctx.fillRect(stage.x, stage.y, stage.width, stage.height);
-            ctx.fillStyle = "#ff4500";
-            ctx.fillRect(stage.x, stage.y, stage.width, 4); // Neon bovenkant
+            ctx.fillStyle = "#ffaa00";
+            ctx.fillRect(stage.x, stage.y, stage.width, 4); 
 
             p1.draw();
             p2.draw();
             updateProjectiles();
 
-            // UI percentages updaten
-            document.getElementById("p1-ui").style.color = classStats[p1.type].color;
-            document.getElementById("p1-ui").innerText = `P1 (${p1.type}): ${p1.percentage}%`;
+            // Scherm flitsen bij een Final Smash impact
+            if (screenFlashTimer > 0) {
+                ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                screenFlashTimer--;
+            }
+
+            // UI percentages en Final Smash gloed-indicator toevoegen aan de UI boxen
+            let p1UI = document.getElementById("p1-ui");
+            let p2UI = document.getElementById("p2-ui");
+
+            p1UI.style.color = classStats[p1.type].color;
+            p1UI.innerText = `P1 (${p1.type}): ${p1.percentage}%`;
+            if (p1.percentage >= 100 && p1.percentage <= 230) p1UI.classList.add("final-smash-ready");
+            else p1UI.classList.remove("final-smash-ready");
             
-            document.getElementById("p2-ui").style.color = classStats[p2.type].color;
-            document.getElementById("p2-ui").innerText = `${isCPUGame ? 'CPU' : 'P2'} (${p2.type}): ${p2.percentage}%`;
+            p2UI.style.color = classStats[p2.type].color;
+            p2UI.innerText = `${isCPUGame ? 'CPU' : 'P2'} (${p2.type}): ${p2.percentage}%`;
+            if (p2.percentage >= 100 && p2.percentage <= 230) p2UI.classList.add("final-smash-ready");
+            else p2UI.classList.remove("final-smash-ready");
 
             requestAnimationFrame(gameLoop);
         }
