@@ -3,61 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super Smash Browser - Character Select</title>
+    <title>Super Smash Browser - Animated Classes</title>
     <style>
         body {
             margin: 0; background: #111; color: white;
-            font-family: Arial, sans-serif; display: flex;
+            font-family: 'Segoe UI', Arial, sans-serif; display: flex;
             flex-direction: column; align-items: center; justify-content: center;
             height: 100vh; overflow: hidden;
         }
         #menu {
-            position: absolute; background: rgba(20, 20, 20, 0.95);
+            position: absolute; background: rgba(15, 15, 25, 0.98);
             width: 800px; height: 500px; display: flex;
             flex-direction: column; align-items: center; justify-content: center;
-            border: 4px solid #fff; z-index: 10;
-            box-shadow: 0 0 30px rgba(0,0,0,0.8);
+            border: 4px solid #ff4500; z-index: 10;
+            box-shadow: 0 0 40px rgba(255, 69, 0, 0.3);
+            border-radius: 10px;
         }
         .btn {
-            background: #ff4500; color: white; border: none;
-            padding: 12px 25px; margin: 10px; font-size: 16px;
+            background: linear-gradient(135deg, #ff4500, #ff6347); color: white; border: none;
+            padding: 15px 30px; margin: 10px; font-size: 18px;
             cursor: pointer; font-weight: bold; border-radius: 5px;
-            width: 250px; transition: 0.2s;
+            width: 300px; transition: 0.2s; box-shadow: 0 4px 15px rgba(0,0,0,0.4);
         }
-        .btn:hover { background: #ff6347; transform: scale(1.05); }
-        .select-container {
-            display: flex; gap: 40px; margin-bottom: 20px;
-        }
+        .btn:hover { transform: scale(1.05); filter: brightness(1.2); }
+        .select-container { display: flex; gap: 40px; margin-bottom: 30px; }
         .select-box {
-            background: #222; border: 2px dashed #555; padding: 15px; border-radius: 5px; text-align: center;
+            background: #1a1a24; border: 2px solid #333; padding: 20px; border-radius: 8px; text-align: center;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
         }
         select {
-            padding: 8px; font-size: 16px; margin-top: 10px; background: #333; color: white; border: 1px solid #666;
+            padding: 10px; font-size: 16px; margin-top: 12px; background: #222; color: white; border: 1px solid #555;
+            border-radius: 4px; cursor: pointer;
         }
-        canvas { background: #222; border: 4px solid #fff; display: none; }
-        #ui { display: none; justify-content: space-around; width: 800px; margin-top: 10px; font-size: 24px; font-weight: bold; }
+        canvas { background: linear-gradient(to bottom, #1a1c2e, #0f101b); border: 4px solid #333; border-radius: 6px; display: none; box-shadow: 0 10px 30px rgba(0,0,0,0.7); }
+        #ui { display: none; justify-content: space-around; width: 800px; margin-top: 15px; font-size: 26px; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); }
+        .p-ui-box { padding: 10px 20px; border-radius: 8px; background: rgba(0,0,0,0.4); min-width: 250px; text-align: center; }
     </style>
 </head>
 <body>
 
     <div id="menu">
-        <h1 style="font-size: 36px; margin-bottom: 20px; letter-spacing: 2px;">SUPER SMASH BROWSER</h1>
+        <h1 style="font-size: 40px; margin-bottom: 5px; color: #ff4500; text-shadow: 0 0 10px rgba(255,69,0,0.5);">SUPER SMASH BROWSER</h1>
+        <p style="color: #666; margin-bottom: 25px;">Animated Edition</p>
         
         <div class="select-container">
-            <div class="select-box">
+            <div class="select-box" style="border-top: 4px solid #ff3333;">
                 <h3>Speler 1</h3>
                 <select id="p1Char">
-                    <option value="SwordFighter">SwordFighter (Zwaard)</option>
-                    <option value="Brawler">Brawler (Vuisten)</option>
-                    <option value="Gunner">Gunner (Wapen)</option>
+                    <option value="Brawler">Brawler 🥊</option>
+                    <option value="SwordFighter">SwordFighter ⚔️</option>
+                    <option value="Gunner">Gunner 🔫</option>
                 </select>
             </div>
-            <div class="select-box">
+            <div class="select-box" style="border-top: 4px solid #3333ff;">
                 <h3>Speler 2 / CPU</h3>
                 <select id="p2Char">
-                    <option value="Brawler">Brawler (Vuisten)</option>
-                    <option value="SwordFighter">SwordFighter (Zwaard)</option>
-                    <option value="Gunner">Gunner (Wapen)</option>
+                    <option value="SwordFighter">SwordFighter ⚔️</option>
+                    <option value="Brawler">Brawler 🥊</option>
+                    <option value="Gunner">Gunner 🔫</option>
                 </select>
             </div>
         </div>
@@ -65,14 +68,14 @@
         <button class="btn" id="btnLocal">2 SPELERS (LOKAAL)</button>
         <button class="btn" id="btnCPU">SPELEN VS CPU</button>
         
-        <p style="color: #aaa; font-size: 14px; margin-top: 15px;">P1: A-D (Lopen), W (Springen), F (Aanvallen)</p>
-        <p style="color: #aaa; font-size: 14px;">P2: Pijltjes (Lopen), Omhoog (Springen), Punt . (Aanvallen)</p>
+        <p style="color: #888; font-size: 13px; margin-top: 20px;">P1: A-D (Lopen), W (Springen), F (Aanvallen)</p>
+        <p style="color: #888; font-size: 13px;">P2: Pijltjes (Lopen), Omhoog (Springen), Punt . (Aanvallen)</p>
     </div>
 
     <canvas id="gameCanvas" width="800" height="500"></canvas>
     <div id="ui">
-        <div id="p1-ui">Speler 1: 0%</div>
-        <div id="p2-ui">Speler 2: 0%</div>
+        <div id="p1-ui" class="p-ui-box" style="border-bottom: 4px solid #ff3333;">Speler 1: 0%</div>
+        <div id="p2-ui" class="p-ui-box" style="border-bottom: 4px solid #3333ff;">Speler 2: 0%</div>
     </div>
 
     <script>
@@ -85,13 +88,12 @@
         let isCPUGame = false;
         let projectielen = [];
 
-        const stage = { x: 150, y: 350, width: 500, height: 40 };
+        const stage = { x: 150, y: 350, width: 500, height: 30 };
 
-        // Stats per klasse
         const classStats = {
-            SwordFighter: { color: "#ff3333", damage: 12, range: 45, knockback: 8 },
-            Brawler:      { color: "#33ff33", damage: 18, range: 25, knockback: 12 },
-            Gunner:       { color: "#3333ff", damage: 7,  range: 0,  knockback: 5 } // Maakt projectielen aan
+            SwordFighter: { color: "#ff5555", weaponColor: "#e0e0e0", damage: 14, range: 55, knockback: 9 },
+            Brawler:      { color: "#55ff55", weaponColor: "#ff0000", damage: 19, range: 35, knockback: 13 },
+            Gunner:       { color: "#5555ff", weaponColor: "#777777", damage: 6,  range: 0,  knockback: 5 }
         };
 
         class Player {
@@ -105,9 +107,12 @@
                 this.isGrounded = false;
                 this.controls = controls;
                 this.facing = 1; 
+                
+                // Animatie variabelen
+                this.attackTimer = 0;
+                this.animFrame = 0;
             }
 
-            // Methode om de gekozen klasse in te stellen
             setClass(type) {
                 this.type = type;
                 this.color = classStats[type].color;
@@ -123,74 +128,151 @@
 
                 this.vx *= this.isGrounded ? 0.8 : 0.95;
 
+                // Loop-animatie frame omhoog gooien als we bewegen
+                if (Math.abs(this.vx) > 0.2 && this.isGrounded) {
+                    this.animFrame += 0.2;
+                }
+
+                // Aanvalstimer afbouwen
+                if (this.attackTimer > 0) this.attackTimer--;
+
                 // Stage Collision
                 if (this.x + this.width > stage.x && this.x < stage.x + stage.width &&
                     this.y + this.height <= stage.y + 10 && this.y + this.height + this.vy >= stage.y) {
                     this.y = stage.y - this.height; this.vy = 0; this.isGrounded = true;
                 } else { this.isGrounded = false; }
 
-                // Blast zones (Doodgaan)
+                // Blast zones
                 if (this.y > canvas.height || this.x < 0 || this.x > canvas.width) {
                     this.x = canvas.width / 2; this.y = 100; this.vx = 0; this.vy = 0; this.percentage = 0;
                 }
             }
 
             draw() {
+                let centerX = this.x + this.width / 2;
+                let centerY = this.y + this.height / 2;
+                let weaponColor = classStats[this.type].weaponColor;
+
+                ctx.save();
+                ctx.translate(centerX, centerY);
+                ctx.scale(this.facing, 1); // Zorgt ervoor dat alles automatisch omdraait naar links/rechts
+
+                // --- 1. BENEN (Lopen animatie op basis van Sinus)
+                let legSwing = Math.sin(this.animFrame) * 10;
+                ctx.fillStyle = "#222";
+                if (!this.isGrounded) legSwing = 8; // Spring-houding
+                ctx.fillRect(-12, 15, 8, 15 + legSwing * 0.3); 
+                ctx.fillRect(4, 15, 8, 15 - legSwing * 0.3);
+
+                // --- 2. LICHAAM
                 ctx.fillStyle = this.color;
-                ctx.fillRect(this.x, this.y, this.width, this.height);
+                ctx.fillRect(-15, -15, 30, 32);
+
+                // --- 3. HOOFD
+                ctx.fillStyle = "#ffdbac"; // Huidskleur
+                ctx.fillRect(-10, -33, 20, 18);
+                // Oog (kijkt altijd de goede kant op door de scale)
+                ctx.fillStyle = "#000";
+                ctx.fillRect(4, -28, 3, 4);
+
+                // --- 4. WAPEN / ARM ANIMATIE
+                ctx.fillStyle = weaponColor;
                 
-                // Richtingaanwijzer (wapen/vizier)
-                ctx.fillStyle = "white";
-                ctx.fillRect(this.facing === 1 ? this.x + this.width - 8 : this.x + 3, this.y + 15, 5, 5);
+                let ext = 0; // Hoeveel de arm uitschuift bij een aanval
+                if (this.attackTimer > 0) {
+                    ext = Math.sin((this.attackTimer / 12) * Math.PI) * 25; // Punch/Slash beweging
+                }
+
+                if (this.type === "Brawler") {
+                    // Kickbox handschoenen!
+                    ctx.fillStyle = weaponColor; // Rood
+                    // Achterste arm
+                    ctx.fillRect(-5, -5, 15, 8);
+                    // Voorste arm (slaat uit!)
+                    ctx.fillStyle = weaponColor;
+                    ctx.fillRect(5, -8, 12 + ext, 10); // Arm
+                    ctx.fillStyle = "#fff"; // Grote witte boksbal-vuisthandschoen
+                    ctx.beginPath();
+                    ctx.arc(17 + ext, -3, 8, 0, Math.PI * 2);
+                    ctx.fill();
+                } 
+                else if (this.type === "SwordFighter") {
+                    // Zwaardvechter met zwaai-animatie
+                    ctx.save();
+                    ctx.translate(8, -2);
+                    if (this.attackTimer > 0) {
+                        // Zwaai het zwaard omlaag tijdens aanval
+                        ctx.rotate((ext / 25) * Math.PI / 2 - Math.PI/4);
+                    } else {
+                        ctx.rotate(-Math.PI / 4); // Rustpositie (schuin omhoog)
+                    }
+                    // Het Zwaard zelf
+                    ctx.fillStyle = "#555"; // Handvat
+                    ctx.fillRect(0, -2, 6, 4);
+                    ctx.fillStyle = weaponColor; // Kling
+                    ctx.fillRect(6, -3, 32, 6);
+                    ctx.restore();
+                } 
+                else if (this.type === "Gunner") {
+                    // Mega Man-achtige Arm Cannon!
+                    ctx.fillStyle = this.color;
+                    ctx.fillRect(2, -7, 15, 10); // Bovenarm
+                    ctx.fillStyle = weaponColor;
+                    ctx.fillRect(14, -9, 14 + (ext * 0.2), 14); // De dikke Arm Gun
+                    // Lichtgevende loop
+                    ctx.fillStyle = "cyan";
+                    ctx.fillRect(26 + (ext * 0.2), -6, 3, 8);
+                }
+
+                ctx.restore();
             }
 
             jump() { if (this.isGrounded) this.vy = -12; }
 
             attack(opponent) {
+                if (this.attackTimer > 0) return; // Kan niet aanvallen tijdens huidige animatie
+                
+                this.attackTimer = 12; // Start animatie (duurt 12 frames)
                 const stats = classStats[this.type];
 
                 if (this.type === "Gunner") {
-                    // Gunner schiet een kogel
+                    // Schiet een lichtgevende energiekogel
                     projectielen.push({
-                        x: this.facing === 1 ? this.x + this.width : this.x - 15,
-                        y: this.y + 25,
-                        vx: this.facing * 10,
+                        x: this.facing === 1 ? this.x + this.width + 10 : this.x - 25,
+                        y: this.y + 20,
+                        vx: this.facing * 11,
                         damage: stats.damage,
                         knockback: stats.knockback,
                         owner: this
                     });
                 } else {
-                    // SwordFighter en Brawler gebruiken fysieke hitboxes
+                    // Berekening klappen voor zwaard en vuist
                     let hitzoneX = this.facing === 1 ? this.x + this.width : this.x - stats.range;
                     if (hitzoneX < opponent.x + opponent.width && hitzoneX + stats.range > opponent.x &&
                         this.y < opponent.y + opponent.height && this.y + this.height > opponent.y) {
                         
                         opponent.percentage += stats.damage;
-                        let finalKnockback = stats.knockback + (opponent.percentage * 0.12);
+                        let finalKnockback = stats.knockback + (opponent.percentage * 0.14);
                         opponent.vx = this.facing * finalKnockback;
-                        opponent.vy = -3 - (opponent.percentage * 0.08);
+                        opponent.vy = -4 - (opponent.percentage * 0.08);
                     }
                 }
             }
         }
 
-        // Spelers initialiseren (zonder klasse, die zetten we bij de start)
         const p1 = new Player(250, 200, { left: "KeyA", right: "KeyD", up: "KeyW", attack: "KeyF" });
         const p2 = new Player(500, 200, { left: "ArrowLeft", right: "ArrowRight", up: "ArrowUp", attack: "Period" });
 
-        // Toetsenbord inputs
         const keys = {};
         window.addEventListener("keydown", (e) => { keys[e.code] = true; });
         window.addEventListener("keyup", (e) => { keys[e.code] = false; });
 
         function handleInput() {
-            // Speler 1 (A, D, W, F)
             if (keys[p1.controls.left]) p1.vx = -5;
             if (keys[p1.controls.right]) p1.vx = 5;
             if (keys[p1.controls.up]) p1.jump();
             if (keys[p1.controls.attack]) { p1.attack(p2); keys[p1.controls.attack] = false; }
 
-            // Speler 2 (Alleen als het GEEN CPU game is)
             if (!isCPUGame) {
                 if (keys[p2.controls.left]) p2.vx = -5;
                 if (keys[p2.controls.right]) p2.vx = 5;
@@ -202,16 +284,13 @@
         function updateCPU() {
             if (!isCPUGame) return;
 
-            // Loop naar P1 toe
-            if (p2.x < p1.x - 40) p2.vx = 2.5;
-            else if (p2.x > p1.x + 40) p2.vx = -2.5;
+            if (p2.x < p1.x - 30) p2.vx = 2.5;
+            else if (p2.x > p1.x + 30) p2.vx = -2.5;
 
-            // Spring willekeurig als P1 hoger is
             if (p1.y < p2.y - 40 && Math.random() < 0.03) p2.jump();
 
-            // Val aan op basis van klasse-bereik
-            let attackRange = p2.type === "Gunner" ? 250 : 60;
-            if (Math.abs(p2.x - p1.x) < attackRange && Math.random() < 0.05) {
+            let attackRange = p2.type === "Gunner" ? 300 : 55;
+            if (Math.abs(p2.x - p1.x) < attackRange && Math.random() < 0.04) {
                 p2.attack(p1);
             }
         }
@@ -221,26 +300,26 @@
                 let proj = projectielen[i];
                 proj.x += proj.vx;
 
-                // Teken de kogel
-                ctx.fillStyle = "yellow";
-                ctx.fillRect(proj.x, proj.y, 15, 8);
+                // Plasma kogel gloed effect
+                ctx.fillStyle = "cyan";
+                ctx.fillRect(proj.x, proj.y, 16, 6);
+                ctx.fillStyle = "white";
+                ctx.fillRect(proj.x + 3, proj.y + 1, 10, 4);
 
                 let target = (proj.owner === p1) ? p2 : p1;
                 
-                // Check of de kogel de tegenstander raakt
                 if (proj.x > target.x && proj.x < target.x + target.width && 
                     proj.y > target.y && proj.y < target.y + target.height) {
                     
                     target.percentage += proj.damage;
                     let kb = proj.knockback + (target.percentage * 0.1);
                     target.vx = (proj.vx > 0 ? 1 : -1) * kb;
-                    target.vy = -3;
+                    target.vy = -3.5;
                     
                     projectielen.splice(i, 1);
                     continue;
                 }
 
-                // Kogel verwijderen buiten beeld
                 if (proj.x < 0 || proj.x > canvas.width) {
                     projectielen.splice(i, 1);
                 }
@@ -251,11 +330,9 @@
             isCPUGame = vsCPU;
             gameState = "PLAYING";
             
-            // Haal de gekozen klasses op uit de menu dropdowns
             p1.setClass(document.getElementById("p1Char").value);
             p2.setClass(document.getElementById("p2Char").value);
 
-            // Schakel UI om
             document.getElementById("menu").style.display = "none";
             canvas.style.display = "block";
             document.getElementById("ui").style.display = "flex";
@@ -274,22 +351,30 @@
             p1.update();
             p2.update();
 
-            // Teken de Stage (Platform)
-            ctx.fillStyle = "#666";
+            // Sfeervolle achtergrondgrid (Gridlijntjes)
+            ctx.strokeStyle = "rgba(255,255,255,0.03)";
+            for(let i=0; i<canvas.width; i+=40) { ctx.strokeRect(i, 0, 40, canvas.height); }
+
+            // Teken de Stage (Zwevend platform met neon randje)
+            ctx.fillStyle = "#333";
             ctx.fillRect(stage.x, stage.y, stage.width, stage.height);
+            ctx.fillStyle = "#ff4500";
+            ctx.fillRect(stage.x, stage.y, stage.width, 4); // Neon bovenkant
 
             p1.draw();
             p2.draw();
             updateProjectiles();
 
-            // UI percentages en klassenaam updaten
-            document.getElementById("p1-ui").innerText = `Speler 1 (${p1.type}): ${p1.percentage}%`;
-            document.getElementById("p2-ui").innerText = `${isCPUGame ? 'CPU' : 'Speler 2'} (${p2.type}): ${p2.percentage}%`;
+            // UI percentages updaten
+            document.getElementById("p1-ui").style.color = classStats[p1.type].color;
+            document.getElementById("p1-ui").innerText = `P1 (${p1.type}): ${p1.percentage}%`;
+            
+            document.getElementById("p2-ui").style.color = classStats[p2.type].color;
+            document.getElementById("p2-ui").innerText = `${isCPUGame ? 'CPU' : 'P2'} (${p2.type}): ${p2.percentage}%`;
 
             requestAnimationFrame(gameLoop);
         }
 
-        // Knoppen activeren via JavaScript Event Listeners
         document.getElementById("btnLocal").addEventListener("click", () => startScherm(false));
         document.getElementById("btnCPU").addEventListener("click", () => startScherm(true));
     });
