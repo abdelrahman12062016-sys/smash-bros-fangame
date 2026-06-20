@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super Smash Browser - Shield & Juice Edition</title>
+    <title>Super Smash Browser - Master Edition</title>
     <style>
         body {
             margin: 0; background: #05050d; color: white;
@@ -17,7 +17,7 @@
             flex-direction: column; align-items: center; justify-content: center;
             border: 4px solid #ff9900; z-index: 10;
             box-shadow: 0 0 40px rgba(255, 153, 0, 0.3);
-            border-radius: 12px;
+            border-radius: 12px; overflow-y: auto; padding: 20px; box-sizing: border-box;
         }
         #victoryScreen {
             display: none; background: rgba(5, 5, 10, 0.96); border-color: #00ffcc;
@@ -31,18 +31,20 @@
         }
         .btn:hover { transform: scale(1.05); filter: brightness(1.2); }
         .btn-victory { background: linear-gradient(135deg, #00ffcc, #0099ff); }
-        .select-container { display: flex; gap: 25px; margin-bottom: 20px; flex-wrap: wrap; justify-content: center; }
+        .select-container { display: flex; gap: 20px; margin-bottom: 15px; flex-wrap: wrap; justify-content: center; }
         .select-box {
-            background: #131324; border: 2px solid #2a2a40; padding: 15px; border-radius: 8px; text-align: center; min-width: 180px;
+            background: #131324; border: 2px solid #2a2a40; padding: 12px; border-radius: 8px; text-align: center; min-width: 170px;
         }
-        select {
-            padding: 8px; font-size: 15px; margin-top: 10px; background: #222; color: white; border: 1px solid #555;
-            border-radius: 4px; cursor: pointer; width: 100%;
+        select, input[type="color"] {
+            padding: 6px; font-size: 14px; margin-top: 8px; background: #222; color: white; border: 1px solid #555;
+            border-radius: 4px; cursor: pointer; width: 100%; box-sizing: border-box;
         }
+        input[type="color"] { height: 35px; padding: 2px; }
         canvas { background: #000; border: 4px solid #222; border-radius: 8px; display: none; box-shadow: 0 15px 35px rgba(0,0,0,0.8); }
         #ui { display: none; justify-content: space-around; width: 800px; margin-top: 15px; font-size: 22px; font-weight: bold; }
         .p-ui-box { padding: 10px 20px; border-radius: 8px; background: rgba(0,0,0,0.5); min-width: 280px; text-align: center; }
         .stocks { color: #ffaa00; font-size: 18px; margin-top: 4px; }
+        .stats-grid { display: flex; gap: 40px; margin: 15px 0; text-align: left; font-size: 16px; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; }
         .final-smash-ready { animation: glow 0.5s infinite alternate; border-color: #ffaa00 !important; }
         @keyframes glow { from { box-shadow: 0 0 10px #ffaa00; } to { box-shadow: 0 0 25px #ff4500; } }
     </style>
@@ -50,8 +52,8 @@
 <body>
 
     <div id="menu">
-        <h1 style="font-size: 38px; margin-bottom: 5px; color: #ff9900; text-shadow: 0 0 15px rgba(255,153,0,0.4);">SUPER SMASH BROWSER</h1>
-        <p style="color: #555577; margin-bottom: 20px; font-weight: bold; font-size: 14px;">SHIELDS • SCREENSHAKE • PARTICLES</p>
+        <h1 style="font-size: 36px; margin: 0 0 5px 0; color: #ff9900; text-shadow: 0 0 15px rgba(255,153,0,0.4); text-align:center;">SUPER SMASH BROWSER</h1>
+        <p style="color: #555577; margin-bottom: 15px; font-weight: bold; font-size: 13px; text-align:center;">MASTER EDITION</p>
         
         <div class="select-container">
             <div class="select-box" style="border-top: 4px solid #ff4444;">
@@ -61,6 +63,8 @@
                     <option value="SwordFighter">SwordFighter ⚔️</option>
                     <option value="Gunner">Gunner 🔫</option>
                 </select>
+                <label style="font-size:11px; display:block; margin-top:8px;">Kleur Outfit:</label>
+                <input type="color" id="p1Color" value="#ff5555">
             </div>
             <div class="select-box" style="border-top: 4px solid #4444ff;">
                 <h3>Speler 2 / CPU</h3>
@@ -69,33 +73,46 @@
                     <option value="Brawler">Brawler 🥊</option>
                     <option value="Gunner">Gunner 🔫</option>
                 </select>
+                <label style="font-size:11px; display:block; margin-top:8px;">Kleur Outfit:</label>
+                <input type="color" id="p2Color" value="#5555ff">
             </div>
             <div class="select-box" style="border-top: 4px solid #00ffcc;">
                 <h3>Kies Stage</h3>
                 <select id="stageSelect">
-                    <option value="Battlefield">Battlefield (Met Platformen)</option>
+                    <option value="Battlefield">Battlefield (Platformen)</option>
                     <option value="FinalDestination">Final Destination (Vlak)</option>
-                    <option value="ThePit">The Pit (Smal & Gevaarlijk)</option>
+                    <option value="ThePit">The Pit (Smal)</option>
                 </select>
             </div>
         </div>
 
         <button class="btn" id="btnLocal">2 SPELERS (LOKAAL)</button>
         <button class="btn" id="btnCPU">SPELEN VS CPU</button>
-        
-        <p style="color: #666; font-size: 11px; margin-top: 10px;">P1: A-D (Lopen), W (Springen), F (Aanval), G (Special), <b>Shift (Schild)</b></p>
-        <p style="color: #666; font-size: 11px;">P2: ◄ ► (Lopen), ▲ (Springen), . (Aanval), / (Special), <b>▼ (Schild)</b></p>
     </div>
 
     <div id="victoryScreen">
-        <h1 id="victoryTitle" style="font-size: 50px; color: #00ffcc; text-shadow: 0 0 20px rgba(0,255,204,0.5); margin-bottom: 10px;">VICTORY!</h1>
-        <p id="victorySub" style="font-size: 20px; color: #8a8a9e; margin-bottom: 30px;">Speler 1 wint de match!</p>
+        <h1 id="victoryTitle" style="font-size: 45px; color: #00ffcc; text-shadow: 0 0 20px rgba(0,255,204,0.5); margin: 0 0 5px 0;">VICTORY!</h1>
+        <p id="victorySub" style="font-size: 18px; color: #8a8a9e; margin-bottom: 10px;">Speler 1 wint de match!</p>
+        
+        <div class="stats-grid">
+            <div>
+                <h4 id="st-p1-title" style="color:#ff4444; margin:0 0 8px 0;">Speler 1</h4>
+                <p id="st-p1-dmg">Uitgedeelde Schade: 0%</p>
+                <p id="st-p1-blk">Succesvolle Blocks: 0</p>
+            </div>
+            <div style="border-left: 1px solid #333; padding-left: 40px;">
+                <h4 id="st-p2-title" style="color:#4444ff; margin:0 0 8px 0;">Speler 2</h4>
+                <p id="st-p2-dmg">Uitgedeelde Schade: 0%</p>
+                <p id="st-p2-blk">Succesvolle Blocks: 0</p>
+            </div>
+        </div>
+
         <button class="btn btn-victory" id="btnBackToMenu">TERUG NAAR MENU</button>
     </div>
 
     <canvas id="gameCanvas" width="800" height="500"></canvas>
     <div id="ui">
-        <div id="p1-ui" class="p-ui-box" style="border-bottom: 4px solid #ff4444;">P1: 0% <div class="stocks">⭐⭐⭐</div></div>
+        <div id="p1-ui" class="p-ui-box" style="border-bottom: 4px solid #ff4444;">P1: 0% <div class="stocks">⭐⭐•</div></div>
         <div id="p2-ui" class="p-ui-box" style="border-bottom: 4px solid #4444ff;">P2: 0% <div class="stocks">⭐⭐⭐</div></div>
     </div>
 
@@ -105,27 +122,53 @@
         const ctx = canvas.getContext("2d");
         const gravity = 0.5;
 
+        // Audio Context voor procedurele geluiden
+        let audioCtx = null;
+        function initAudio() { if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+        
+        function playSound(type) {
+            if(!audioCtx) return;
+            let osc = audioCtx.createOscillator();
+            let gain = audioCtx.createGain();
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            let now = audioCtx.currentTime;
+
+            if(type === "jump") {
+                osc.type = "square"; osc.frequency.setValueAtTime(150, now); osc.frequency.exponentialRampToValueAtTime(400, now + 0.15);
+                gain.gain.setValueAtTime(0.1, now); gain.gain.linearRampToValueAtTime(0, now + 0.15); osc.start(now); osc.stop(now + 0.15);
+            } else if(type === "hit") {
+                osc.type = "sawtooth"; osc.frequency.setValueAtTime(120, now); osc.frequency.linearRampToValueAtTime(40, now + 0.1);
+                gain.gain.setValueAtTime(0.2, now); gain.gain.linearRampToValueAtTime(0, now + 0.1); osc.start(now); osc.stop(now + 0.1);
+            } else if(type === "laser") {
+                osc.type = "triangle"; osc.frequency.setValueAtTime(600, now); osc.frequency.exponentialRampToValueAtTime(200, now + 0.2);
+                gain.gain.setValueAtTime(0.1, now); gain.gain.linearRampToValueAtTime(0, now + 0.2); osc.start(now); osc.stop(now + 0.2);
+            } else if(type === "block") {
+                osc.type = "sine"; osc.frequency.setValueAtTime(300, now); osc.frequency.setValueAtTime(150, now + 0.05);
+                gain.gain.setValueAtTime(0.15, now); gain.gain.linearRampToValueAtTime(0, now + 0.1); osc.start(now); osc.stop(now + 0.1);
+            }
+        }
+
         let gameState = "MENU";
         let isCPUGame = false;
         let projectielen = [];
         let lasers = []; 
-        let particles = []; // Voor de hit-vonken
+        let particles = []; 
         let cameraOffset = 0;
         let screenFlashTimer = 0;
-        
-        // Screenshake variabelen
-        let shakeTimer = 0;
-        let shakeIntensity = 0;
+        let shakeTimer = 0; let shakeIntensity = 0;
 
         let activeStageName = "Battlefield";
         let mainStage = { x: 150, y: 340, width: 500, height: 25, depth: 35 };
         let softPlatforms = [];
 
         const classStats = {
-            SwordFighter: { color: "#ff5555", weaponColor: "#e0e0e0", damage: 13, range: 55, knockback: 6.5 },
-            Brawler:      { color: "#55ff55", weaponColor: "#ff0000", damage: 17, range: 40, knockback: 8.5 },
-            Gunner:       { color: "#5555ff", weaponColor: "#777777", damage: 5,  range: 0,  knockback: 4 }
+            SwordFighter: { weaponColor: "#e0e0e0", damage: 13, range: 55, knockback: 6.5 },
+            Brawler:      { weaponColor: "#ff0000", damage: 17, range: 40, knockback: 8.5 },
+            Gunner:       { weaponColor: "#777777", damage: 5,  range: 0,  knockback: 4 }
         };
+
+        // Scorebord statistieken trackers
+        let statsTracker = { p1: { damageDealt: 0, blocks: 0 }, p2: { damageDealt: 0, blocks: 0 } };
 
         class Player {
             constructor(x, y, controls, isP1) {
@@ -142,69 +185,57 @@
                 this.facing = isP1 ? 1 : -1; 
                 this.isP1 = isP1;
                 
-                this.attackTimer = 0;
-                this.specialTimer = 0;
-                this.animFrame = 0;
-                this.isFinalSmashing = false; 
-                this.respawnTimer = 0;
+                this.attackTimer = 0; this.specialTimer = 0; this.animFrame = 0;
+                this.isFinalSmashing = false; this.respawnTimer = 0;
+                this.isShielding = false; this.shieldHealth = 40;
 
-                // Shield stats
-                this.isShielding = false;
-                this.shieldHealth = 40; // Max schild grootte
+                // Double Jump & Air Dodge
+                this.jumpsLeft = 2;
+                this.airDodgeTimer = 0;
             }
 
-            setClass(type) {
+            setClass(type, chosenColor) {
                 this.type = type;
-                this.color = classStats[type].color;
+                this.color = chosenColor;
             }
 
             resetFull() {
-                this.x = this.startX; this.y = this.startY;
-                this.vx = 0; this.vy = 0;
-                this.percentage = 0;
-                this.stocks = 3;
-                this.isFinalSmashing = false;
-                this.attackTimer = 0;
-                this.specialTimer = 0;
-                this.respawnTimer = 0;
-                this.isShielding = false;
-                this.shieldHealth = 40;
+                this.x = this.startX; this.y = this.startY; this.vx = 0; this.vy = 0;
+                this.percentage = 0; this.stocks = 3; this.isFinalSmashing = false;
+                this.attackTimer = 0; this.specialTimer = 0; this.respawnTimer = 0;
+                this.isShielding = false; this.shieldHealth = 40; this.jumpsLeft = 2; this.airDodgeTimer = 0;
             }
 
             respawn() {
-                this.stocks--;
-                this.x = this.isP1 ? 250 : 550;
-                this.y = 100;
-                this.vx = 0; this.vy = 0;
-                this.percentage = 0;
-                this.respawnTimer = 60;
-                this.shieldHealth = 40;
+                this.stocks--; this.x = this.isP1 ? 250 : 550; this.y = 100; this.vx = 0; this.vy = 0;
+                this.percentage = 0; this.respawnTimer = 60; this.shieldHealth = 40; this.jumpsLeft = 2;
             }
 
             update() {
                 if (this.respawnTimer > 0) this.respawnTimer--;
+                if (this.airDodgeTimer > 0) this.airDodgeTimer--;
 
-                // Schild logica regeneratie / afbraak
-                if (this.isShielding && this.isGrounded) {
-                    this.vx *= 0.2; // Je kunt niet snel lopen tijdens shield
-                    this.shieldHealth -= 0.25;
-                    if (this.shieldHealth <= 5) {
-                        this.isShielding = false; // Schild breekt als het te klein is
-                    }
-                } else {
-                    if (this.shieldHealth < 40) this.shieldHealth += 0.1; // Schild laadt langzaam op
+                // Air dodge physics bevriezing / verplaatsing
+                if (this.airDodgeTimer > 10) {
+                    this.vy = 0;
+                    return; 
                 }
 
-                this.vy += gravity;
-                this.x += this.vx;
-                this.y += this.vy;
+                if (this.isShielding && this.isGrounded) {
+                    this.vx *= 0.2; this.shieldHealth -= 0.25;
+                    if (this.shieldHealth <= 5) this.isShielding = false;
+                } else {
+                    if (this.shieldHealth < 40) this.shieldHealth += 0.1;
+                }
+
+                this.vy += gravity; this.x += this.vx; this.y += this.vy;
 
                 if (this.vx > 0.1 && !this.isShielding) this.facing = 1;
                 if (this.vx < -0.1 && !this.isShielding) this.facing = -1;
-
                 this.vx *= this.isGrounded ? 0.8 : 0.95;
 
                 if (Math.abs(this.vx) > 0.2 && this.isGrounded) this.animFrame += 0.2;
+                if (this.isGrounded) this.jumpsLeft = 2; // Reset jumps
 
                 if (this.attackTimer > 0) {
                     this.attackTimer--;
@@ -212,169 +243,150 @@
                 }
                 if (this.specialTimer > 0) {
                     this.specialTimer--;
-                    if (this.type === "SwordFighter" && this.specialTimer > 5) {
-                        this.vx = this.facing * 6;
-                    }
+                    if (this.type === "SwordFighter" && this.specialTimer > 5) this.vx = this.facing * 6;
                 }
 
-                // Stage collision
+                // Stage collisions
                 if (this.x + this.width > mainStage.x && this.x < mainStage.x + mainStage.width &&
                     this.y + this.height <= mainStage.y + 10 && this.y + this.height + this.vy >= mainStage.y) {
                     this.y = mainStage.y - this.height; this.vy = 0; this.isGrounded = true;
-                } else { 
-                    this.isGrounded = false; 
-                }
+                } else { this.isGrounded = false; }
 
-                // Soft platforms collision
                 if (!this.isGrounded && this.vy >= 0) {
                     for (let plat of softPlatforms) {
                         if (this.x + this.width > plat.x && this.x < plat.x + plat.width &&
                             this.y + this.height <= plat.y + 8 && this.y + this.height + this.vy >= plat.y) {
-                            this.y = plat.y - this.height; this.vy = 0; this.isGrounded = true;
-                            break;
+                            this.y = plat.y - this.height; this.vy = 0; this.isGrounded = true; break;
                         }
                     }
                 }
             }
 
             drawShadow() {
-                if (this.respawnTimer % 4 >= 2) return;
+                if (this.respawnTimer % 4 >= 2 || this.airDodgeTimer > 10) return;
                 if (this.x + this.width > mainStage.x && this.x < mainStage.x + mainStage.width && this.y <= mainStage.y) {
                     let distance = mainStage.y - (this.y + this.height);
                     let shadowWidth = Math.max(8, this.width - (distance * 0.08));
                     let shadowAlpha = Math.max(0, 0.35 - (distance * 0.002));
-                    ctx.fillStyle = `rgba(0, 0, 0, ${shadowAlpha})`;
-                    ctx.beginPath();
-                    ctx.ellipse(this.x + this.width/2, mainStage.y, shadowWidth, 5, 0, 0, Math.PI * 2);
-                    ctx.fill();
+                    ctx.fillStyle = `rgba(0, 0, 0, ${shadowAlpha})`; ctx.beginPath();
+                    ctx.ellipse(this.x + this.width/2, mainStage.y, shadowWidth, 5, 0, 0, Math.PI * 2); ctx.fill();
                 }
             }
 
             draw() {
                 if (this.respawnTimer % 4 >= 2) return;
+                if (this.airDodgeTimer > 10) { // Air dodge doorschijnend effect
+                    ctx.globalAlpha = 0.4;
+                }
 
                 let centerX = this.x + this.width / 2;
                 let centerY = this.y + this.height / 2;
                 let weaponColor = classStats[this.type].weaponColor;
 
-                // Teken Schild bubble indien actief
                 if (this.isShielding) {
-                    ctx.save();
-                    ctx.beginPath();
-                    ctx.arc(centerX, centerY, this.shieldHealth, 0, Math.PI * 2);
+                    ctx.save(); ctx.beginPath(); ctx.arc(centerX, centerY, this.shieldHealth, 0, Math.PI * 2);
                     ctx.fillStyle = this.isP1 ? "rgba(255, 50, 50, 0.4)" : "rgba(50, 50, 255, 0.4)";
                     ctx.strokeStyle = this.isP1 ? "rgba(255, 150, 150, 0.8)" : "rgba(150, 150, 255, 0.8)";
-                    ctx.lineWidth = 2;
-                    ctx.fill();
-                    ctx.stroke();
-                    ctx.restore();
+                    ctx.lineWidth = 2; ctx.fill(); ctx.stroke(); ctx.restore();
                 }
 
                 if (this.isFinalSmashing || (this.specialTimer > 0 && this.type === "Gunner")) {
-                    ctx.save();
-                    ctx.shadowBlur = 35;
-                    ctx.shadowColor = this.isFinalSmashing ? "#ffaa00" : "cyan";
+                    ctx.save(); ctx.shadowBlur = 35; ctx.shadowColor = this.isFinalSmashing ? "#ffaa00" : "cyan";
                 }
 
-                ctx.save();
-                ctx.translate(centerX, centerY);
-                ctx.scale(this.facing, 1);
+                ctx.save(); ctx.translate(centerX, centerY); ctx.scale(this.facing, 1);
 
                 // BENEN
-                let legSwing = Math.sin(this.animFrame) * 10;
-                ctx.fillStyle = "#151525";
+                let legSwing = Math.sin(this.animFrame) * 10; ctx.fillStyle = "#151525";
                 if (!this.isGrounded) legSwing = 8;
-                ctx.fillRect(-12, 15, 8, 15 + legSwing * 0.3); 
-                ctx.fillRect(4, 15, 8, 15 - legSwing * 0.3);
+                ctx.fillRect(-12, 15, 8, 15 + legSwing * 0.3); ctx.fillRect(4, 15, 8, 15 - legSwing * 0.3);
 
                 // LICHAAM
-                ctx.fillStyle = this.color;
-                ctx.fillRect(-15, -15, 30, 32);
+                ctx.fillStyle = this.color; ctx.fillRect(-15, -15, 30, 32);
 
                 // HOOFD
-                ctx.fillStyle = "#ffdbac";
-                ctx.fillRect(-10, -33, 20, 18);
-                ctx.fillStyle = "#000";
-                ctx.fillRect(4, -28, 3, 4);
+                ctx.fillStyle = "#ffdbac"; ctx.fillRect(-10, -33, 20, 18);
+                ctx.fillStyle = "#000"; ctx.fillRect(4, -28, 3, 4);
 
                 // WAPENS
-                let ext = 0;
-                let sizeMultiplier = this.isFinalSmashing ? 2.2 : 1.0; 
-
-                if (this.attackTimer > 0) {
-                    ext = Math.sin((this.attackTimer / 15) * Math.PI) * (25 * sizeMultiplier);
-                }
+                let ext = 0; let sizeMultiplier = this.isFinalSmashing ? 2.2 : 1.0; 
+                if (this.attackTimer > 0) ext = Math.sin((this.attackTimer / 15) * Math.PI) * (25 * sizeMultiplier);
 
                 if (this.type === "Brawler") {
                     ctx.fillStyle = this.isFinalSmashing ? "#ffaa00" : (this.specialTimer > 0 ? "#ff5500" : weaponColor);
                     let upAmt = (this.specialTimer > 0) ? -15 : 0;
                     ctx.fillRect(5, -8 + upAmt, (12 + ext), 10 * sizeMultiplier);
-                    ctx.beginPath();
-                    ctx.arc(17 + ext, -3 + upAmt, 8 * sizeMultiplier, 0, Math.PI * 2);
-                    ctx.fill();
+                    ctx.beginPath(); ctx.arc(17 + ext, -3 + upAmt, 8 * sizeMultiplier, 0, Math.PI * 2); ctx.fill();
                 } 
                 else if (this.type === "SwordFighter") {
-                    ctx.save();
-                    ctx.translate(8, -2);
-                    if (this.specialTimer > 0) {
-                        ctx.rotate(this.specialTimer * 0.7);
-                    } else if (this.attackTimer > 0) {
-                        ctx.rotate((ext / (25 * sizeMultiplier)) * Math.PI / 2 - Math.PI/4);
-                    } else {
-                        ctx.rotate(-Math.PI / 4);
-                    }
-                    ctx.fillStyle = "#444";
-                    ctx.fillRect(0, -2, 6, 4);
-                    ctx.fillStyle = this.isFinalSmashing ? "#ffaa00" : weaponColor;
-                    ctx.fillRect(6, -3, 32 * sizeMultiplier, 6 * sizeMultiplier);
+                    ctx.save(); ctx.translate(8, -2);
+                    if (this.specialTimer > 0) ctx.rotate(this.specialTimer * 0.7);
+                    else if (this.attackTimer > 0) ctx.rotate((ext / (25 * sizeMultiplier)) * Math.PI / 2 - Math.PI/4);
+                    else ctx.rotate(-Math.PI / 4);
+                    ctx.fillStyle = "#444"; ctx.fillRect(0, -2, 6, 4);
+                    ctx.fillStyle = this.isFinalSmashing ? "#ffaa00" : weaponColor; ctx.fillRect(6, -3, 32 * sizeMultiplier, 6 * sizeMultiplier);
                     ctx.restore();
                 } 
                 else if (this.type === "Gunner") {
-                    ctx.fillStyle = this.color;
-                    ctx.fillRect(2, -7, 15, 10);
+                    ctx.fillStyle = this.color; ctx.fillRect(2, -7, 15, 10);
                     ctx.fillStyle = this.isFinalSmashing ? "#ffaa00" : (this.specialTimer > 0 ? "cyan" : weaponColor);
                     ctx.fillRect(14, -9, 14 + (ext * 0.2), 14 * sizeMultiplier);
-                    ctx.fillStyle = "cyan";
-                    ctx.fillRect(26 + (ext * 0.2), -6, 3, 8 * sizeMultiplier);
+                    ctx.fillStyle = "cyan"; ctx.fillRect(26 + (ext * 0.2), -6, 3, 8 * sizeMultiplier);
                 }
 
                 ctx.restore();
                 if (this.isFinalSmashing || (this.specialTimer > 0 && this.type === "Gunner")) ctx.restore(); 
+                ctx.globalAlpha = 1.0;
             }
 
-            jump() { if (this.isGrounded && !this.isShielding) this.vy = -12; }
+            jump() { 
+                if (this.isShielding) return;
+                // Double jump checks
+                if (this.isGrounded) {
+                    this.vy = -12; this.jumpsLeft = 1; playSound("jump");
+                } else if (this.jumpsLeft > 0) {
+                    this.vy = -11; this.jumpsLeft = 0; playSound("jump");
+                    createParticles(this.x + this.width/2, this.y + this.height, "white", 5);
+                }
+            }
+
+            triggerAirDodge(dirX) {
+                if (this.isGrounded || this.airDodgeTimer > 0) return;
+                this.airDodgeTimer = 20; // 20 frames onkwetsbaar flitsen
+                this.vx = dirX * 8; this.vy = -2;
+                createParticles(this.x + this.width/2, this.y + this.height/2, "rgba(255,255,255,0.5)", 8);
+            }
 
             attack(opponent) {
-                if (this.attackTimer > 0 || this.specialTimer > 0 || this.isShielding || gameState !== "PLAYING") return; 
+                if (this.attackTimer > 0 || this.specialTimer > 0 || this.isShielding || this.airDodgeTimer > 10 || gameState !== "PLAYING") return; 
                 
                 this.attackTimer = 15; 
                 let stats = Object.assign({}, classStats[this.type]);
 
                 if (this.percentage >= 100 && this.percentage <= 230) {
                     if (Math.random() < 0.25) { 
-                        this.isFinalSmashing = true;
-                        stats.damage *= 2.2; stats.knockback *= 2.5; stats.range += 30; 
+                        this.isFinalSmashing = true; stats.damage *= 2.2; stats.knockback *= 2.5; stats.range += 30; 
                     }
                 }
 
                 if (this.type === "Gunner") {
+                    playSound("laser");
                     projectielen.push({
-                        x: this.facing === 1 ? this.x + this.width + 10 : this.x - 25,
-                        y: this.isFinalSmashing ? this.y : this.y + 20,
-                        vx: this.facing * (this.isFinalSmashing ? 13 : 10),
-                        damage: stats.damage, knockback: stats.knockback, isMega: this.isFinalSmashing, owner: this
+                        x: this.facing === 1 ? this.x + this.width + 10 : this.x - 25, y: this.isFinalSmashing ? this.y : this.y + 20,
+                        vx: this.facing * (this.isFinalSmashing ? 13 : 10), damage: stats.damage, knockback: stats.knockback, isMega: this.isFinalSmashing, owner: this
                     });
                 } else {
                     let hitzoneX = this.facing === 1 ? this.x + this.width : this.x - stats.range;
                     if (hitzoneX < opponent.x + opponent.width && hitzoneX + stats.range > opponent.x &&
-                        this.y < opponent.y + opponent.height && this.y + this.height > opponent.y) {
+                        this.y < opponent.y + opponent.height && this.y + this.height > opponent.y && opponent.airDodgeTimer <= 10) {
                         
-                        // Check of opponent aan het shielden is
                         if (opponent.isShielding) {
-                            opponent.shieldHealth -= stats.damage * 0.8;
+                            opponent.shieldHealth -= stats.damage * 0.8; playSound("block");
+                            if(this.isP1) statsTracker.p2.blocks++; else statsTracker.p1.blocks++;
                             createParticles(opponent.x + opponent.width/2, opponent.y + opponent.height/2, "cyan", 5);
                         } else {
-                            opponent.percentage += stats.damage;
+                            opponent.percentage += stats.damage; playSound("hit");
+                            if(this.isP1) statsTracker.p1.damageDealt += stats.damage; else statsTracker.p2.damageDealt += stats.damage;
                             opponent.vx = this.facing * (stats.knockback + (opponent.percentage * 0.15));
                             opponent.vy = -4 - (opponent.percentage * 0.08);
                             
@@ -387,36 +399,30 @@
             }
 
             special(opponent) {
-                if (this.attackTimer > 0 || this.specialTimer > 0 || this.isShielding || gameState !== "PLAYING") return;
-
+                if (this.attackTimer > 0 || this.specialTimer > 0 || this.isShielding || this.airDodgeTimer > 10 || gameState !== "PLAYING") return;
                 this.specialTimer = 25;
 
                 if (this.type === "Brawler") {
-                    this.vy = -14;
-                    this.isGrounded = false;
-                    if (Math.abs(this.x - opponent.x) < 50 && this.y > opponent.y - 40 && this.y < opponent.y + opponent.height + 40) {
+                    this.vy = -14; this.isGrounded = false; playSound("jump");
+                    if (Math.abs(this.x - opponent.x) < 50 && this.y > opponent.y - 40 && this.y < opponent.y + opponent.height + 40 && opponent.airDodgeTimer <= 10) {
                         if (opponent.isShielding) {
-                            opponent.shieldHealth -= 12;
+                            opponent.shieldHealth -= 12; playSound("block");
                         } else {
-                            opponent.percentage += 15;
-                            opponent.vy = -13;
-                            opponent.vx = this.facing * 3;
-                            triggerShake(8, 12);
-                            createParticles(opponent.x + opponent.width/2, opponent.y + opponent.height/2, "#ff5500", 15);
+                            opponent.percentage += 15; playSound("hit");
+                            if(this.isP1) statsTracker.p1.damageDealt += 15; else statsTracker.p2.damageDealt += 15;
+                            opponent.vy = -13; opponent.vx = this.facing * 3;
+                            triggerShake(8, 12); createParticles(opponent.x + opponent.width/2, opponent.y + opponent.height/2, "#ff5500", 15);
                         }
                     }
                 } 
                 else if (this.type === "SwordFighter") {
-                    // Verplaatsing via update loop handled continuous hits
+                    playSound("hit");
                 } 
                 else if (this.type === "Gunner") {
+                    playSound("laser");
                     lasers.push({
-                        x: this.facing === 1 ? this.x + this.width : 0,
-                        y: this.y + 10,
-                        width: this.facing === 1 ? canvas.width - (this.x + this.width) : this.x,
-                        height: 20,
-                        timer: 15,
-                        owner: this
+                        x: this.facing === 1 ? this.x + this.width : 0, y: this.y + 10,
+                        width: this.facing === 1 ? canvas.width - (this.x + this.width) : this.x, height: 20, timer: 15, owner: this
                     });
                 }
             }
@@ -426,66 +432,61 @@
         const p2 = new Player(550, 200, { left: "ArrowLeft", right: "ArrowRight", up: "ArrowUp", attack: "Period", special: "Slash", shield: "ArrowDown" }, false);
 
         const keys = {};
-        window.addEventListener("keydown", (e) => { keys[e.code] = true; });
+        window.addEventListener("keydown", (e) => { 
+            initAudio(); 
+            keys[e.code] = true; 
+            
+            // Air dodge trigger check op knopklik
+            if (e.code === p1.controls.shield && !p1.isGrounded) {
+                let dirX = keys[p1.controls.left] ? -1 : (keys[p1.controls.right] ? 1 : 0);
+                p1.triggerAirDodge(dirX);
+            }
+            if (!isCPUGame && e.code === p2.controls.shield && !p2.isGrounded) {
+                let dirX = keys[p2.controls.left] ? -1 : (keys[p2.controls.right] ? 1 : 0);
+                p2.triggerAirDodge(dirX);
+            }
+        });
         window.addEventListener("keyup", (e) => { keys[e.code] = false; });
 
-        // --- NEW JUICE: SCREENSHAKE LOGICA ---
-        function triggerShake(intensity, duration) {
-            shakeTimer = duration;
-            shakeIntensity = intensity;
-        }
+        function triggerShake(intensity, duration) { shakeTimer = duration; shakeIntensity = intensity; }
+        function flashScreen() { screenFlashTimer = 6; } 
 
-        // --- NEW JUICE: PARTICLES LOGICA ---
         function createParticles(x, y, color, amount) {
             for(let i=0; i<amount; i++) {
                 particles.push({
-                    x: x, y: y,
-                    vx: (Math.random() - 0.5) * 8,
-                    vy: (Math.random() - 0.5) * 8,
-                    size: Math.random() * 4 + 2,
-                    alpha: 1,
-                    color: color
+                    x: x, y: y, vx: (Math.random() - 0.5) * 8, vy: (Math.random() - 0.5) * 8,
+                    size: Math.random() * 4 + 2, alpha: 1, color: color
                 });
             }
         }
 
         function updateAndDrawParticles() {
             for(let i = particles.length - 1; i >= 0; i--) {
-                let p = particles[i];
-                p.x += p.vx; p.y += p.vy;
-                p.alpha -= 0.03;
-                ctx.fillStyle = p.color;
-                ctx.globalAlpha = p.alpha;
-                ctx.fillRect(p.x, p.y, p.size, p.size);
-                ctx.globalAlpha = 1.0;
-                if(p.alpha <= 0) particles.splice(i, 1);
+                let p = particles[i]; p.x += p.vx; p.y += p.vy; p.alpha -= 0.03;
+                ctx.fillStyle = p.color; ctx.globalAlpha = p.alpha; ctx.fillRect(p.x, p.y, p.size, p.size);
+                ctx.globalAlpha = 1.0; if(p.alpha <= 0) particles.splice(i, 1);
             }
         }
 
         function handleInput() {
             if (gameState !== "PLAYING") return;
             
-            // Shield status toggles via key hold
             p1.isShielding = keys[p1.controls.shield] && p1.isGrounded;
-            if (!isCPUGame) {
-                p2.isShielding = keys[p2.controls.shield] && p2.isGrounded;
-            }
+            if (!isCPUGame) p2.isShielding = keys[p2.controls.shield] && p2.isGrounded;
 
-            // Speler 1 movement (geblokkeerd bij shield)
-            if (!p1.isShielding) {
+            if (!p1.isShielding && p1.airDodgeTimer <= 10) {
                 if (keys[p1.controls.left]) p1.vx = -5;
                 if (keys[p1.controls.right]) p1.vx = 5;
-                if (keys[p1.controls.up]) p1.jump();
+                if (keys[p1.controls.up]) { p1.jump(); keys[p1.controls.up] = false; }
             }
             if (keys[p1.controls.attack]) { p1.attack(p2); keys[p1.controls.attack] = false; }
             if (keys[p1.controls.special]) { p1.special(p2); keys[p1.controls.special] = false; }
 
-            // Speler 2 movement
             if (!isCPUGame) {
-                if (!p2.isShielding) {
+                if (!p2.isShielding && p2.airDodgeTimer <= 10) {
                     if (keys[p2.controls.left]) p2.vx = -5;
                     if (keys[p2.controls.right]) p2.vx = 5;
-                    if (keys[p2.controls.up]) p2.jump();
+                    if (keys[p2.controls.up]) { p2.jump(); keys[p2.controls.up] = false; }
                 }
                 if (keys[p2.controls.attack]) { p2.attack(p1); keys[p2.controls.attack] = false; }
                 if (keys[p2.controls.special]) { p2.special(p1); keys[p2.controls.special] = false; }
@@ -494,29 +495,27 @@
 
         function updateCPU() {
             if (!isCPUGame || gameState !== "PLAYING") return;
-
             let dist = Math.abs(p2.x - p1.x);
 
-            // CPU verdedigt soms slim als P1 dichtbij aanvalt
             if (dist < 60 && p1.attackTimer > 10 && Math.random() < 0.35 && p2.isGrounded) {
-                p2.isShielding = true;
-                return;
-            } else {
-                p2.isShielding = false;
+                p2.isShielding = true; return;
+            } else { p2.isShielding = false; }
+
+            // CPU slimme double jump terug naar stage
+            if(p2.y > mainStage.y + 20 && p2.jumpsLeft > 0 && Math.random() < 0.05) {
+                p2.jump(); p2.vx = (p2.x < canvas.width/2) ? 4 : -4;
             }
 
-            if (!p2.isShielding) {
+            if (!p2.isShielding && p2.airDodgeTimer <= 10) {
                 if (p2.x < p1.x - 40) p2.vx = 2.5;
                 else if (p2.x > p1.x + 40) p2.vx = -2.5;
                 if (p1.y < p2.y - 40 && Math.random() < 0.03) p2.jump();
             }
 
             if (dist < 60 && Math.random() < 0.04) {
-                if (Math.random() < 0.4) p2.special(p1);
-                else p2.attack(p1);
+                if (Math.random() < 0.4) p2.special(p1); else p2.attack(p1);
             } else if (p2.type === "Gunner" && dist < 300 && Math.random() < 0.02) {
-                if (Math.random() < 0.5) p2.special(p1);
-                else p2.attack(p1);
+                if (Math.random() < 0.5) p2.special(p1); else p2.attack(p1);
             }
         }
 
@@ -524,12 +523,12 @@
             [p1, p2].forEach(p => {
                 let opp = (p === p1) ? p2 : p1;
                 if (p.type === "SwordFighter" && p.specialTimer > 0) {
-                    if (Math.abs(p.x - opp.x) < 65 && Math.abs(p.y - opp.y) < 50) {
+                    if (Math.abs(p.x - opp.x) < 65 && Math.abs(p.y - opp.y) < 50 && opp.airDodgeTimer <= 10) {
                         if (opp.isShielding) {
-                            opp.shieldHealth -= 0.3;
+                            opp.shieldHealth -= 0.3; playSound("block");
                         } else {
-                            opp.percentage += 0.5;
-                            opp.vx = p.facing * 3;
+                            opp.percentage += 0.5; opp.vx = p.facing * 3;
+                            if(p.isP1) statsTracker.p1.damageDealt += 0.5; else statsTracker.p2.damageDealt += 0.5;
                             if (Math.random() < 0.2) createParticles(opp.x + opp.width/2, opp.y + opp.height/2, "white", 1);
                         }
                     }
@@ -537,28 +536,25 @@
             });
 
             for (let i = lasers.length - 1; i >= 0; i--) {
-                let laser = lasers[i];
-                laser.timer--;
+                let laser = lasers[i]; laser.timer--;
                 
                 if (laser.timer < 10) {
-                    ctx.fillStyle = "white";
-                    ctx.fillRect(laser.x, laser.y, laser.width, laser.height);
-                    ctx.fillStyle = "cyan";
-                    ctx.fillRect(laser.x, laser.y + 4, laser.width, laser.height - 8);
+                    ctx.fillStyle = "white"; ctx.fillRect(laser.x, laser.y, laser.width, laser.height);
+                    ctx.fillStyle = "cyan"; ctx.fillRect(laser.x, laser.y + 4, laser.width, laser.height - 8);
 
                     let target = (laser.owner === p1) ? p2 : p1;
                     if (laser.timer === 8 && target.x + target.width > laser.x && target.x < laser.x + laser.width &&
-                        target.y + target.height > laser.y && target.y < laser.y + laser.height) {
+                        target.y + target.height > laser.y && target.y < laser.y + laser.height && target.airDodgeTimer <= 10) {
                         
                         if (target.isShielding) {
-                            target.shieldHealth -= 10;
+                            target.shieldHealth -= 10; playSound("block");
+                            if(laser.owner.isP1) statsTracker.p2.blocks++; else statsTracker.p1.blocks++;
                             createParticles(target.x + target.width/2, target.y + target.height/2, "cyan", 6);
                         } else {
-                            target.percentage += 12;
-                            target.vx = laser.owner.facing * (6 + (target.percentage * 0.1));
-                            target.vy = -3;
-                            triggerShake(6, 10);
-                            createParticles(target.x + target.width/2, target.y + target.height/2, "cyan", 14);
+                            target.percentage += 12; playSound("hit");
+                            if(laser.owner.isP1) statsTracker.p1.damageDealt += 12; else statsTracker.p2.damageDealt += 12;
+                            target.vx = laser.owner.facing * (6 + (target.percentage * 0.1)); target.vy = -3;
+                            triggerShake(6, 10); createParticles(target.x + target.width/2, target.y + target.height/2, "cyan", 14);
                         }
                     }
                 }
@@ -568,30 +564,26 @@
 
         function updateProjectiles() {
             for (let i = projectielen.length - 1; i >= 0; i--) {
-                let proj = projectielen[i];
-                proj.x += proj.vx;
-
+                let proj = projectielen[i]; proj.x += proj.vx;
                 let pSize = proj.isMega ? 30 : 6;
-                ctx.fillStyle = proj.isMega ? "#ffaa00" : "cyan";
-                ctx.fillRect(proj.x, proj.y, proj.isMega ? 60 : 16, pSize);
+                ctx.fillStyle = proj.isMega ? "#ffaa00" : "cyan"; ctx.fillRect(proj.x, proj.y, proj.isMega ? 60 : 16, pSize);
 
                 let target = (proj.owner === p1) ? p2 : p1;
                 if (proj.x > target.x && proj.x < target.x + target.width && 
-                    proj.y > target.y && proj.y < target.y + target.height + (proj.isMega ? 20 : 0)) {
+                    proj.y > target.y && proj.y < target.y + target.height + (proj.isMega ? 20 : 0) && target.airDodgeTimer <= 10) {
                     
                     if (target.isShielding) {
-                        target.shieldHealth -= proj.damage * 0.7;
+                        target.shieldHealth -= proj.damage * 0.7; playSound("block");
+                        if(proj.owner.isP1) statsTracker.p2.blocks++; else statsTracker.p1.blocks++;
                         createParticles(target.x + target.width/2, target.y + target.height/2, "cyan", 4);
                     } else {
-                        target.percentage += proj.damage;
-                        target.vx = (proj.vx > 0 ? 1 : -1) * (proj.knockback + (target.percentage * 0.12));
-                        target.vy = proj.isMega ? -6 : -3.5;
-                        triggerShake(proj.isMega ? 12 : 3, 8);
-                        createParticles(target.x + target.width/2, target.y + target.height/2, "cyan", proj.isMega ? 15 : 4);
+                        target.percentage += proj.damage; playSound("hit");
+                        if(proj.owner.isP1) statsTracker.p1.damageDealt += proj.damage; else statsTracker.p2.damageDealt += proj.damage;
+                        target.vx = (proj.vx > 0 ? 1 : -1) * (proj.knockback + (target.percentage * 0.12)); target.vy = proj.isMega ? -6 : -3.5;
+                        triggerShake(proj.isMega ? 12 : 3, 8); createParticles(target.x + target.width/2, target.y + target.height/2, "cyan", proj.isMega ? 15 : 4);
                         if (proj.isMega) flashScreen();
                     }
-                    projectielen.splice(i, 1);
-                    continue;
+                    projectielen.splice(i, 1); continue;
                 }
                 if (proj.x < -100 || proj.x > canvas.width + 100) projectielen.splice(i, 1);
             }
@@ -600,19 +592,16 @@
         function checkRingOuts() {
             [p1, p2].forEach(p => {
                 if (p.y > canvas.height || p.x < 0 || p.x > canvas.width) {
-                    if (p.stocks > 1) {
-                        p.respawn();
-                    } else {
-                        p.stocks = 0;
-                        gameState = "GAMEOVER";
-                        showVictoryScreen();
-                    }
+                    if (p.stocks > 1) { p.respawn(); } 
+                    else { p.stocks = 0; gameState = "GAMEOVER"; showVictoryScreen(); }
                 }
             });
         }
 
         function showVictoryScreen() {
             projectielen = []; lasers = []; particles = [];
+            document.getElementById("victoryScreen").style.display = "flex";
+
             let title = document.getElementById("victoryTitle");
             let sub = document.getElementById("victorySub");
 
@@ -621,21 +610,25 @@
                 title.style.color = isCPUGame ? "#ff3333" : "#00ffcc";
                 sub.innerText = isCPUGame ? `De CPU (${p2.type}) heeft gewonnen!` : `Speler 2 (${p2.type}) wint de match!`;
             } else {
-                title.innerText = "VICTORY!";
-                title.style.color = "#00ffcc";
+                title.innerText = "VICTORY!"; title.style.color = "#00ffcc";
                 sub.innerText = `Speler 1 (${p1.type}) wint de match!`;
             }
-            document.getElementById("victoryScreen").style.display = "flex";
+
+            // Vul statistieken in op eindscherm
+            document.getElementById("st-p1-title").innerText = `Speler 1 (${p1.type})`;
+            document.getElementById("st-p1-dmg").innerText = `Uitgedeelde Schade: ${Math.floor(statsTracker.p1.damageDealt)}%`;
+            document.getElementById("st-p1-blk").innerText = `Succesvolle Blocks: ${statsTracker.p1.blocks}`;
+
+            document.getElementById("st-p2-title").innerText = `${isCPUGame ? 'CPU' : 'Speler 2'} (${p2.type})`;
+            document.getElementById("st-p2-dmg").innerText = `Uitgedeelde Schade: ${Math.floor(statsTracker.p2.damageDealt)}%`;
+            document.getElementById("st-p2-blk").innerText = `Succesvolle Blocks: ${statsTracker.p2.blocks}`;
         }
 
         function setupStage() {
-            activeStageName = document.getElementById("stageSelect").value;
-            softPlatforms = [];
-
+            activeStageName = document.getElementById("stageSelect").value; softPlatforms = [];
             if (activeStageName === "Battlefield") {
                 mainStage = { x: 180, y: 350, width: 440, height: 25, depth: 35 };
-                softPlatforms.push({ x: 230, y: 240, width: 120 });
-                softPlatforms.push({ x: 450, y: 240, width: 120 });
+                softPlatforms.push({ x: 230, y: 240, width: 120 }); softPlatforms.push({ x: 450, y: 240, width: 120 });
             } else if (activeStageName === "FinalDestination") {
                 mainStage = { x: 100, y: 360, width: 600, height: 25, depth: 40 };
             } else if (activeStageName === "ThePit") {
@@ -644,122 +637,79 @@
         }
 
         function drawAchtergrond() {
-            let spelerMidden = (p1.x + p2.x) / 2;
-            cameraOffset = (spelerMidden - canvas.width / 2) * 0.08;
-
+            let spelerMidden = (p1.x + p2.x) / 2; cameraOffset = (spelerMidden - canvas.width / 2) * 0.08;
             let skyGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            skyGradient.addColorStop(0, "#060610");
-            skyGradient.addColorStop(0.5, "#111124");
-            skyGradient.addColorStop(1, "#1c1830");
-            ctx.fillStyle = skyGradient;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            skyGradient.addColorStop(0, "#060610"); skyGradient.addColorStop(0.5, "#111124"); skyGradient.addColorStop(1, "#1c1830");
+            ctx.fillStyle = skyGradient; ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            ctx.fillStyle = "#0d0d1a";
-            ctx.fillRect(40 - cameraOffset * 0.3, 180, 150, 320);
-            ctx.fillRect(600 - cameraOffset * 0.3, 150, 160, 350);
-            ctx.fillStyle = "#141426";
-            ctx.fillRect(160 - cameraOffset * 0.6, 230, 180, 270);
-            ctx.fillRect(440 - cameraOffset * 0.6, 200, 200, 300);
+            ctx.fillStyle = "#0d0d1a"; ctx.fillRect(40 - cameraOffset * 0.3, 180, 150, 320); ctx.fillRect(600 - cameraOffset * 0.3, 150, 160, 350);
+            ctx.fillStyle = "#141426"; ctx.fillRect(160 - cameraOffset * 0.6, 230, 180, 270); ctx.fillRect(440 - cameraOffset * 0.6, 200, 200, 300);
         }
 
         function draw3DStage() {
-            ctx.fillStyle = "#2c2c3e";
-            ctx.fillRect(mainStage.x, mainStage.y, mainStage.width, mainStage.height);
-            ctx.fillStyle = "#ffaa00";
-            ctx.fillRect(mainStage.x, mainStage.y, mainStage.width, 3);
+            ctx.fillStyle = "#2c2c3e"; ctx.fillRect(mainStage.x, mainStage.y, mainStage.width, mainStage.height);
+            ctx.fillStyle = "#ffaa00"; ctx.fillRect(mainStage.x, mainStage.y, mainStage.width, 3);
 
-            ctx.fillStyle = "#1e1e2b";
-            ctx.beginPath();
-            ctx.moveTo(mainStage.x, mainStage.y + mainStage.height);
+            ctx.fillStyle = "#1e1e2b"; ctx.beginPath(); ctx.moveTo(mainStage.x, mainStage.y + mainStage.height);
             ctx.lineTo(mainStage.x + 20, mainStage.y + mainStage.height + mainStage.depth);
             ctx.lineTo(mainStage.x + mainStage.width - 20, mainStage.y + mainStage.height + mainStage.depth);
-            ctx.lineTo(mainStage.x + mainStage.width, mainStage.y + mainStage.height);
-            ctx.closePath();
-            ctx.fill();
+            ctx.lineTo(mainStage.x + mainStage.width, mainStage.y + mainStage.height); ctx.closePath(); ctx.fill();
 
             softPlatforms.forEach(plat => {
-                ctx.fillStyle = "rgba(40, 40, 60, 0.8)";
-                ctx.fillRect(plat.x, plat.y, plat.width, 8);
-                ctx.fillStyle = "#00ffcc";
-                ctx.fillRect(plat.x, plat.y, plat.width, 2);
+                ctx.fillStyle = "rgba(40, 40, 60, 0.8)"; ctx.fillRect(plat.x, plat.y, plat.width, 8);
+                ctx.fillStyle = "#00ffcc"; ctx.fillRect(plat.x, plat.y, plat.width, 2);
             });
         }
 
         function startScherm(vsCPU) {
-            isCPUGame = vsCPU;
-            gameState = "PLAYING";
+            isCPUGame = vsCPU; gameState = "PLAYING"; setupStage();
             
-            setupStage();
+            // Reset trackers
+            statsTracker = { p1: { damageDealt: 0, blocks: 0 }, p2: { damageDealt: 0, blocks: 0 } };
+
             p1.resetFull(); p2.resetFull();
-            p1.setClass(document.getElementById("p1Char").value);
-            p2.setClass(document.getElementById("p2Char").value);
+            p1.setClass(document.getElementById("p1Char").value, document.getElementById("p1Color").value);
+            p2.setClass(document.getElementById("p2Char").value, document.getElementById("p2Color").value);
 
             document.getElementById("menu").style.display = "none";
             document.getElementById("victoryScreen").style.display = "none";
-            canvas.style.display = "block";
-            document.getElementById("ui").style.display = "flex";
+            canvas.style.display = "block"; document.getElementById("ui").style.display = "flex";
             
             gameLoop();
         }
 
         function backToMenu() {
-            gameState = "MENU";
-            document.getElementById("victoryScreen").style.display = "none";
-            canvas.style.display = "none";
-            document.getElementById("ui").style.display = "none";
+            gameState = "MENU"; document.getElementById("victoryScreen").style.display = "none";
+            canvas.style.display = "none"; document.getElementById("ui").style.display = "none";
             document.getElementById("menu").style.display = "flex";
         }
 
         function gameLoop() {
             if (gameState !== "PLAYING") return;
 
-            handleInput();
-            updateCPU();
-            p1.update();
-            p2.update();
-            checkRingOuts();
+            handleInput(); updateCPU(); p1.update(); p2.update(); checkRingOuts();
 
-            // --- APPLICATION OF SCREENSHAKE ---
             ctx.save();
             if (shakeTimer > 0) {
-                let dx = (Math.random() - 0.5) * shakeIntensity;
-                let dy = (Math.random() - 0.5) * shakeIntensity;
-                ctx.translate(dx, dy);
-                shakeTimer--;
+                ctx.translate((Math.random() - 0.5) * shakeIntensity, (Math.random() - 0.5) * shakeIntensity); shakeTimer--;
             }
 
-            drawAchtergrond();
-            p1.drawShadow();
-            p2.drawShadow();
-            draw3DStage();
+            drawAchtergrond(); p1.drawShadow(); p2.drawShadow(); draw3DStage();
+            handleContinuousHits(); p1.draw(); p2.draw(); updateProjectiles(); updateAndDrawParticles();
 
-            handleContinuousHits();
-            p1.draw();
-            p2.draw();
-            updateProjectiles();
-            updateAndDrawParticles(); // Update hit-vonken
-
-            ctx.restore(); // Stop screenshake matrix transformatie
+            ctx.restore();
 
             if (screenFlashTimer > 0) {
-                ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                screenFlashTimer--;
+                ctx.fillStyle = "rgba(255, 255, 255, 0.6)"; ctx.fillRect(0, 0, canvas.width, canvas.height); screenFlashTimer--;
             }
 
-            // UI
-            let p1UI = document.getElementById("p1-ui");
-            let p2UI = document.getElementById("p2-ui");
-
-            p1UI.style.color = classStats[p1.type].color;
-            p1UI.innerHTML = `P1 (${p1.type}): ${Math.floor(p1.percentage)}% <div class="stocks">${"⭐".repeat(p1.stocks)}</div>`;
-            if (p1.percentage >= 100 && p1.percentage <= 230) p1UI.classList.add("final-smash-ready");
-            else p1UI.classList.remove("final-smash-ready");
+            // UI renderen
+            let p1UI = document.getElementById("p1-ui"); let p2UI = document.getElementById("p2-ui");
+            p1UI.style.color = p1.color; p1UI.innerHTML = `P1 (${p1.type}): ${Math.floor(p1.percentage)}% <div class="stocks">${"⭐".repeat(p1.stocks)}</div>`;
+            if (p1.percentage >= 100 && p1.percentage <= 230) p1UI.classList.add("final-smash-ready"); else p1UI.classList.remove("final-smash-ready");
             
-            p2UI.style.color = classStats[p2.type].color;
-            p2UI.innerHTML = `${isCPUGame ? 'CPU' : 'P2'} (${p2.type}): ${Math.floor(p2.percentage)}% <div class="stocks">${"⭐".repeat(p2.stocks)}</div>`;
-            if (p2.percentage >= 100 && p2.percentage <= 230) p2UI.classList.add("final-smash-ready");
-            else p2UI.classList.remove("final-smash-ready");
+            p2UI.style.color = p2.color; p2UI.innerHTML = `${isCPUGame ? 'CPU' : 'P2'} (${p2.type}): ${Math.floor(p2.percentage)}% <div class="stocks">${"⭐".repeat(p2.stocks)}</div>`;
+            if (p2.percentage >= 100 && p2.percentage <= 230) p2UI.classList.add("final-smash-ready"); else p2UI.classList.remove("final-smash-ready");
 
             requestAnimationFrame(gameLoop);
         }
