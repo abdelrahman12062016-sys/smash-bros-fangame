@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super Smash Browser - Ultimate Edition</title>
+    <title>Super Smash Browser - Cyber Blast Edition</title>
     <style>
         body {
             margin: 0; background: #05050d; color: white;
@@ -46,7 +46,7 @@
 
     <div id="menu">
         <h1 style="font-size: 30px; margin: 0 0 5px 0; color: #ff9900; text-shadow: 0 0 15px rgba(255,153,0,0.4);">SUPER SMASH BROWSER</h1>
-        <p style="color: #555577; margin: 0 0 15px 0; font-weight: bold; font-size: 12px;">4-PLAYER CHAOS & ANIMATIONS ON</p>
+        <p style="color: #555577; margin: 0 0 15px 0; font-weight: bold; font-size: 12px;">SPINNING SWORDS & SMASH BLAST EFFECTS ACTIEF</p>
         
         <div style="margin-bottom: 15px; background: #131324; padding: 10px; border-radius: 8px; border: 1px solid #2a2a40;">
             <label><b>Spelmodus:</b> </label>
@@ -65,7 +65,7 @@
         <div class="config-panel">
             <div class="p-box" style="border-top: 4px solid #ff4444;">
                 <h4 style="margin:2px 0;">Speler 1 (Jij)</h4>
-                <select id="p1Char"><option value="Brawler">Brawler 🥊</option><option value="SwordFighter">SwordFighter ⚔️</option><option value="Gunner">Gunner 🔫</option></select>
+                <select id="p1Char"><option value="SwordFighter">SwordFighter ⚔️</option><option value="Brawler">Brawler 🥊</option><option value="Gunner">Gunner 🔫</option></select>
                 <select id="p1Control" disabled><option>Mens (A/D/W/F/G)</option></select>
             </div>
             <div class="p-box" style="border-top: 4px solid #4444ff;">
@@ -124,7 +124,7 @@
         }
 
         let gameState = "MENU", matchMode = "FFA";
-        let spelers = [], projectielen = [], lasers = [], particles = [];
+        let spelers = [], projectielen = [], lasers = [], particles = [], blastEffects = [];
         let shakeTimer = 0, shakeIntensity = 0, cameraOffset = 0;
         let mainStage = { x: 150, y: 340, width: 500, height: 25, depth: 35 }, softPlatforms = [];
 
@@ -195,17 +195,16 @@
                 if (this.vx < -0.1 && !this.isShielding) this.facing = -1;
                 this.vx *= this.isGrounded ? 0.8 : 0.96;
 
-                // Lopende benen animatie frame updater
                 if (Math.abs(this.vx) > 0.2 && this.isGrounded) this.animFrame += 0.22;
                 if (this.isGrounded) this.jumpsLeft = 2;
 
                 if (this.attackTimer > 0) this.attackTimer--;
                 if (this.specialTimer > 0) {
                     this.specialTimer--;
-                    if (this.type === "SwordFighter" && this.specialTimer > 5) this.vx = this.facing * 5.5;
+                    // Swordfighter dash vooruit tijdens zijn spinnende aanval
+                    if (this.type === "SwordFighter" && this.specialTimer > 5) this.vx = this.facing * 4.5;
                 }
 
-                // Stage collisions
                 if (this.x + this.width > mainStage.x && this.x < mainStage.x + mainStage.width &&
                     this.y + this.height <= mainStage.y + 10 && this.y + this.height + this.vy >= mainStage.y) {
                     this.y = mainStage.y - this.height; this.vy = 0; this.isGrounded = true;
@@ -247,14 +246,12 @@
 
                 ctx.save(); ctx.translate(cx, cy); ctx.scale(this.facing, 1);
                 
-                // BENEN MET LOOP-ANIMATIE
                 let legSwing = Math.sin(this.animFrame) * 11; 
                 if (!this.isGrounded) legSwing = 8; 
                 ctx.fillStyle = "#11111e"; 
                 ctx.fillRect(-11, 14, 6, 14 + legSwing * 0.25); 
                 ctx.fillRect(4, 14, 6, 14 - legSwing * 0.25);
 
-                // LICHAAM & HOOFD
                 ctx.fillStyle = this.color; ctx.fillRect(-14, -13, 28, 27);
                 ctx.fillStyle = "#ffdbac"; ctx.fillRect(-8, -28, 16, 15);
                 ctx.fillStyle = "#000"; ctx.fillRect(4, -24, 2, 3);
@@ -264,7 +261,6 @@
                     ctx.beginPath(); ctx.moveTo(0, -35); ctx.lineTo(-5, -43); ctx.lineTo(5, -43); ctx.fill();
                 }
 
-                // ZWAARD- & WAPENANIMATIES
                 let ext = 0; if (this.attackTimer > 0) ext = Math.sin((this.attackTimer/14)*Math.PI)*24;
                 ctx.fillStyle = classStats[this.type].weaponColor;
                 
@@ -272,10 +268,22 @@
                     ctx.fillRect(4, -4, 10+ext, 8); 
                 } else if (this.type === "SwordFighter") { 
                     ctx.save(); 
-                    // Zwaait echt omlaag tijdens aanval!
-                    let swingAngle = -Math.PI/4 + (this.attackTimer > 0 ? (ext * 0.05) : 0);
-                    ctx.rotate(swingAngle); 
-                    ctx.fillRect(4, -2, 28, 4); 
+                    if (this.specialTimer > 0) {
+                        // SPINNEND ZWAARD VISUEEL EFFECT (360 graden rotatie!)
+                        let spinAngle = (this.specialTimer * 0.4) * Math.PI;
+                        ctx.rotate(spinAngle);
+                        ctx.fillStyle = "#00ffcc";
+                        ctx.fillRect(4, -3, 34, 6);
+                        
+                        // Cyber ring gloed rondom speler
+                        ctx.strokeStyle = "rgba(0, 255, 204, 0.4)";
+                        ctx.lineWidth = 4;
+                        ctx.beginPath(); ctx.arc(0, 0, 32, 0, Math.PI*2); ctx.stroke();
+                    } else {
+                        let swingAngle = -Math.PI/4 + (this.attackTimer > 0 ? (ext * 0.05) : 0);
+                        ctx.rotate(swingAngle); 
+                        ctx.fillRect(4, -2, 28, 4); 
+                    }
                     ctx.restore(); 
                 } else if (this.type === "Gunner") { 
                     ctx.fillRect(2, -5, 12, 7); ctx.fillStyle = "cyan"; ctx.fillRect(14, -4, 3, 5); 
@@ -327,7 +335,7 @@
                         }
                     });
                 } else if (this.type === "SwordFighter") {
-                    playSound("hit");
+                    playSound("hit"); // Maakt geluid bij start spinnende zwaard-aanval
                 } else if (this.type === "Gunner") {
                     playSound("laser");
                     lasers.push({ x: this.facing === 1 ? this.x+this.width : 0, y: this.y+12, width: this.facing === 1 ? canvas.width : this.x, height: 16, timer: 12, owner: this });
@@ -338,7 +346,6 @@
                 opp.percentage += dmg; playSound("hit");
                 opp.vx = kx; opp.vy = ky;
                 triggerShake(dmg > 10 ? 8 : 4, 8);
-                // Cyber deeltjes / Hit effect
                 createParticles(opp.x + opp.width/2 - cameraOffset*0.3, opp.y + opp.height/2, classStats[this.type].weaponColor, 12);
             }
         }
@@ -427,13 +434,14 @@
         }
 
         function handleContinuousHits() {
+            // Spinnende zwaard activeert hittesterkte rondom de speler
             spelers.forEach(p => {
                 if (!p.isActive || p.type !== "SwordFighter" || p.specialTimer <= 0) return;
                 spelers.forEach(opp => {
                     if (opp === p || !opp.isActive || opp.airDodgeTimer > 10 || (p.team && opp.team === p.team)) return;
-                    if (Math.abs(p.x - opp.x) < 55 && Math.abs(p.y - opp.y) < 45) {
-                        if (opp.isShielding) opp.shieldHealth -= 0.3;
-                        else { opp.percentage += 0.4; opp.vx = p.facing * 2.5; }
+                    if (Math.abs((p.x + p.width/2) - (opp.x + opp.width/2)) < 55 && Math.abs(p.y - opp.y) < 45) {
+                        if (opp.isShielding) opp.shieldHealth -= 0.4;
+                        else { opp.percentage += 0.5; opp.vx = p.facing * 3; opp.vy = -1.5; }
                     }
                 });
             });
@@ -474,10 +482,24 @@
         function checkRingOuts() {
             spelers.forEach(p => {
                 if (!p.isActive) return;
-                // BLAST ZONE CHECKS (Bovenkant: y < -40 toegevoegd!)
+                
+                // Blast zone check op alle 4 de randen
                 if (p.y > canvas.height || p.x < 0 || p.x > canvas.width || p.y < -40) {
-                    createParticles(p.x + p.width/2 - cameraOffset*0.3, Math.max(0, p.y), p.color, 25);
-                    triggerShake(10, 15);
+                    // DYNAMISCHE SMASH BLAST STRAAL EFFECT (Echt Smash bros stijl!)
+                    let bx = Math.max(10, Math.min(canvas.width - 50, p.x - cameraOffset*0.3));
+                    let isVertical = (p.y > canvas.height || p.y < -40);
+                    
+                    blastEffects.push({
+                        x: isVertical ? bx : (p.x < 0 ? 0 : canvas.width - 40),
+                        y: 0,
+                        width: isVertical ? 45 : canvas.width,
+                        height: isVertical ? canvas.height : 45,
+                        color: p.color,
+                        timer: 20
+                    });
+
+                    createParticles(p.x + p.width/2 - cameraOffset*0.3, Math.max(0, Math.min(canvas.height, p.y)), p.color, 30);
+                    triggerShake(12, 18);
                     p.respawn();
                 }
             });
@@ -496,12 +518,13 @@
         function showVictoryScreen(winnaar) {
             document.getElementById("victoryScreen").style.display = "flex";
             let sub = document.getElementById("victorySub");
-            sub.innerText = matchMode === "2v2" ? `Team ${winnaar} wint het gevecht!` : `${winnaar} is de ultieme winnaar!`;
+            sub.innerText = matchMode === "2v2" ? `Team ${winnaar} wint de strijd!` : `${winnaar} rekent iedereen af!`;
         }
 
         function startScherm() {
             matchMode = document.getElementById("matchMode").value;
             gameState = "PLAYING";
+            blastEffects = [];
 
             let stageName = document.getElementById("stageSelect").value; softPlatforms = [];
             if (stageName === "Battlefield") {
@@ -535,7 +558,6 @@
             spelers.forEach(p => p.update());
             checkRingOuts();
 
-            // CAMERA GEMIDDELDE (DYNAMISCHE PARALLAX)
             let levendeSpelers = spelers.filter(s => s.isActive);
             if (levendeSpelers.length > 0) {
                 let mX = levendeSpelers.reduce((sum, s) => sum + s.x, 0) / levendeSpelers.length;
@@ -545,19 +567,15 @@
             ctx.save();
             if (shakeTimer > 0) { ctx.translate((Math.random()-0.5)*shakeIntensity, (Math.random()-0.5)*shakeIntensity); shakeTimer--; }
 
-            // PARALLAX ACHTERGROND
             let skyGrad = ctx.createLinearGradient(0, 0, 0, canvas.height);
             skyGrad.addColorStop(0, "#060610"); skyGrad.addColorStop(0.5, "#111124"); skyGrad.addColorStop(1, "#1c1830");
             ctx.fillStyle = skyGrad; ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Bergen / Cyber Torens
             ctx.fillStyle = "#0d0d1a"; ctx.fillRect(40 - cameraOffset * 0.1, 180, 150, 320); ctx.fillRect(630 - cameraOffset * 0.1, 150, 160, 350);
             ctx.fillStyle = "#141426"; ctx.fillRect(170 - cameraOffset * 0.2, 230, 180, 270); ctx.fillRect(420 - cameraOffset * 0.2, 200, 200, 300);
 
-            // Schaduwen & Vloer rendering
             spelers.forEach(p => p.drawShadow());
 
-            // 2.5D DIEPTE HOOFDSTAGE
             let sx = mainStage.x - cameraOffset * 0.3;
             ctx.fillStyle = "#2c2c3e"; ctx.fillRect(sx, mainStage.y, mainStage.width, mainStage.height);
             ctx.fillStyle = "#ffaa00"; ctx.fillRect(sx, mainStage.y, mainStage.width, 3);
@@ -569,7 +587,6 @@
             ctx.lineTo(sx + mainStage.width, mainStage.y + mainStage.height); 
             ctx.closePath(); ctx.fill();
 
-            // Platforms
             softPlatforms.forEach(p => { 
                 let px = p.x - cameraOffset * 0.3;
                 ctx.fillStyle = "rgba(60,60,90,0.8)"; ctx.fillRect(px, p.y, p.width, 6); 
@@ -582,7 +599,21 @@
 
             lasers.forEach(l => { ctx.fillStyle = "rgba(0, 255, 255, 0.35)"; ctx.fillRect(l.x - cameraOffset*0.3, l.y, l.width, l.height); });
 
-            // Deeltjes handler
+            // DE DEOD-STRAAL RENDERING (SMASH BLAST LINES)
+            for (let i = blastEffects.length - 1; i >= 0; i--) {
+                let b = blastEffects[i];
+                ctx.save();
+                ctx.shadowBlur = 25; ctx.shadowColor = b.color;
+                ctx.fillStyle = "white"; ctx.fillRect(b.x, b.y, b.width, b.height);
+                ctx.fillStyle = b.color; ctx.globalAlpha = 0.4;
+                ctx.fillRect(b.x - 8, b.y, b.width + 16, b.height);
+                ctx.restore();
+                
+                b.timer--;
+                if (b.timer <= 0) blastEffects.splice(i, 1);
+            }
+            ctx.globalAlpha = 1.0;
+
             for(let i=particles.length-1; i>=0; i--) {
                 let p = particles[i]; p.x += p.vx; p.y += p.vy; p.alpha -= 0.04;
                 ctx.fillStyle = p.color; ctx.globalAlpha = p.alpha; ctx.fillRect(p.x, p.y, p.size, p.size);
@@ -590,7 +621,6 @@
             }
             ctx.globalAlpha = 1.0; ctx.restore();
 
-            // HUD rendering
             spelers.forEach((p, idx) => {
                 let uibox = document.getElementById(`ui-p${idx+1}`);
                 if (p.isActive) {
