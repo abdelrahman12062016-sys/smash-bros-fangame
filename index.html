@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super Smash Browser - 4 Player & AI Edition</title>
+    <title>Super Smash Browser - Ultimate Edition</title>
     <style>
         body {
             margin: 0; background: #05050d; color: white;
@@ -40,15 +40,13 @@
         #ui { display: none; justify-content: space-between; width: 800px; margin-top: 10px; }
         .p-ui-box { padding: 6px 12px; border-radius: 6px; background: rgba(0,0,0,0.6); width: 180px; text-align: center; font-size: 16px; font-weight: bold; border-bottom: 4px solid #fff; }
         .stocks { color: #ffaa00; font-size: 14px; margin-top: 2px; }
-        .final-smash-ready { animation: glow 0.5s infinite alternate; }
-        @keyframes glow { from { box-shadow: 0 0 8px #ffaa00; } to { box-shadow: 0 0 20px #ff4500; } }
     </style>
 </head>
 <body>
 
     <div id="menu">
         <h1 style="font-size: 30px; margin: 0 0 5px 0; color: #ff9900; text-shadow: 0 0 15px rgba(255,153,0,0.4);">SUPER SMASH BROWSER</h1>
-        <p style="color: #555577; margin: 0 0 15px 0; font-weight: bold; font-size: 12px;">4-PLAYER CHAOS & SMART AI EDITION</p>
+        <p style="color: #555577; margin: 0 0 15px 0; font-weight: bold; font-size: 12px;">4-PLAYER CHAOS & ANIMATIONS ON</p>
         
         <div style="margin-bottom: 15px; background: #131324; padding: 10px; border-radius: 8px; border: 1px solid #2a2a40;">
             <label><b>Spelmodus:</b> </label>
@@ -127,7 +125,7 @@
 
         let gameState = "MENU", matchMode = "FFA";
         let spelers = [], projectielen = [], lasers = [], particles = [];
-        let shakeTimer = 0, shakeIntensity = 0, screenFlashTimer = 0, cameraOffset = 0;
+        let shakeTimer = 0, shakeIntensity = 0, cameraOffset = 0;
         let mainStage = { x: 150, y: 340, width: 500, height: 25, depth: 35 }, softPlatforms = [];
 
         const classStats = {
@@ -154,8 +152,7 @@
                 this.controls = controls; this.isCPU = true; this.aiLevel = 3; this.isActive = true;
                 
                 this.attackTimer = 0; this.specialTimer = 0; this.animFrame = 0;
-                this.isFinalSmashing = false; this.respawnTimer = 0;
-                this.isShielding = false; this.shieldHealth = 40; this.jumpsLeft = 2; this.airDodgeTimer = 0;
+                this.respawnTimer = 0; this.isShielding = false; this.shieldHealth = 40; this.jumpsLeft = 2; this.airDodgeTimer = 0;
             }
 
             reset(type, isCPU, aiLevel, teamMode) {
@@ -198,11 +195,11 @@
                 if (this.vx < -0.1 && !this.isShielding) this.facing = -1;
                 this.vx *= this.isGrounded ? 0.8 : 0.96;
 
-                // Loop-animatie frame updater
+                // Lopende benen animatie frame updater
                 if (Math.abs(this.vx) > 0.2 && this.isGrounded) this.animFrame += 0.22;
                 if (this.isGrounded) this.jumpsLeft = 2;
 
-                if (this.attackTimer > 0 && --this.attackTimer === 0) this.isFinalSmashing = false;
+                if (this.attackTimer > 0) this.attackTimer--;
                 if (this.specialTimer > 0) {
                     this.specialTimer--;
                     if (this.type === "SwordFighter" && this.specialTimer > 5) this.vx = this.facing * 5.5;
@@ -239,7 +236,6 @@
                 if (!this.isActive || this.respawnTimer % 4 >= 2) return;
                 if (this.airDodgeTimer > 10) ctx.globalAlpha = 0.35;
 
-                // Camera offset toepassen op de x-as voor het dynamische 2.5D effect
                 let cx = this.x + this.width / 2 - cameraOffset * 0.3;
                 let cy = this.y + this.height / 2;
 
@@ -251,32 +247,39 @@
 
                 ctx.save(); ctx.translate(cx, cy); ctx.scale(this.facing, 1);
                 
-                // GEANIMEERDE BENEN (zwaaien heen en weer tijdens het rennen!)
+                // BENEN MET LOOP-ANIMATIE
                 let legSwing = Math.sin(this.animFrame) * 11; 
-                if (!this.isGrounded) legSwing = 8; // Vaste stand in de lucht
+                if (!this.isGrounded) legSwing = 8; 
                 ctx.fillStyle = "#11111e"; 
                 ctx.fillRect(-11, 14, 6, 14 + legSwing * 0.25); 
                 ctx.fillRect(4, 14, 6, 14 - legSwing * 0.25);
 
-                // LICHAAM
+                // LICHAAM & HOOFD
                 ctx.fillStyle = this.color; ctx.fillRect(-14, -13, 28, 27);
-                
-                // HOOFD
                 ctx.fillStyle = "#ffdbac"; ctx.fillRect(-8, -28, 16, 15);
                 ctx.fillStyle = "#000"; ctx.fillRect(4, -24, 2, 3);
 
-                // Team indicator driehoekje boven het hoofd
                 if (matchMode === "2v2") {
                     ctx.fillStyle = this.team === "ROOD" ? "red" : "blue";
                     ctx.beginPath(); ctx.moveTo(0, -35); ctx.lineTo(-5, -43); ctx.lineTo(5, -43); ctx.fill();
                 }
 
-                // WAPENS
-                let ext = 0; if (this.attackTimer > 0) ext = Math.sin((this.attackTimer/15)*Math.PI)*22;
+                // ZWAARD- & WAPENANIMATIES
+                let ext = 0; if (this.attackTimer > 0) ext = Math.sin((this.attackTimer/14)*Math.PI)*24;
                 ctx.fillStyle = classStats[this.type].weaponColor;
-                if (this.type === "Brawler") { ctx.fillRect(4, -4, 10+ext, 8); }
-                else if (this.type === "SwordFighter") { ctx.save(); ctx.rotate(-Math.PI/4 + (this.attackTimer>0?ext*0.04:0)); ctx.fillRect(4, -2, 26, 4); ctx.restore(); }
-                else if (this.type === "Gunner") { ctx.fillRect(2, -5, 12, 7); ctx.fillStyle = "cyan"; ctx.fillRect(14, -4, 3, 5); }
+                
+                if (this.type === "Brawler") { 
+                    ctx.fillRect(4, -4, 10+ext, 8); 
+                } else if (this.type === "SwordFighter") { 
+                    ctx.save(); 
+                    // Zwaait echt omlaag tijdens aanval!
+                    let swingAngle = -Math.PI/4 + (this.attackTimer > 0 ? (ext * 0.05) : 0);
+                    ctx.rotate(swingAngle); 
+                    ctx.fillRect(4, -2, 28, 4); 
+                    ctx.restore(); 
+                } else if (this.type === "Gunner") { 
+                    ctx.fillRect(2, -5, 12, 7); ctx.fillStyle = "cyan"; ctx.fillRect(14, -4, 3, 5); 
+                }
 
                 ctx.restore(); ctx.globalAlpha = 1.0;
             }
@@ -284,7 +287,7 @@
             jump() {
                 if (this.isShielding || !this.isActive) return;
                 if (this.isGrounded) { this.vy = -11.5; this.jumpsLeft = 1; playSound("jump"); }
-                else if (this.jumpsLeft > 0) { this.vy = -10.5; this.jumpsLeft = 0; playSound("jump"); createParticles(this.x+this.width/2, this.y+this.height, "white", 4); }
+                else if (this.jumpsLeft > 0) { this.vy = -10.5; this.jumpsLeft = 0; playSound("jump"); createParticles(this.x+this.width/2 - cameraOffset*0.3, this.y+this.height, "white", 4); }
             }
 
             triggerAirDodge(dx) {
@@ -335,11 +338,11 @@
                 opp.percentage += dmg; playSound("hit");
                 opp.vx = kx; opp.vy = ky;
                 triggerShake(dmg > 10 ? 8 : 4, 8);
-                createParticles(opp.x + opp.width/2 - cameraOffset*0.3, opp.y + opp.height/2, classStats[this.type].weaponColor, 10);
+                // Cyber deeltjes / Hit effect
+                createParticles(opp.x + opp.width/2 - cameraOffset*0.3, opp.y + opp.height/2, classStats[this.type].weaponColor, 12);
             }
         }
 
-        // Init 4 Spelers
         spelers = [
             new Player(playerMeta[0], { left: "KeyA", right: "KeyD", up: "KeyW", attack: "KeyF", special: "KeyG", shield: "ShiftLeft" }),
             new Player(playerMeta[1], { left: "ArrowLeft", right: "ArrowRight", up: "ArrowUp", attack: "Period", special: "Slash", shield: "ArrowDown" }),
@@ -354,7 +357,7 @@
         function triggerShake(intensity, duration) { shakeTimer = duration; shakeIntensity = intensity; }
         function createParticles(x, y, color, amount) {
             for(let i=0; i<amount; i++) {
-                particles.push({ x: x, y: y, vx: (Math.random()-0.5)*7, vy: (Math.random()-0.5)*7, size: Math.random()*3+2, alpha: 1, color: color });
+                particles.push({ x: x, y: y, vx: (Math.random()-0.5)*8, vy: (Math.random()-0.5)*8, size: Math.random()*3+2, alpha: 1, color: color });
             }
         }
 
@@ -453,8 +456,6 @@
         function updateProjectiles() {
             for (let i = projectielen.length - 1; i >= 0; i--) {
                 let proj = projectielen[i]; proj.x += proj.vx;
-                
-                // Render projectiel mét camera offset
                 ctx.fillStyle = "cyan"; ctx.fillRect(proj.x - cameraOffset*0.3, proj.y, 14, 5);
 
                 spelers.forEach(target => {
@@ -473,7 +474,7 @@
         function checkRingOuts() {
             spelers.forEach(p => {
                 if (!p.isActive) return;
-                // Upper Blast Zone Check (y < -40) toegevoegd!
+                // BLAST ZONE CHECKS (Bovenkant: y < -40 toegevoegd!)
                 if (p.y > canvas.height || p.x < 0 || p.x > canvas.width || p.y < -40) {
                     createParticles(p.x + p.width/2 - cameraOffset*0.3, Math.max(0, p.y), p.color, 25);
                     triggerShake(10, 15);
@@ -534,7 +535,7 @@
             spelers.forEach(p => p.update());
             checkRingOuts();
 
-            // CAMERA GEMIDDELDE BEREKENEN VOOR PARALLAX & SCHADUWEN
+            // CAMERA GEMIDDELDE (DYNAMISCHE PARALLAX)
             let levendeSpelers = spelers.filter(s => s.isActive);
             if (levendeSpelers.length > 0) {
                 let mX = levendeSpelers.reduce((sum, s) => sum + s.x, 0) / levendeSpelers.length;
@@ -544,28 +545,23 @@
             ctx.save();
             if (shakeTimer > 0) { ctx.translate((Math.random()-0.5)*shakeIntensity, (Math.random()-0.5)*shakeIntensity); shakeTimer--; }
 
-            // GEANIMEERDE ACHTERGROND MET MEERDERE DIEPTE-LAGEN (Parallax)
+            // PARALLAX ACHTERGROND
             let skyGrad = ctx.createLinearGradient(0, 0, 0, canvas.height);
             skyGrad.addColorStop(0, "#060610"); skyGrad.addColorStop(0.5, "#111124"); skyGrad.addColorStop(1, "#1c1830");
             ctx.fillStyle = skyGrad; ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Bergen / Torens op de achtergrond die langzamer meebewegen (2.5D)
-            ctx.fillStyle = "#0d0d1a"; 
-            ctx.fillRect(40 - cameraOffset * 0.1, 180, 150, 320); 
-            ctx.fillRect(630 - cameraOffset * 0.1, 150, 160, 350);
-            ctx.fillStyle = "#141426"; 
-            ctx.fillRect(170 - cameraOffset * 0.2, 230, 180, 270); 
-            ctx.fillRect(420 - cameraOffset * 0.2, 200, 200, 300);
+            // Bergen / Cyber Torens
+            ctx.fillStyle = "#0d0d1a"; ctx.fillRect(40 - cameraOffset * 0.1, 180, 150, 320); ctx.fillRect(630 - cameraOffset * 0.1, 150, 160, 350);
+            ctx.fillStyle = "#141426"; ctx.fillRect(170 - cameraOffset * 0.2, 230, 180, 270); ctx.fillRect(420 - cameraOffset * 0.2, 200, 200, 300);
 
-            // Karakter schaduwen renderen op de hoofdstage
+            // Schaduwen & Vloer rendering
             spelers.forEach(p => p.drawShadow());
 
-            // 2.5D 3D-EFFECT HOOFDSTAGE MET SCHUINE ONDERKANT
+            // 2.5D DIEPTE HOOFDSTAGE
             let sx = mainStage.x - cameraOffset * 0.3;
             ctx.fillStyle = "#2c2c3e"; ctx.fillRect(sx, mainStage.y, mainStage.width, mainStage.height);
-            ctx.fillStyle = "#ffaa00"; ctx.fillRect(sx, mainStage.y, mainStage.width, 3); // Gekleurde toplaag
+            ctx.fillStyle = "#ffaa00"; ctx.fillRect(sx, mainStage.y, mainStage.width, 3);
 
-            // De schuine 3D 'buik' van het zwevende platform
             ctx.fillStyle = "#1e1e2b"; ctx.beginPath(); 
             ctx.moveTo(sx, mainStage.y + mainStage.height);
             ctx.lineTo(sx + 20, mainStage.y + mainStage.height + mainStage.depth);
@@ -573,7 +569,7 @@
             ctx.lineTo(sx + mainStage.width, mainStage.y + mainStage.height); 
             ctx.closePath(); ctx.fill();
 
-            // Soft platforms renderen met camera offset
+            // Platforms
             softPlatforms.forEach(p => { 
                 let px = p.x - cameraOffset * 0.3;
                 ctx.fillStyle = "rgba(60,60,90,0.8)"; ctx.fillRect(px, p.y, p.width, 6); 
@@ -584,10 +580,9 @@
             spelers.forEach(p => p.draw());
             updateProjectiles();
 
-            // Lasers handler met camera offset
             lasers.forEach(l => { ctx.fillStyle = "rgba(0, 255, 255, 0.35)"; ctx.fillRect(l.x - cameraOffset*0.3, l.y, l.width, l.height); });
 
-            // Deeltjes / Explosies renderen
+            // Deeltjes handler
             for(let i=particles.length-1; i>=0; i--) {
                 let p = particles[i]; p.x += p.vx; p.y += p.vy; p.alpha -= 0.04;
                 ctx.fillStyle = p.color; ctx.globalAlpha = p.alpha; ctx.fillRect(p.x, p.y, p.size, p.size);
@@ -595,7 +590,7 @@
             }
             ctx.globalAlpha = 1.0; ctx.restore();
 
-            // Render HUD onderaan het scherm
+            // HUD rendering
             spelers.forEach((p, idx) => {
                 let uibox = document.getElementById(`ui-p${idx+1}`);
                 if (p.isActive) {
