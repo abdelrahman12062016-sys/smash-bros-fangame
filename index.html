@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super Smash Browser - Final Smash Edition</title>
+    <title>Super Smash Browser - Final Smash Fixed</title>
     <style>
         body {
             margin: 0; background: #111; color: white;
@@ -45,7 +45,7 @@
 
     <div id="menu">
         <h1 style="font-size: 40px; margin-bottom: 5px; color: #ffaa00; text-shadow: 0 0 10px rgba(255,170,0,0.5);">SUPER SMASH BROWSER</h1>
-        <p style="color: #666; margin-bottom: 25px;">Final Smash Edition (100% - 230% Random Trigger)</p>
+        <p style="color: #666; margin-bottom: 25px;">Final Smash Fixed (Enkel vijand vliegt weg!)</p>
         
         <div class="select-container">
             <div class="select-box" style="border-top: 4px solid #ff3333;">
@@ -89,9 +89,9 @@
         const stage = { x: 150, y: 350, width: 500, height: 30 };
 
         const classStats = {
-            SwordFighter: { color: "#ff5555", weaponColor: "#e0e0e0", damage: 14, range: 55, knockback: 9 },
-            Brawler:      { color: "#55ff55", weaponColor: "#ff0000", damage: 19, range: 35, knockback: 13 },
-            Gunner:       { color: "#5555ff", weaponColor: "#777777", damage: 6,  range: 0,  knockback: 5 }
+            SwordFighter: { color: "#ff5555", weaponColor: "#e0e0e0", damage: 14, range: 55, knockback: 7 },
+            Brawler:      { color: "#55ff55", weaponColor: "#ff0000", damage: 19, range: 40, knockback: 9 },
+            Gunner:       { color: "#5555ff", weaponColor: "#777777", damage: 6,  range: 0,  knockback: 4 }
         };
 
         class Player {
@@ -108,7 +108,7 @@
                 
                 this.attackTimer = 0;
                 this.animFrame = 0;
-                this.isFinalSmashing = false; // Checkt of de huidige aanval een Final Smash is
+                this.isFinalSmashing = false; 
             }
 
             setClass(type) {
@@ -130,7 +130,7 @@
 
                 if (this.attackTimer > 0) {
                     this.attackTimer--;
-                    if (this.attackTimer === 0) this.isFinalSmashing = false; // Reset status na aanval
+                    if (this.attackTimer === 0) this.isFinalSmashing = false; 
                 }
 
                 // Stage Collision
@@ -139,7 +139,7 @@
                     this.y = stage.y - this.height; this.vy = 0; this.isGrounded = true;
                 } else { this.isGrounded = false; }
 
-                // Blast zones
+                // Blast zones (Respawn)
                 if (this.y > canvas.height || this.x < 0 || this.x > canvas.width) {
                     this.x = canvas.width / 2; this.y = 100; this.vx = 0; this.vy = 0; this.percentage = 0;
                 }
@@ -150,10 +150,9 @@
                 let centerY = this.y + this.height / 2;
                 let weaponColor = classStats[this.type].weaponColor;
 
-                // Als deze speler een Final Smash doet, krijgt hij een vurige gloed rond zijn lichaam
                 if (this.isFinalSmashing) {
                     ctx.save();
-                    ctx.shadowBlur = 30;
+                    ctx.shadowBlur = 35;
                     ctx.shadowColor = "#ffaa00";
                 }
 
@@ -178,9 +177,9 @@
                 ctx.fillStyle = "#000";
                 ctx.fillRect(4, -28, 3, 4);
 
-                // WAPEN / ARM LOGICA MET ANIMATIE
+                // WAPEN ANIMATIE
                 let ext = 0;
-                let sizeMultiplier = this.isFinalSmashing ? 2.5 : 1.0; // Maak het wapen gigantisch tijdens Final Smash!
+                let sizeMultiplier = this.isFinalSmashing ? 2.2 : 1.0; 
 
                 if (this.attackTimer > 0) {
                     ext = Math.sin((this.attackTimer / 15) * Math.PI) * (25 * sizeMultiplier);
@@ -217,7 +216,7 @@
                 }
 
                 ctx.restore();
-                if (this.isFinalSmashing) ctx.restore(); // Herstel de schaduw-gloed
+                if (this.isFinalSmashing) ctx.restore(); 
             }
 
             jump() { if (this.isGrounded) this.vy = -12; }
@@ -225,43 +224,48 @@
             attack(opponent) {
                 if (this.attackTimer > 0) return; 
                 
-                this.attackTimer = 15; // Iets langere animatietijd voor de impact
-                let stats = Object.assign({}, classStats[this.type]); // Kopieer basis-stats
+                this.attackTimer = 15; 
+                let currentKnockback = classStats[this.type].knockback;
+                let currentDamage = classStats[this.type].damage;
+                let currentRange = classStats[this.type].range;
 
-                // --- GOUDEN REGEL: EEN RANDOM KANS OP FINAL SMASH TUSSEN 100 EN 230 PERCENT ---
+                // Check kans op Final Smash tussen 100% en 230%
                 if (this.percentage >= 100 && this.percentage <= 230) {
-                    // 25% kans (0.25) bij elke klap dat het een Final Smash wordt
-                    if (Math.random() < 0.25) {
+                    if (Math.random() < 0.30) { // 30% kans
                         this.isFinalSmashing = true;
-                        stats.damage *= 2.5;     // Deelt 2.5x zoveel schade uit
-                        stats.knockback *= 3.0;  // Schiet de vijand 3x zo ver weg
-                        stats.range *= 2.0;      // Groter bereik van de hitbox
+                        currentDamage *= 2.2;
+                        currentKnockback *= 2.5;
+                        currentRange += 30; // Vergroot het bereik veilig naar voren
                     }
                 }
 
                 if (this.type === "Gunner") {
-                    // Gunner schiet een gewone of GIGANTISCHE plasma kogel
                     projectielen.push({
                         x: this.facing === 1 ? this.x + this.width + 10 : this.x - 25,
                         y: this.isFinalSmashing ? this.y : this.y + 20,
-                        vx: this.facing * (this.isFinalSmashing ? 14 : 11),
-                        damage: stats.damage,
-                        knockback: stats.knockback,
+                        vx: this.facing * (this.isFinalSmashing ? 13 : 10),
+                        damage: currentDamage,
+                        knockback: currentKnockback,
                         isMega: this.isFinalSmashing,
                         owner: this
                     });
                 } else {
-                    // Hitbox check voor fysieke klassen (Brawler & SwordFighter)
-                    let hitzoneX = this.facing === 1 ? this.x + this.width : this.x - stats.range;
-                    if (hitzoneX < opponent.x + opponent.width && hitzoneX + stats.range > opponent.x &&
+                    // HITBOX LOGICA (Zorgt dat enkel de OPPONENT weggeslingerd wordt!)
+                    let hitzoneX = this.facing === 1 ? this.x + this.width : this.x - currentRange;
+                    
+                    if (hitzoneX < opponent.x + opponent.width && hitzoneX + currentRange > opponent.x &&
                         this.y < opponent.y + opponent.height && this.y + this.height > opponent.y) {
                         
-                        opponent.percentage += stats.damage;
-                        let finalKnockback = stats.knockback + (opponent.percentage * 0.16);
-                        opponent.vx = this.facing * finalKnockback;
-                        opponent.vy = -5 - (opponent.percentage * 0.1);
+                        opponent.percentage += currentDamage;
                         
-                        if (this.isFinalSmashing) flashScreen(); // Scherm flitst bij Final Smash impact!
+                        // Bereken knockback puur gebaseerd op de stats van de aanvaller en schade van de OPSTELLER
+                        let calculatedKb = currentKnockback + (opponent.percentage * 0.15);
+                        
+                        // Pas dit direct toe op het SLachtoffer (opponent), de aanvaller (this) behoudt zijn eigen snelheid (vx)
+                        opponent.vx = this.facing * calculatedKb;
+                        opponent.vy = -4 - (opponent.percentage * 0.08);
+                        
+                        if (this.isFinalSmashing) flashScreen(); 
                     }
                 }
             }
@@ -275,7 +279,7 @@
         window.addEventListener("keyup", (e) => { keys[e.code] = false; });
 
         let screenFlashTimer = 0;
-        function flashScreen() { screenFlashTimer = 6; } // Laat het scherm 6 frames wit flitsen
+        function flashScreen() { screenFlashTimer = 6; } 
 
         function handleInput() {
             if (keys[p1.controls.left]) p1.vx = -5;
@@ -310,7 +314,6 @@
                 let proj = projectielen[i];
                 proj.x += proj.vx;
 
-                // Teken kogel (Mega groot als het een Final Smash kogel is!)
                 let pSize = proj.isMega ? 30 : 6;
                 ctx.fillStyle = proj.isMega ? "#ffaa00" : "cyan";
                 ctx.fillRect(proj.x, proj.y, proj.isMega ? 60 : 16, pSize);
@@ -362,11 +365,11 @@
             p1.update();
             p2.update();
 
-            // Grid op de achtergrond
+            // Grid
             ctx.strokeStyle = "rgba(255,255,255,0.02)";
             for(let i=0; i<canvas.width; i+=40) { ctx.strokeRect(i, 0, 40, canvas.height); }
 
-            // Stage (Neon platform)
+            // Stage 
             ctx.fillStyle = "#333";
             ctx.fillRect(stage.x, stage.y, stage.width, stage.height);
             ctx.fillStyle = "#ffaa00";
@@ -376,14 +379,12 @@
             p2.draw();
             updateProjectiles();
 
-            // Scherm flitsen bij een Final Smash impact
             if (screenFlashTimer > 0) {
                 ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
                 screenFlashTimer--;
             }
 
-            // UI percentages en Final Smash gloed-indicator toevoegen aan de UI boxen
             let p1UI = document.getElementById("p1-ui");
             let p2UI = document.getElementById("p2-ui");
 
