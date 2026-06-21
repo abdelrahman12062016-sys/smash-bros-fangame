@@ -61,6 +61,13 @@
                 <option value="Battlefield">Battlefield</option>
                 <option value="FinalDestination">Final Destination</option>
                 <option value="ThePit">The Pit</option>
+                <option value="SkyTemple">Sky Temple</option>
+                <option value="LavaIsland">Lava Island</option>
+                <option value="IceWasteland">Ice Wasteland</option>
+                <option value="ForestArena">Forest Arena</option>
+                <option value="VolcanoRealm">Volcano Realm</option>
+                <option value="SpaceStation">Space Station</option>
+                <option value="ShadowRealm">Shadow Realm</option>
             </select>
         </div>
 
@@ -78,6 +85,15 @@
                     <option value="Robot">Robot 🤖</option>
                     <option value="Pirate">Pirate 🏴‍☠️</option>
                     <option value="SonicBoy">Sonic Boy 🎧</option>
+                    <option value="Knight">Knight ⚒️</option>
+                    <option value="Archer">Archer 🏹</option>
+                    <option value="Samurai">Samurai ⚡</option>
+                    <option value="Dragon">Dragon 🐉</option>
+                    <option value="Vampire">Vampire 🧛</option>
+                    <option value="Hunter">Hunter 🎯</option>
+                    <option value="Cyborg">Cyborg 🤖⚡</option>
+                    <option value="Phoenix">Phoenix 🔥</option>
+                    <option value="Wraith">Wraith 👻</option>
                 </select>
                 <select id="p1Control" disabled><option>Toetsenbord (A/D/W/F/G) of Gamepad</option></select>
             </div>
@@ -94,6 +110,15 @@
                     <option value="Robot">Robot 🤖</option>
                     <option value="Pirate">Pirate 🏴‍☠️</option>
                     <option value="SonicBoy">Sonic Boy 🎧</option>
+                    <option value="Knight">Knight ⚒️</option>
+                    <option value="Archer">Archer 🏹</option>
+                    <option value="Samurai">Samurai ⚡</option>
+                    <option value="Dragon">Dragon 🐉</option>
+                    <option value="Vampire">Vampire 🧛</option>
+                    <option value="Hunter">Hunter 🎯</option>
+                    <option value="Cyborg">Cyborg 🤖⚡</option>
+                    <option value="Phoenix">Phoenix 🔥</option>
+                    <option value="Wraith">Wraith 👻</option>
                 </select>
                 <select id="p2Control"><option value="CPU">CPU (Computer)</option><option value="Human">Mens (◄/►/▲/./\/)</option></select>
                 <select id="p2Level"><option value="3">AI Level 3</option><option value="1">AI Level 1</option><option value="6">AI Level 6</option><option value="9">AI Level 9 🔥</option></select>
@@ -111,6 +136,15 @@
                     <option value="Robot">Robot 🤖</option>
                     <option value="Pirate">Pirate 🏴‍☠️</option>
                     <option value="SonicBoy">Sonic Boy 🎧</option>
+                    <option value="Knight">Knight ⚒️</option>
+                    <option value="Archer">Archer 🏹</option>
+                    <option value="Samurai">Samurai ⚡</option>
+                    <option value="Dragon">Dragon 🐉</option>
+                    <option value="Vampire">Vampire 🧛</option>
+                    <option value="Hunter">Hunter 🎯</option>
+                    <option value="Cyborg">Cyborg 🤖⚡</option>
+                    <option value="Phoenix">Phoenix 🔥</option>
+                    <option value="Wraith">Wraith 👻</option>
                 </select>
                 <select id="p3Control"><option value="CPU">CPU (Computer)</option><option value="OFF">UIT (Geen)</option></select>
                 <select id="p3Level"><option value="3">AI Level 3</option><option value="1">AI Level 1</option><option value="6">AI Level 6</option><option value="9">AI Level 9 🔥</option></select>
@@ -128,6 +162,15 @@
                     <option value="Robot">Robot 🤖</option>
                     <option value="Pirate">Pirate 🏴‍☠️</option>
                     <option value="SonicBoy">Sonic Boy 🎧</option>
+                    <option value="Knight">Knight ⚒️</option>
+                    <option value="Archer">Archer 🏹</option>
+                    <option value="Samurai">Samurai ⚡</option>
+                    <option value="Dragon">Dragon 🐉</option>
+                    <option value="Vampire">Vampire 🧛</option>
+                    <option value="Hunter">Hunter 🎯</option>
+                    <option value="Cyborg">Cyborg 🤖⚡</option>
+                    <option value="Phoenix">Phoenix 🔥</option>
+                    <option value="Wraith">Wraith 👻</option>
                 </select>
                 <select id="p4Control"><option value="CPU">CPU (Computer)</option><option value="OFF">UIT (Geen)</option></select>
                 <select id="p4Level"><option value="3">AI Level 3</option><option value="1">AI Level 1</option><option value="6">AI Level 6</option><option value="9">AI Level 9 🔥</option></select>
@@ -141,6 +184,14 @@
         <h1 id="victoryTitle" style="font-size: 40px; color: #00ffcc; text-shadow: 0 0 20px rgba(0,255,204,0.5); margin:0;">VICTORY!</h1>
         <p id="victorySub" style="font-size: 18px; color: #8a8a9e; margin-bottom: 20px;">Match afgelopen!</p>
         <button class="btn btn-victory" id="btnBackToMenu">TERUG NAAR MENU</button>
+    </div>
+
+    <div id="pauseScreen" style="position: absolute; background: rgba(10, 10, 20, 0.95); width: 400px; height: 300px; display: none; flex-direction: column; align-items: center; justify-content: center; border: 4px solid #ff9900; z-index: 20; box-shadow: 0 0 40px rgba(255, 153, 0, 0.3); border-radius: 12px; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+        <h1 style="font-size: 40px; color: #ff9900; text-shadow: 0 0 15px rgba(255,153,0,0.4); margin: 0 0 30px 0;">⏸ PAUSED</h1>
+        <div style="display: flex; gap: 20px;">
+            <button id="pauseResumeBtn" style="width: 80px; height: 80px; border: none; border-radius: 50%; background: linear-gradient(135deg, #00ff00, #00aa00); color: white; font-size: 40px; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; transition: 0.2s;" title="Resume">▶</button>
+            <button id="pauseExitBtn" style="width: 80px; height: 80px; border: none; border-radius: 50%; background: linear-gradient(135deg, #ff3333, #cc0000); color: white; font-size: 40px; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; transition: 0.2s;" title="Exit">⏹</button>
+        </div>
     </div>
 
     <canvas id="gameCanvas" width="800" height="500"></canvas>
@@ -173,16 +224,25 @@
         let spelers = [], projectielen = [], lasers = [], particles = [], blastEffects = [];
         let shakeTimer = 0, shakeIntensity = 0, cameraOffset = 0;
         let mainStage = { x: 150, y: 340, width: 500, height: 25, depth: 35 }, softPlatforms = [];
+        let isPaused = false;
 
-        // Gamepad tracking variabele
-        let controllerIndex = null;
+        // Gamepad tracking for multiple controllers
+        let connectedControllers = new Set();
+        let controllerPlayerMap = {}; // Maps controller index to player index
+        
         window.addEventListener("gamepadconnected", (e) => {
-            controllerIndex = e.gamepad.index;
+            connectedControllers.add(e.gamepad.index);
             document.getElementById("controllerStatus").style.display = "block";
+            document.getElementById("controllerStatus").textContent = `🎮 CONTROLLERS VERBONDEN: ${connectedControllers.size}`;
         });
-        window.addEventListener("gamepaddisconnected", () => {
-            controllerIndex = null;
-            document.getElementById("controllerStatus").style.display = "none";
+        window.addEventListener("gamepaddisconnected", (e) => {
+            connectedControllers.delete(e.gamepad.index);
+            delete controllerPlayerMap[e.gamepad.index];
+            if (connectedControllers.size === 0) {
+                document.getElementById("controllerStatus").style.display = "none";
+            } else {
+                document.getElementById("controllerStatus").textContent = `🎮 CONTROLLERS VERBONDEN: ${connectedControllers.size}`;
+            }
         });
 
         const classStats = {
@@ -195,7 +255,16 @@
             Alien:        { weaponColor: "#00ff66", damage: 8,  range: 45, knockback: 5.0 },
             Robot:        { weaponColor: "#95a5a6", damage: 14, range: 45, knockback: 7.5 },
             Pirate:       { weaponColor: "#f22613", damage: 13, range: 50, knockback: 8.0 },
-            SonicBoy:     { weaponColor: "#ff007f", damage: 7,  range: 50, knockback: 4.5 }
+            SonicBoy:     { weaponColor: "#ff007f", damage: 7,  range: 50, knockback: 4.5 },
+            Knight:       { weaponColor: "#c0c0c0", damage: 18, range: 50, knockback: 10.0 },
+            Archer:       { weaponColor: "#d2691e", damage: 10, range: 0,  knockback: 4.5 },
+            Samurai:      { weaponColor: "#daa520", damage: 16, range: 60, knockback: 9.0 },
+            Dragon:       { weaponColor: "#ff6600", damage: 20, range: 55, knockback: 11.5 },
+            Vampire:      { weaponColor: "#8b0000", damage: 12, range: 40, knockback: 7.0 },
+            Hunter:       { weaponColor: "#8b4513", damage: 11, range: 45, knockback: 6.5 },
+            Cyborg:       { weaponColor: "#1e90ff", damage: 15, range: 50, knockback: 8.0 },
+            Phoenix:      { weaponColor: "#ff4500", damage: 14, range: 45, knockback: 8.5 },
+            Wraith:       { weaponColor: "#9370db", damage: 9,  range: 40, knockback: 5.0 }
         };
 
         const playerMeta = [
@@ -204,11 +273,6 @@
             { id: 3, baseColor: "#22cc22", startX: 320, name: "P3" },
             { id: 4, baseColor: "#eeee22", startX: 480, name: "P4" }
         ];
-
-        // Button press debouncer trackers voor controllers
-        let prevJumpPressed = false;
-        let prevAttackPressed = false;
-        let prevSpecialPressed = false;
 
         class Player {
             constructor(meta, controls) {
@@ -372,6 +436,46 @@
                 } else if (this.type === "SonicBoy") {
                     ctx.fillStyle = "#ff007f"; ctx.fillRect(-10, -32, 20, 4);
                     ctx.fillRect(-12, -28, 4, 8); ctx.fillRect(8, -28, 4, 8);
+                } else if (this.type === "Knight") {
+                    ctx.fillStyle = "#c0c0c0"; ctx.fillRect(4, -20, 4, 24);
+                    ctx.fillStyle = "#a9a9a9"; ctx.fillRect(6 + ext*0.2, -26, 14, 14);
+                    ctx.fillStyle = "#696969"; ctx.fillRect(-8, -32, 16, 4);
+                } else if (this.type === "Archer") {
+                    ctx.fillStyle = "#8b4513"; ctx.fillRect(6 + ext, -10, 12, 6);
+                    ctx.fillStyle = "#d2691e"; ctx.fillRect(2, -3, 20, 3);
+                } else if (this.type === "Samurai") {
+                    ctx.fillStyle = "#daa520"; ctx.rotate(Math.PI/6 + (this.attackTimer > 0 ? ext * 0.08 : 0));
+                    ctx.fillRect(4, -3, 30, 5); ctx.restore();
+                    ctx.save(); ctx.translate(cx, cy); ctx.scale(this.facing, 1);
+                    ctx.fillStyle = "#8b0000"; ctx.fillRect(-8, -30, 16, 4);
+                } else if (this.type === "Dragon") {
+                    ctx.fillStyle = "#ff6600"; ctx.fillRect(2, -8, 16, 10);
+                    ctx.fillStyle = "#ff4500"; ctx.fillRect(18, -6, 8, 8);
+                    ctx.fillStyle = "#ffaa00"; for(let i=-2; i<=2; i+=2) ctx.fillRect(4 + i, -30 + i*1.5, 3, 5);
+                } else if (this.type === "Vampire") {
+                    ctx.fillStyle = "#8b0000"; ctx.fillRect(-14, -30, 28, 5);
+                    ctx.fillStyle = "#4d0000"; ctx.fillRect(-10, -32, 20, 3);
+                    ctx.fillStyle = "#fff"; ctx.fillRect(3, -24, 2, 3); ctx.fillRect(-5, -24, 2, 3);
+                } else if (this.type === "Hunter") {
+                    ctx.fillStyle = "#8b4513"; ctx.fillRect(6 + ext*0.3, -8, 14, 8);
+                    ctx.fillStyle = "#228b22"; ctx.fillRect(-8, -30, 16, 4);
+                } else if (this.type === "Cyborg") {
+                    ctx.fillStyle = "#1e90ff"; ctx.fillRect(4, -20, 4, 24);
+                    ctx.fillStyle = "#00ffff"; ctx.fillRect(6 + ext*0.2, -26, 14, 14);
+                    ctx.fillStyle = "#ff0000"; ctx.fillRect(2, -25, 3, 3); ctx.fillRect(9, -25, 3, 3);
+                } else if (this.type === "Phoenix") {
+                    ctx.fillStyle = "#ff4500"; ctx.rotate((this.animFrame * 0.1) % Math.PI * 2);
+                    ctx.fillRect(-5, -3, 10, 25); ctx.restore();
+                    ctx.save(); ctx.translate(cx, cy); ctx.scale(this.facing, 1);
+                    ctx.fillStyle = "#ffaa00"; ctx.fillRect(-12, -28, 24, 5);
+                } else if (this.type === "Wraith") {
+                    ctx.fillStyle = "#9370db"; ctx.globalAlpha = 0.7;
+                    ctx.fillRect(-14, -28, 28, 30);
+                    ctx.fillStyle = "#e6ccff"; ctx.fillRect(3, -24, 2, 3); ctx.fillRect(-5, -24, 2, 3);
+                    ctx.globalAlpha = 1.0;
+                } else if (this.type === "Mage") {
+                    ctx.fillStyle = "#4d13d1"; ctx.fillRect(-8, -30, 16, 6);
+                    ctx.fillStyle = "#6a23c5"; ctx.fillRect(4, -8, 6, 8);
                 }
 
                 ctx.restore(); ctx.globalAlpha = 1.0;
@@ -395,6 +499,18 @@
                     playSound("laser"); projectielen.push({ type: "fireball", x: this.x, y: this.y+10, vx: this.facing*7, damage: stats.damage, knockback: stats.knockback, owner: this });
                 } else if (this.type === "Alien") {
                     playSound("laser"); projectielen.push({ type: "eyelaser", x: this.x, y: this.y+4, vx: this.facing*14, damage: stats.damage, knockback: stats.knockback, owner: this });
+                } else if (this.type === "Archer") {
+                    playSound("laser"); projectielen.push({ type: "arrow", x: this.x, y: this.y+8, vx: this.facing*12, damage: stats.damage, knockback: stats.knockback, owner: this });
+                } else if (this.type === "Dragon") {
+                    playSound("laser"); projectielen.push({ type: "fireball", x: this.x, y: this.y+5, vx: this.facing*9, damage: stats.damage, knockback: stats.knockback, owner: this });
+                } else if (this.type === "Vampire") {
+                    playSound("hit"); projectielen.push({ type: "bloodmist", x: this.x, y: this.y, vx: this.facing*6, damage: stats.damage * 0.8, knockback: stats.knockback * 0.8, owner: this });
+                } else if (this.type === "Hunter") {
+                    playSound("laser"); projectielen.push({ type: "hunter_shot", x: this.x, y: this.y+10, vx: this.facing*11, damage: stats.damage, knockback: stats.knockback, owner: this });
+                } else if (this.type === "Phoenix") {
+                    playSound("laser"); projectielen.push({ type: "fireball", x: this.x, y: this.y+8, vx: this.facing*8, damage: stats.damage, knockback: stats.knockback, owner: this });
+                } else if (this.type === "Cyborg") {
+                    playSound("laser"); projectielen.push({ type: "laser", x: this.facing === 1 ? this.x+this.width+4 : this.x-16, y: this.y+16, vx: this.facing*11, damage: stats.damage, knockback: stats.knockback, owner: this });
                 } else {
                     let hx = this.facing === 1 ? this.x + this.width : this.x - stats.range;
                     spelers.forEach(opp => {
@@ -438,6 +554,42 @@
                     projectielen.push({ type: "cannonball", x: this.x, y: this.y + 10, vx: this.facing * 4.5, damage: 20, knockback: 12, owner: this });
                 } else if (this.type === "SonicBoy") {
                     lasers.push({ type: "sonic", x: this.x - 60, y: this.y - 20, width: 160, height: 100, timer: 30, owner: this });
+                } else if (this.type === "Knight") {
+                    playSound("hit"); triggerShake(5, 12);
+                    this.vx = this.facing * 6; this.vy = -8;
+                    spelers.forEach(opp => { if (opp !== this && Math.abs(this.x - opp.x) < 70) this.hitOpponent(opp, 18, this.facing * 6, -10); });
+                } else if (this.type === "Archer") {
+                    playSound("laser");
+                    for (let angle = -0.4; angle <= 0.4; angle += 0.2) {
+                        projectielen.push({ type: "arrow", x: this.x, y: this.y, vx: Math.cos(angle) * 6 * this.facing, vy: Math.sin(angle) * 6, damage: 12, knockback: 6, owner: this });
+                    }
+                } else if (this.type === "Samurai") {
+                    playSound("hit"); triggerShake(6, 15);
+                    this.vx = this.facing * 8; 
+                    spelers.forEach(opp => { if (opp !== this && Math.abs(this.x - opp.x) < 65) this.hitOpponent(opp, 16, this.facing * 7, -9); });
+                } else if (this.type === "Dragon") {
+                    playSound("laser"); triggerShake(10, 20);
+                    projectielen.push({ type: "fireball", x: this.x, y: this.y - 5, vx: this.facing * 5, damage: 18, knockback: 10, owner: this });
+                    this.vy = -12;
+                } else if (this.type === "Vampire") {
+                    playSound("jump"); createParticles(this.x, this.y, "#8b0000", 20);
+                    this.vy = -14; this.vx = this.facing * 3;
+                    spelers.forEach(opp => { if (opp !== this && Math.abs(this.x - opp.x) < 50) { this.hitOpponent(opp, 11, this.facing * 4, -8); this.percentage = Math.max(0, this.percentage - 5); } });
+                } else if (this.type === "Hunter") {
+                    playSound("laser");
+                    projectielen.push({ type: "hunter_shot", x: this.x, y: this.y + 5, vx: this.facing * 7, damage: 13, knockback: 7, owner: this });
+                } else if (this.type === "Cyborg") {
+                    playSound("hit"); triggerShake(7, 14);
+                    lasers.push({ type: "beam", x: this.facing === 1 ? this.x+this.width : 0, y: this.y, width: this.facing === 1 ? canvas.width : this.x, height: 40, timer: 18, owner: this });
+                } else if (this.type === "Phoenix") {
+                    playSound("laser"); triggerShake(8, 16);
+                    createParticles(this.x, this.y, "#ff4500", 25);
+                    lasers.push({ type: "fire", x: this.x - 60, y: this.y - 40, width: 150, height: 120, timer: 25, owner: this });
+                    this.vy = -10;
+                } else if (this.type === "Wraith") {
+                    playSound("jump"); createParticles(this.x, this.y, "#9370db", 18);
+                    this.x += this.facing * 100; this.vy = -6;
+                    if (this.x < 20) this.x = 20; if (this.x > canvas.width - 50) this.x = canvas.width - 50;
                 }
             }
 
@@ -468,36 +620,65 @@
         }
 
         function handleGamepadInput() {
-            if (controllerIndex === null) return;
-            let gp = navigator.getGamepads()[controllerIndex];
-            if (!gp) return;
-
-            let p1 = spelers[0];
-            if (!p1.isActive) return;
-
-            // Schild (L2/R2 of L1/R1 triggers)
-            p1.isShielding = (gp.buttons[6].pressed || gp.buttons[7].pressed || gp.buttons[4].pressed || gp.buttons[5].pressed) && p1.isGrounded;
-
-            if (!p1.isShielding && p1.airDodgeTimer <= 10) {
-                // Stick beweging links / rechts
-                if (gp.axes[0] < -0.3 || gp.buttons[14].pressed) p1.vx = -4.5;
-                if (gp.axes[0] > 0.3 || gp.buttons[15].pressed) p1.vx = 4.5;
-
-                // Knop A / Kruisje (onderste knop) = Springen
-                let jumpPressed = gp.buttons[0].pressed;
-                if (jumpPressed && !prevJumpPressed) { p1.jump(); }
-                prevJumpPressed = jumpPressed;
+            const gamepads = navigator.getGamepads();
+            
+            // Auto-assign controllers to human players
+            for (let i = 0; i < gamepads.length; i++) {
+                if (!gamepads[i]) continue;
+                if (!controllerPlayerMap[i]) {
+                    // Find first available human player not controlled by keyboard
+                    for (let p = 0; p < spelers.length; p++) {
+                        if (spelers[p].isActive && !spelers[p].isCPU && !Object.values(controllerPlayerMap).includes(p)) {
+                            controllerPlayerMap[i] = p;
+                            break;
+                        }
+                    }
+                }
             }
+            
+            // Process input for each connected gamepad
+            for (let controllerIdx of connectedControllers) {
+                const gp = gamepads[controllerIdx];
+                if (!gp || controllerPlayerMap[controllerIdx] === undefined) continue;
+                
+                const playerIdx = controllerPlayerMap[controllerIdx];
+                const p = spelers[playerIdx];
+                
+                if (!p || !p.isActive) continue;
 
-            // Knop X / Vierkantje (linker knop) = Attack
-            let attackPressed = gp.buttons[2].pressed;
-            if (attackPressed && !prevAttackPressed) { p1.attack(); }
-            prevAttackPressed = attackPressed;
+                // Shield (L2/R2 or L1/R1 triggers)
+                p.isShielding = (gp.buttons[6]?.pressed || gp.buttons[7]?.pressed || gp.buttons[4]?.pressed || gp.buttons[5]?.pressed) && p.isGrounded;
 
-            // Knop Y / Driehoekje (bovenste knop) = Special
-            let specialPressed = gp.buttons[3].pressed;
-            if (specialPressed && !prevSpecialPressed) { p1.special(); }
-            prevSpecialPressed = specialPressed;
+                if (!p.isShielding && p.airDodgeTimer <= 10) {
+                    // Left stick or D-pad movement
+                    if (gp.axes[0] < -0.3 || gp.buttons[14]?.pressed) p.vx = -4.5;
+                    if (gp.axes[0] > 0.3 || gp.buttons[15]?.pressed) p.vx = 4.5;
+
+                    // Button A / Cross (bottom button) = Jump
+                    const jumpPressed = gp.buttons[0]?.pressed;
+                    const prevJumpKey = `prevJump_P${playerIdx}_C${controllerIdx}`;
+                    if (jumpPressed && !window[prevJumpKey]) { 
+                        p.jump(); 
+                    }
+                    window[prevJumpKey] = jumpPressed;
+                }
+
+                // Button X / Square (left button) = Attack
+                const attackPressed = gp.buttons[2]?.pressed;
+                const prevAttackKey = `prevAttack_P${playerIdx}_C${controllerIdx}`;
+                if (attackPressed && !window[prevAttackKey]) { 
+                    p.attack(); 
+                }
+                window[prevAttackKey] = attackPressed;
+
+                // Button Y / Triangle (top button) = Special
+                const specialPressed = gp.buttons[3]?.pressed;
+                const prevSpecialKey = `prevSpecial_P${playerIdx}_C${controllerIdx}`;
+                if (specialPressed && !window[prevSpecialKey]) { 
+                    p.special(); 
+                }
+                window[prevSpecialKey] = specialPressed;
+            }
         }
 
         function handleInput() {
@@ -637,11 +818,38 @@
         function startScherm() {
             matchMode = document.getElementById("matchMode").value; gameState = "PLAYING"; blastEffects = [];
             let stageName = document.getElementById("stageSelect").value; softPlatforms = [];
+            
             if (stageName === "Battlefield") {
-                mainStage = { x: 180, y: 350, width: 440, height: 25, depth: 35 }; softPlatforms.push({ x: 230, y: 240, width: 120 }, { x: 450, y: 240, width: 120 });
+                mainStage = { x: 180, y: 350, width: 440, height: 25, depth: 35 };
+                softPlatforms.push({ x: 230, y: 240, width: 120 }, { x: 450, y: 240, width: 120 });
             } else if (stageName === "FinalDestination") {
                 mainStage = { x: 100, y: 360, width: 600, height: 25, depth: 40 };
-            } else { mainStage = { x: 280, y: 350, width: 240, height: 25, depth: 30 }; }
+            } else if (stageName === "ThePit") {
+                mainStage = { x: 280, y: 350, width: 240, height: 25, depth: 30 };
+            } else if (stageName === "SkyTemple") {
+                mainStage = { x: 150, y: 340, width: 500, height: 25, depth: 35 };
+                softPlatforms.push({ x: 200, y: 220, width: 100 }, { x: 500, y: 200, width: 100 });
+            } else if (stageName === "LavaIsland") {
+                mainStage = { x: 120, y: 370, width: 560, height: 25, depth: 40 };
+                softPlatforms.push({ x: 250, y: 270, width: 90 }, { x: 450, y: 260, width: 90 });
+            } else if (stageName === "IceWasteland") {
+                mainStage = { x: 100, y: 360, width: 600, height: 25, depth: 38 };
+                softPlatforms.push({ x: 200, y: 240, width: 110 }, { x: 490, y: 250, width: 110 });
+            } else if (stageName === "ForestArena") {
+                mainStage = { x: 140, y: 345, width: 520, height: 25, depth: 32 };
+                softPlatforms.push({ x: 220, y: 235, width: 115 }, { x: 460, y: 225, width: 115 }, { x: 340, y: 150, width: 80 });
+            } else if (stageName === "VolcanoRealm") {
+                mainStage = { x: 110, y: 365, width: 580, height: 25, depth: 42 };
+                softPlatforms.push({ x: 180, y: 260, width: 95 }, { x: 520, y: 270, width: 95 });
+            } else if (stageName === "SpaceStation") {
+                mainStage = { x: 130, y: 355, width: 540, height: 25, depth: 36 };
+                softPlatforms.push({ x: 190, y: 230, width: 105 }, { x: 510, y: 240, width: 105 }, { x: 350, y: 280, width: 100 });
+            } else if (stageName === "ShadowRealm") {
+                mainStage = { x: 160, y: 340, width: 480, height: 25, depth: 34 };
+                softPlatforms.push({ x: 240, y: 245, width: 100 }, { x: 460, y: 230, width: 100 });
+            } else {
+                mainStage = { x: 280, y: 350, width: 240, height: 25, depth: 30 };
+            }
 
             spelers[0].reset(document.getElementById("p1Char").value, false, 3, matchMode);
             spelers[1].reset(document.getElementById("p2Char").value, document.getElementById("p2Control").value === "CPU", document.getElementById("p2Level").value, matchMode);
@@ -656,8 +864,21 @@
 
         function gameLoop() {
             if (gameState !== "PLAYING") return;
+            
+            if (isPaused) {
+                // Still render when paused, but don't update
+                drawCurrentState();
+                requestAnimationFrame(gameLoop);
+                return;
+            }
 
             handleInput(); updateCPUs(); spelers.forEach(p => p.update()); checkRingOuts();
+
+            drawCurrentState();
+            requestAnimationFrame(gameLoop);
+        }
+        
+        function drawCurrentState() {
 
             let levendeSpelers = spelers.filter(s => s.isActive);
             if (levendeSpelers.length > 0) {
@@ -669,6 +890,52 @@
 
             let skyGrad = ctx.createLinearGradient(0, 0, 0, canvas.height); skyGrad.addColorStop(0, "#060610"); skyGrad.addColorStop(1, "#1c1830");
             ctx.fillStyle = skyGrad; ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Stage-specific visuals
+            if (matchMode !== undefined) {
+                let stageName = document.getElementById("stageSelect").value;
+                if (stageName === "LavaIsland") {
+                    ctx.fillStyle = "rgba(255, 100, 0, 0.15)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    for (let i = 0; i < 5; i++) {
+                        ctx.fillStyle = `rgba(255, ${100 + Math.random()*100}, 0, 0.1)`;
+                        ctx.fillRect(Math.random() * canvas.width, Math.random() * canvas.height, 50, 50);
+                    }
+                } else if (stageName === "IceWasteland") {
+                    ctx.fillStyle = "rgba(100, 200, 255, 0.1)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.fillStyle = "#e0f7ff"; 
+                    for (let i = 0; i < 8; i++) {
+                        ctx.fillRect(Math.random() * canvas.width, Math.random() * canvas.height, 30, 30);
+                    }
+                } else if (stageName === "ForestArena") {
+                    ctx.fillStyle = "#0a2e0a"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.fillStyle = "rgba(34, 139, 34, 0.3)";
+                    for (let i = 0; i < 10; i++) {
+                        ctx.fillRect(Math.random() * canvas.width, Math.random() * canvas.height, 40, 40);
+                    }
+                } else if (stageName === "VolcanoRealm") {
+                    ctx.fillStyle = "rgba(139, 35, 35, 0.2)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.fillStyle = "#ff4500";
+                    for (let i = 0; i < 6; i++) {
+                        ctx.fillRect(Math.random() * canvas.width, Math.random() * canvas.height, 60, 20);
+                    }
+                } else if (stageName === "SpaceStation") {
+                    ctx.fillStyle = "#0a0a1a"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.fillStyle = "#ffffff";
+                    for (let i = 0; i < 12; i++) {
+                        ctx.fillRect(Math.random() * canvas.width, Math.random() * canvas.height, 4, 4);
+                    }
+                } else if (stageName === "SkyTemple") {
+                    let skyGrad2 = ctx.createLinearGradient(0, 0, 0, canvas.height);
+                    skyGrad2.addColorStop(0, "#87ceeb"); skyGrad2.addColorStop(1, "#e0f6ff");
+                    ctx.fillStyle = skyGrad2; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                } else if (stageName === "ShadowRealm") {
+                    ctx.fillStyle = "rgba(75, 0, 130, 0.3)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.fillStyle = "#9370db";
+                    for (let i = 0; i < 8; i++) {
+                        ctx.fillRect(Math.random() * canvas.width, Math.random() * canvas.height, 35, 35);
+                    }
+                }
+            }
 
             spelers.forEach(p => p.drawShadow());
             let sx = mainStage.x - cameraOffset * 0.3;
@@ -704,16 +971,37 @@
             }
             ctx.globalAlpha = 1.0; ctx.restore();
 
-            spelers.forEach((p, idx) => {
+             spelers.forEach((p, idx) => {
                 let uibox = document.getElementById(`ui-p${idx+1}`);
                 if (p.isActive) {
                     uibox.style.display = "block"; uibox.style.borderColor = p.color;
                     uibox.innerHTML = `${p.name} (${p.type}): ${Math.floor(p.percentage)}% <div class="stocks">${"⭐".repeat(p.stocks)}</div>`;
                 } else { uibox.innerHTML = `${p.name}: K.O.`; uibox.style.borderColor = "#333"; }
             });
-
-            requestAnimationFrame(gameLoop);
         }
+
+        // Pause menu event listeners
+        document.getElementById("pauseResumeBtn").addEventListener("click", () => {
+            isPaused = false;
+            document.getElementById("pauseScreen").style.display = "none";
+        });
+        
+        document.getElementById("pauseExitBtn").addEventListener("click", () => {
+            isPaused = false;
+            gameState = "MENU";
+            document.getElementById("pauseScreen").style.display = "none";
+            canvas.style.display = "none";
+            document.getElementById("ui").style.display = "none";
+            document.getElementById("menu").style.display = "flex";
+        });
+        
+        // Pause with ESC key
+        window.addEventListener("keydown", (e) => {
+            if (e.key === "Escape" && gameState === "PLAYING") {
+                isPaused = !isPaused;
+                document.getElementById("pauseScreen").style.display = isPaused ? "flex" : "none";
+            }
+        });
 
         document.getElementById("btnStartGame").addEventListener("click", startScherm);
         document.getElementById("btnBackToMenu").addEventListener("click", () => {
